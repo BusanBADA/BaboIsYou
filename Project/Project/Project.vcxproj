@@ -232,17 +232,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Apple.cpp" />
-    <ClCompile Include="ApplePlayerController.cpp" />
-    <ClCompile Include="Bullet.cpp" />
-    <ClCompile Include="Bullet1.cpp" />
-    <ClCompile Include="Button.cpp" />
-    <ClCompile Include="Enemy.cpp" />
-    <ClCompile Include="Level1.cpp" />
+    <ClCompile Include="BackgroundObject.cpp" />
+    <ClCompile Include="FlagObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="Tutorial.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SNAKE_Engine\SNAKE_Engine.vcxproj">
@@ -250,16 +245,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Apple.h" />
-    <ClInclude Include="ApplePlayerController.h" />
-    <ClInclude Include="Bullet.h" />
-    <ClInclude Include="Bullet1.h" />
-    <ClInclude Include="Button.h" />
-    <ClInclude Include="Enemy.h" />
-    <ClInclude Include="Level1.h" />
+    <ClInclude Include="BackgroundObject.h" />
+    <ClInclude Include="FlagObject.h" />
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="Player.h" />
-    <ClInclude Include="Timer.h" />
+    <ClInclude Include="Tutorial.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -28,6 +28,8 @@ public:
 
     bool IsFullScreen() const { return isFullscreen; }
 
+    void RestrictResizing(bool shouldRestrict);
+
 private:
     bool Init(int _windowWidth, int _windowHeight, SNAKE_Engine& engine);
 

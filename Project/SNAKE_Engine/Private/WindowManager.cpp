@@ -19,6 +19,12 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
         SNAKE_LOG("changed: " << snakeEngine->GetEngineContext().windowManager->GetWidth() << " " << snakeEngine->GetEngineContext().windowManager->GetHeight());
     }
 }
+
+void WindowManager::RestrictResizing(bool shouldRestrict)
+{
+	glfwSetWindowAttrib(window, GLFW_RESIZABLE, shouldRestrict? GLFW_FALSE : GLFW_TRUE);
+}
+
 bool WindowManager::Init(int _windowWidth, int _windowHeight, SNAKE_Engine& engine)
 {
 
@@ -31,7 +37,7 @@ bool WindowManager::Init(int _windowWidth, int _windowHeight, SNAKE_Engine& engi
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
+  
     windowWidth = _windowWidth;
     windowHeight = _windowHeight;
 
@@ -95,7 +101,6 @@ bool WindowManager::Init(int _windowWidth, int _windowHeight, SNAKE_Engine& engi
             //if (auto* snakeEngine = (SNAKE_Engine*)glfwGetWindowUserPointer(w))
             //    snakeEngine->GetEngineContext().inputManager->Reset();
         });
-
     return true;
 }
 

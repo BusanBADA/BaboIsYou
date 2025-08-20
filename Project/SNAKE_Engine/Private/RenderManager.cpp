@@ -70,8 +70,9 @@ void RenderManager::FlushDrawCommands(const EngineContext& engineContext)
                         colors.push_back(obj->GetColor());
                         if (obj->HasAnimation())
                         {
-                            uvOffsets.push_back(obj->GetAnimator()->GetUVOffset());
-                            uvScales.push_back(obj->GetAnimator()->GetUVScale());
+                            SpriteAnimator* spriteAnimator = obj->GetSpriteAnimator();
+                            uvOffsets.push_back(spriteAnimator->GetUVOffset());
+                            uvScales.push_back(spriteAnimator->GetUVScale());
                         }
                         else
                         {
@@ -114,7 +115,7 @@ void RenderManager::FlushDrawCommands(const EngineContext& engineContext)
 
                     if (batch.front().first->HasAnimation())
                     {
-                        material->SetTexture("u_Texture", batch.front().first->GetAnimator()->GetTexture());
+                        material->SetTexture("u_Texture", batch.front().first->GetSpriteAnimator()->GetTexture());
                     }
 
                     batch.front().first->Draw(engineContext);
@@ -168,10 +169,10 @@ void RenderManager::FlushDrawCommands(const EngineContext& engineContext)
 
                         if (obj->HasAnimation())
                         {
-                            SpriteAnimator* anim = obj->GetAnimator();
-                            material->SetUniform("u_UVOffset", anim->GetUVOffset());
-                            material->SetUniform("u_UVScale", anim->GetUVScale());
-                            material->SetTexture("u_Texture", anim->GetTexture());
+                            SpriteAnimator* spriteAnimator = obj->GetSpriteAnimator();
+                            material->SetUniform("u_UVOffset", spriteAnimator->GetUVOffset());
+                            material->SetUniform("u_UVScale", spriteAnimator->GetUVScale());
+                            material->SetTexture("u_Texture", spriteAnimator->GetTexture());
                         }
 
                         obj->Draw(engineContext);
@@ -416,18 +417,18 @@ void RenderManager::Init(const EngineContext& engineContext)
                 out vec4 FragColor;
                 in vec2 v_UV;
                 uniform vec4 u_Color;
-                uniform sampler2D u_ErrorTexture;
+                uniform sampler2D u_Texture;
 
                 void main()
                 {
-                    FragColor = texture(u_ErrorTexture, v_UV) * u_Color;
+                    FragColor = texture(u_Texture, v_UV) * u_Color;
                 }
     )");
     shader->Link();
 
     shaderMap["[EngineShader]default_texture"] = std::move(shader);
     std::unique_ptr<Material> material = std::make_unique<Material>(GetShaderByTag("[EngineShader]default_texture"));
-    material->SetTexture("u_ErrorTexture", errorTexture);
+    material->SetTexture("u_Texture", errorTexture);
     RegisterMaterial("[EngineMaterial]error", std::move(material));
     defaultMaterial = GetMaterialByTag("[EngineMaterial]error");
 
@@ -831,8 +832,8 @@ void RenderManager::UnregisterSpriteSheet(const std::string& tag, const EngineCo
         std::vector<Object*> objects = gameState->GetObjectManager().GetAllRawPtrObjects();
         for (auto obj : objects)
         {
-            SpriteAnimator* spriteAnim = obj->GetSpriteAnimator();
-            if (spriteAnim && spriteAnim->GetSpriteSheet() == target)
+            SpriteAnimator* spriteAnimator = obj->GetSpriteAnimator();
+            if (spriteAnimator && spriteAnimator->GetSpriteSheet() == target)
             {
                 SNAKE_WRN("Cannot delete the sprite sheet [" << tag << "] while there are objects referencing it.");
                 return;

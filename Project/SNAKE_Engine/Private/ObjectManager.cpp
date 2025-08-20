@@ -46,7 +46,7 @@ void ObjectManager::UpdateAll(float dt, const EngineContext& engineContext)
             }
             obj->Update(dt, engineContext);
             if (obj->HasAnimation())
-                obj->GetAnimator()->Update(dt);
+                obj->GetSpriteAnimator()->Update(dt);
             if (Collider* col = obj->GetCollider())
                 col->SyncWithTransformScale();
         }

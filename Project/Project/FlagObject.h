@@ -1,8 +1,8 @@
 #pragma once
-#include "ObjectManager.h"
-#include "Engine.h"
+#include "GameObject.h"
+#include "TextObject.h"
 
-class Player : public GameObject
+class FlagObject : public GameObject
 {
 public:
     void Init(const EngineContext& engineContext) override;
@@ -12,9 +12,11 @@ public:
     void Free(const EngineContext& engineContext) override;
     void LateFree(const EngineContext& engineContext) override;
     void OnCollision(Object* other) override;
-    bool CheckIdle();
-private:
-    bool checkIdle = true;
-    bool checkIdle_prevFrame = false;
-};
+    void SetGuide(std::string guide_);
 
+private:
+    bool showGuide = false;
+    std::string guide="hello\nworld!";
+    TextObject* textObject;
+    GameObject* pannelObject;
+};

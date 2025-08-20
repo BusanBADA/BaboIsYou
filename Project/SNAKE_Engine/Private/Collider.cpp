@@ -35,7 +35,7 @@ bool CircleCollider::CheckCollision(const Collider* other) const
 
 bool CircleCollider::DispatchAgainst(const CircleCollider& other) const
 {
-    glm::vec2 a = owner->GetWorldPosition();
+    glm::vec2 a = owner->GetWorldPosition()+ GetOffset();
     glm::vec2 b = other.GetOwner()->GetWorldPosition();
 
     float distSqr = glm::length2(a - b);
@@ -58,14 +58,14 @@ void CircleCollider::SyncWithTransformScale()
 
 bool CircleCollider::CheckPointCollision(const glm::vec2& point) const
 {
-    glm::vec2 center = owner->GetWorldPosition();
+    glm::vec2 center = owner->GetWorldPosition() + GetOffset();
     float distSqr = glm::dot(center - point, center - point);
     return distSqr <= GetRadius() * GetRadius();
 }
 
 void CircleCollider::DrawDebug(RenderManager* rm, Camera2D* cam, const glm::vec4& color) const
 {
-    glm::vec2 center = owner->GetWorldPosition();
+    glm::vec2 center = owner->GetWorldPosition() + GetOffset();
     float r = GetRadius();
     const int segments = 20;
     const float angleStep = glm::two_pi<float>() / segments;
@@ -115,7 +115,7 @@ bool AABBCollider::CheckCollision(const Collider* other) const
 
 bool AABBCollider::CheckPointCollision(const glm::vec2& point) const
 {
-    glm::vec2 center = owner->GetWorldPosition();
+    glm::vec2 center = owner->GetWorldPosition() + GetOffset();
     glm::vec2 half = GetHalfSize();
 
     glm::vec2 min = center - half;
@@ -127,8 +127,8 @@ bool AABBCollider::CheckPointCollision(const glm::vec2& point) const
 
 bool AABBCollider::DispatchAgainst(const AABBCollider& other) const
 {
-    glm::vec2 aPos = owner->GetWorldPosition();
-    glm::vec2 bPos = other.GetOwner()->GetWorldPosition();
+    glm::vec2 aPos = owner->GetWorldPosition() + GetOffset();
+    glm::vec2 bPos = other.GetOwner()->GetWorldPosition()+other.GetOwner()->GetCollider()->GetOffset();
 
     glm::vec2 aHalf = GetHalfSize();
     glm::vec2 bHalf = other.GetHalfSize();
@@ -145,7 +145,7 @@ void AABBCollider::SyncWithTransformScale()
 
 void AABBCollider::DrawDebug(RenderManager* rm, Camera2D* cam, const glm::vec4& color) const
 {
-    glm::vec2 center = owner->GetWorldPosition();
+    glm::vec2 center = owner->GetWorldPosition()+GetOffset();
     glm::vec2 half = GetHalfSize();
 
     glm::vec2 min = center - half;
@@ -159,10 +159,10 @@ void AABBCollider::DrawDebug(RenderManager* rm, Camera2D* cam, const glm::vec4& 
 
 bool AABBCollider::DispatchAgainst(const CircleCollider& other) const
 {
-    glm::vec2 aPos = owner->GetWorldPosition();
+    glm::vec2 aPos = owner->GetWorldPosition() + GetOffset();
     glm::vec2 half = GetHalfSize();
 
-    glm::vec2 circlePos = other.GetOwner()->GetWorldPosition();
+    glm::vec2 circlePos = other.GetOwner()->GetWorldPosition() + other.GetOwner()->GetCollider()->GetOffset();
     float radius = other.GetRadius();
 
     glm::vec2 closest = glm::clamp(circlePos, aPos - half, aPos + half);
@@ -183,7 +183,9 @@ void SpatialHashGrid::Insert(Object* obj)
     if (!obj->IsAlive() || !obj->GetCollider())
         return;
 
-    glm::vec2 pos = obj->GetWorldPosition();
+    Collider* collider = obj->GetCollider();
+    glm::vec2 offset = collider? collider->GetOffset(): glm::vec2(0);
+	glm::vec2 pos = obj->GetWorldPosition()+ offset;
     float radius = obj->GetCollider()->GetBoundingRadius();
 
     glm::ivec2 minCell = GetCell(pos - glm::vec2(radius));
