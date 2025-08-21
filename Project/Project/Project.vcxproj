@@ -234,6 +234,7 @@
   <ItemGroup>
     <ClCompile Include="BackgroundObject.cpp" />
     <ClCompile Include="FlagObject.cpp" />
+    <ClCompile Include="InstancedObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -247,6 +248,7 @@
   <ItemGroup>
     <ClInclude Include="BackgroundObject.h" />
     <ClInclude Include="FlagObject.h" />
+    <ClInclude Include="InstancedObject.h" />
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Tutorial.h" />

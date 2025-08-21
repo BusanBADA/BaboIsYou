@@ -1,5 +1,7 @@
 #include "Tutorial.h"
 
+#include <random>
+
 #include "MainMenu.h"
 
 void Tutorial::Load(const EngineContext& engineContext)
@@ -9,13 +11,18 @@ void Tutorial::Load(const EngineContext& engineContext)
     TextureSettings ts = { TextureMinFilter::Nearest,TextureMagFilter::Nearest,TextureWrap::ClampToBorder,TextureWrap::ClampToBorder };
     rm->RegisterTexture("[Texture]MainCharacter", "Textures/MainCharacter/player.png", ts);
     rm->RegisterTexture("[Texture]Flag", "Textures/flag.png");
+    rm->RegisterTexture("[Texture]Leaf", "Textures/leaf.png");
+
 
     rm->RegisterSpriteSheet("[SpriteSheet]MainCharacter", "[Texture]MainCharacter", 32, 32);
     rm->RegisterSpriteSheet("[SpriteSheet]Flag", "[Texture]Flag", 60, 60);
 
 
-    rm->RegisterShader("[Shader]ColorOnly", {{ShaderStage::Vertex, "Shaders/ColorOnly.vert" },{ShaderStage::Fragment,"Shaders/ColorOnly.frag"}});
-    rm->RegisterMaterial("[Material]ColorOnly","[Shader]ColorOnly",{});
+    rm->RegisterShader("[Shader]ColorOnly", { {ShaderStage::Vertex, "Shaders/ColorOnly.vert" },{ShaderStage::Fragment,"Shaders/ColorOnly.frag"} });
+    rm->RegisterMaterial("[Material]ColorOnly", "[Shader]ColorOnly", {});
+
+    rm->RegisterShader("[Shader]Instancing", { {ShaderStage::Vertex, "Shaders/Instancing.vert" },{ShaderStage::Fragment,"Shaders/Instancing.frag"} });
+    rm->RegisterMaterial("[Material]Instancing", "[Shader]Instancing", { {"u_Texture","[Texture]Leaf"} });
 
     rm->RegisterTexture("[Texture]Background00", "Textures/Background/_09_background.png");
     rm->RegisterTexture("[Texture]Background01", "Textures/Background/_08_distant_clouds.png");
@@ -173,12 +180,14 @@ void Tutorial::Load(const EngineContext& engineContext)
 
     player = static_cast<Player*>(objectManager.AddObject(std::make_unique<Player>(), "[Object]player"));
     player->SetRenderLayer("[Layer]Player");
+
+
 }
 
 void Tutorial::Init(const EngineContext& engineContext)
 {
     SNAKE_LOG("[Tutorial] init called");
-    engineContext.engine->RenderDebugDraws(true);
+  //  engineContext.engine->RenderDebugDraws(true);
 }
 
 void Tutorial::LateInit(const EngineContext& engineContext)
@@ -187,6 +196,12 @@ void Tutorial::LateInit(const EngineContext& engineContext)
 
 void Tutorial::Update(float dt, const EngineContext& engineContext)
 {
+
+    if (leafSpawnTimer >=0.5f)
+    {
+        objectManager.AddObject(std::make_unique<InstancedObject>());
+        leafSpawnTimer = 0.0f;
+    }
 
     if (engineContext.inputManager->IsKeyDown(KEY_LEFT))
     {
@@ -197,7 +212,7 @@ void Tutorial::Update(float dt, const EngineContext& engineContext)
         cameraManager.GetActiveCamera()->AddPosition({ 500 * dt,0 });
     }
 
-
+    leafSpawnTimer += dt;
     objectManager.UpdateAll(dt, engineContext);
 }
 
