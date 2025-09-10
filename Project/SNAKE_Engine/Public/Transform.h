@@ -6,7 +6,7 @@ class Transform2D
 public:
     Transform2D()
         : position(0.f), rotation(0.f), scale(1.f),
-        matrix(1.f), isChanged(true)
+        matrix(1.f), isChanged(true), depth(0.f)
     {
     }
 
@@ -46,16 +46,25 @@ public:
         isChanged = true;
     }
 
+    void SetDepth(float dpth)
+    {
+        depth = dpth;
+        isChanged = true;
+    }
+
     [[nodiscard]] const glm::vec2& GetPosition() const { return position; }
 
     [[nodiscard]] float GetRotation() const { return rotation; }
 
     [[nodiscard]] const glm::vec2& GetScale() const { return scale; }
 
+	[[nodiscard]] float GetDepth() const { return depth; }
+
     [[nodiscard]] glm::mat4& GetMatrix();
 
 private:
     glm::vec2 position;
+    float depth;
     float rotation;
     glm::vec2 scale;
     glm::mat4 matrix;

@@ -28,8 +28,8 @@ using UniformName = std::string;
 using FilePath = std::string;
 using RenderCommand = std::function<void()>;
 
-using ShaderMap = std::map<Shader*, std::map<InstanceBatchKey, std::vector<std::pair<Object*, Camera2D*>>>>;
-using RenderMap = std::array<ShaderMap, RenderLayerManager::MAX_LAYERS>;
+using ShaderMap = std::unordered_map<Shader*, std::map<InstanceBatchKey, std::vector<Object*>>>;
+using RenderMap = std::array<std::map<int,ShaderMap>, RenderLayerManager::MAX_LAYERS>;
 
 struct LineInstance
 {
@@ -138,9 +138,10 @@ private:
     Material* defaultMaterial;
     SpriteSheet* defaultSpriteSheet;
     Mesh* defaultMesh;
-
     RenderMap renderMap;
     RenderLayerManager renderLayerManager;
+
+    Camera2D* renderCamera;
 
     Texture* errorTexture;
 };

@@ -32,7 +32,7 @@ void InstancedObject::Init(const EngineContext& engineContext)
 {
     static std::random_device rd;
     static std::mt19937 gen(rd());
-    static std::uniform_real_distribution<float> x0Dist(-100.0f, 100.0f);
+    static std::uniform_real_distribution<float> x0Dist(-700.0f, -600.0f);
     static std::uniform_real_distribution<float> y0Dist(0.f, 10.0f);
     static std::uniform_real_distribution<float> vYDist(30.f, 80.0f);
     static std::uniform_real_distribution<float> vwindDist(-10.0f, 10.0f);

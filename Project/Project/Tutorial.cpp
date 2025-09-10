@@ -44,50 +44,57 @@ void Tutorial::Load(const EngineContext& engineContext)
     rm->RegisterMaterial("[Material]Background07", "[EngineShader]default_texture", { {"u_Texture","[Texture]Background07"} });
     rm->RegisterMaterial("[Material]Background08", "[EngineShader]default_texture", { {"u_Texture","[Texture]Background08"} });
 
+    text = static_cast<TextObject*>(engineContext.stateManager->GetCurrentState()->GetObjectManager().AddObject(
+        std::make_unique<TextObject>(engineContext.renderManager->GetFontByTag("[Font]default"), "test", TextAlignH::Center, TextAlignV::Middle),
+        "[Object]Text"));
+    text->SetRenderLayer("[Layer]UIText");
+    text->GetTransform2D().SetScale({ 0.3f,0.3f });
+
 
     bgObj00 = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg00"));
     bgObj00->SetMaterial(engineContext, "[Material]Background00");
     bgObj00->SetRenderLayer("[Layer]PrallexBG00");
     bgObj00->SetFactor(1.0);
+ 
 
     bgObj01 = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg01"));
     bgObj01->SetMaterial(engineContext, "[Material]Background01");
-    bgObj01->SetRenderLayer("[Layer]PrallexBG01");
+    bgObj01->SetRenderLayer("[Layer]PrallexBG00");
     bgObj01->SetFactor(0.9);
 
     bgObj02 = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg02"));
     bgObj02->SetMaterial(engineContext, "[Material]Background02");
-    bgObj02->SetRenderLayer("[Layer]PrallexBG02");
+    bgObj02->SetRenderLayer("[Layer]PrallexBG00");
     bgObj02->SetFactor(0.8);
 
     bgObj03 = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg03"));
     bgObj03->SetMaterial(engineContext, "[Material]Background03");
-    bgObj03->SetRenderLayer("PrallexBG03");
+    bgObj03->SetRenderLayer("[Layer]PrallexBG00");
     bgObj03->SetFactor(0.7);
 
     bgObj04 = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg04"));
     bgObj04->SetMaterial(engineContext, "[Material]Background04");
-    bgObj04->SetRenderLayer("[Layer]PrallexBG04");
+    bgObj04->SetRenderLayer("[Layer]PrallexBG00");
     bgObj04->SetFactor(0.5);
 
     bgObj05 = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg05"));
     bgObj05->SetMaterial(engineContext, "[Material]Background05");
-    bgObj05->SetRenderLayer("[Layer]PrallexBG05");
+    bgObj05->SetRenderLayer("[Layer]PrallexBG00");
     bgObj05->SetFactor(0.4);
 
     bgObj06 = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg06"));
     bgObj06->SetMaterial(engineContext, "[Material]Background06");
-    bgObj06->SetRenderLayer("[Layer]PrallexBG06");
+    bgObj06->SetRenderLayer("[Layer]PrallexBG00");
     bgObj06->SetFactor(0.3);
 
     bgObj07 = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg07"));
     bgObj07->SetMaterial(engineContext, "[Material]Background07");
-    bgObj07->SetRenderLayer("[Layer]PrallexBG07");
+    bgObj07->SetRenderLayer("[Layer]PrallexBG00");
     bgObj07->SetFactor(0.2);
 
     bgObj08 = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg08"));
     bgObj08->SetMaterial(engineContext, "[Material]Background08");
-    bgObj08->SetRenderLayer("[Layer]PrallexBG08");
+    bgObj08->SetRenderLayer("[Layer]PrallexBG00");
     bgObj08->SetFactor(0.0);
 
     bgObj00Sub = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg00"));
@@ -98,50 +105,50 @@ void Tutorial::Load(const EngineContext& engineContext)
 
     bgObj01Sub = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg01"));
     bgObj01Sub->SetMaterial(engineContext, "[Material]Background01");
-    bgObj01Sub->SetRenderLayer("[Layer]PrallexBG01");
+    bgObj01Sub->SetRenderLayer("[Layer]PrallexBG00");
     bgObj01Sub->SetBasePos({ engineContext.windowManager->GetWidth() ,0 });
     bgObj01Sub->SetFactor(0.9);
 
     bgObj02Sub = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg02"));
     bgObj02Sub->SetMaterial(engineContext, "[Material]Background02");
-    bgObj02Sub->SetRenderLayer("[Layer]PrallexBG02");
+    bgObj02Sub->SetRenderLayer("[Layer]PrallexBG00");
     bgObj02Sub->SetBasePos({ engineContext.windowManager->GetWidth() ,0 });
     bgObj02Sub->SetFactor(0.8);
 
     bgObj03Sub = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg03"));
     bgObj03Sub->SetMaterial(engineContext, "[Material]Background03");
-    bgObj03Sub->SetRenderLayer("[Layer]PrallexBG03");
+    bgObj03Sub->SetRenderLayer("[Layer]PrallexBG00");
     bgObj03Sub->SetBasePos({ engineContext.windowManager->GetWidth() ,0 });
     bgObj03Sub->SetFactor(0.7);
 
     bgObj04Sub = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg04"));
     bgObj04Sub->SetMaterial(engineContext, "[Material]Background04");
-    bgObj04Sub->SetRenderLayer("[Layer]PrallexBG04");
+    bgObj04Sub->SetRenderLayer("[Layer]PrallexBG00");
     bgObj04Sub->SetBasePos({ engineContext.windowManager->GetWidth() ,0 });
     bgObj04Sub->SetFactor(0.5);
     bgObj04Sub->SetFlipUV_X(true);
 
     bgObj05Sub = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg05"));
     bgObj05Sub->SetMaterial(engineContext, "[Material]Background05");
-    bgObj05Sub->SetRenderLayer("[Layer]PrallexBG05");
+    bgObj05Sub->SetRenderLayer("[Layer]PrallexBG00");
     bgObj05Sub->SetBasePos({ engineContext.windowManager->GetWidth() ,0 });
     bgObj05Sub->SetFactor(0.4);
 
     bgObj06Sub = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg06"));
     bgObj06Sub->SetMaterial(engineContext, "[Material]Background06");
-    bgObj06Sub->SetRenderLayer("[Layer]PrallexBG06");
+    bgObj06Sub->SetRenderLayer("[Layer]PrallexBG00");
     bgObj06Sub->SetBasePos({ engineContext.windowManager->GetWidth() ,0 });
     bgObj06Sub->SetFactor(0.3);
 
     bgObj07Sub = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg07"));
     bgObj07Sub->SetMaterial(engineContext, "[Material]Background07");
-    bgObj07Sub->SetRenderLayer("[Layer]PrallexBG07");
+    bgObj07Sub->SetRenderLayer("[Layer]PrallexBG00");
     bgObj07Sub->SetBasePos({ engineContext.windowManager->GetWidth() ,0 });
     bgObj07Sub->SetFactor(0.2);
 
     bgObj08Sub = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg08"));
     bgObj08Sub->SetMaterial(engineContext, "[Material]Background08");
-    bgObj08Sub->SetRenderLayer("[Layer]PrallexBG08");
+    bgObj08Sub->SetRenderLayer("[Layer]PrallexBG00");
     bgObj08Sub->SetBasePos({ engineContext.windowManager->GetWidth() ,0 });
     bgObj08Sub->SetFactor(0.0);
 
@@ -169,19 +176,42 @@ void Tutorial::Load(const EngineContext& engineContext)
     flag00 = static_cast<FlagObject*>(objectManager.AddObject(std::make_unique<FlagObject>(), "[Object]flag"));
     flag00->SetRenderLayer("[Layer]Flag");
     flag00->GetTransform2D().SetPosition(glm::vec2(-600, -170));
+    flag00->SetGuide("These leaves are rendered using instancing.\nCheck InstancedObject.cpp for more Info.");
 
     flag01 = static_cast<FlagObject*>(objectManager.AddObject(std::make_unique<FlagObject>(), "[Object]flag"));
     flag01->SetRenderLayer("[Layer]Flag");
     flag01->GetTransform2D().SetPosition(glm::vec2(200, -170));
+    flag01->SetGuide("Move Left & Right with A,D key.\nInput can be handled via Inputmanager\nand can be accessed from engineContext");
 
     flag02 = static_cast<FlagObject*>(objectManager.AddObject(std::make_unique<FlagObject>(), "[Object]flag"));
     flag02->SetRenderLayer("[Layer]Flag");
     flag02->GetTransform2D().SetPosition(glm::vec2(800, -170));
+    flag02->SetGuide("Objects are managed via ObjectManager.\n Each State has its own ObjectManager.");
 
     player = static_cast<Player*>(objectManager.AddObject(std::make_unique<Player>(), "[Object]player"));
     player->SetRenderLayer("[Layer]Player");
 
 
+    bgObj00->GetTransform2D().SetDepth(0);
+    bgObj01->GetTransform2D().SetDepth(10);
+    bgObj02->GetTransform2D().SetDepth(20);
+    bgObj03->GetTransform2D().SetDepth(30);
+    bgObj04->GetTransform2D().SetDepth(40);
+    bgObj05->GetTransform2D().SetDepth(50);
+    bgObj06->GetTransform2D().SetDepth(60);
+    bgObj07->GetTransform2D().SetDepth(70);
+    bgObj08->GetTransform2D().SetDepth(80);
+    bgObj00Sub->GetTransform2D().SetDepth(0);
+    bgObj01Sub->GetTransform2D().SetDepth(10);
+    bgObj02Sub->GetTransform2D().SetDepth(20);
+    bgObj03Sub->GetTransform2D().SetDepth(30);
+    bgObj04Sub->GetTransform2D().SetDepth(40);
+    bgObj05Sub->GetTransform2D().SetDepth(50);
+    bgObj06Sub->GetTransform2D().SetDepth(60);
+    bgObj07Sub->GetTransform2D().SetDepth(70);
+    bgObj08Sub->GetTransform2D().SetDepth(80);
+
+    player->GetTransform2D().SetDepth(00.0f);
 }
 
 void Tutorial::Init(const EngineContext& engineContext)
@@ -196,13 +226,16 @@ void Tutorial::LateInit(const EngineContext& engineContext)
 
 void Tutorial::Update(float dt, const EngineContext& engineContext)
 {
-
-    if (leafSpawnTimer >=0.5f)
+    text->SetText(std::to_string(objectManager.GetAllRawPtrObjects().size()));
+    if (leafSpawnTimer >=0.01f)
     {
-        objectManager.AddObject(std::make_unique<InstancedObject>());
+        float cnt = objectManager.GetAllRawPtrObjects().size() / 10.f;
+        objectManager.AddObject(std::make_unique<InstancedObject>())->GetTransform2D().SetDepth(cnt);
+        objectManager.AddObject(std::make_unique<InstancedObject>())->GetTransform2D().SetDepth(cnt);
+        objectManager.AddObject(std::make_unique<InstancedObject>())->GetTransform2D().SetDepth(cnt);
+
         leafSpawnTimer = 0.0f;
     }
-
     if (engineContext.inputManager->IsKeyDown(KEY_LEFT))
     {
         cameraManager.GetActiveCamera()->AddPosition({ -500 * dt,0 });
@@ -210,6 +243,10 @@ void Tutorial::Update(float dt, const EngineContext& engineContext)
     if (engineContext.inputManager->IsKeyDown(KEY_RIGHT))
     {
         cameraManager.GetActiveCamera()->AddPosition({ 500 * dt,0 });
+    }
+    if (engineContext.inputManager->IsKeyDown(KEY_ESCAPE))
+    {
+        engineContext.engine->RequestQuit();
     }
 
     leafSpawnTimer += dt;

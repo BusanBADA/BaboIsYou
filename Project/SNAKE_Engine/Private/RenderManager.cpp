@@ -43,91 +43,46 @@ void RenderManager::FlushDrawCommands(const EngineContext& engineContext)
 
     for (uint8_t layer = 0; layer < renderMap.size(); ++layer)
     {
-        const ShaderMap& _shaderMap = renderMap[layer];
-
-        for (const auto& [shader, batchMap] : _shaderMap)
+        for (const auto& pair : renderMap[layer])
         {
-            for (const auto& [key, batch] : batchMap)
+            const ShaderMap& _shaderMap = pair.second;
+
+            for (const auto& [shader, batchMap] : _shaderMap)
             {
-                if (batch.front().first->CanBeInstanced())
+                for (const auto& [key, batch] : batchMap)
                 {
-                    std::vector<glm::mat4> transforms;
-                    std::vector<glm::vec4> colors;
-                    std::vector<glm::vec2> uvOffsets;
-                    std::vector<glm::vec2> uvScales;
-                    transforms.reserve(batch.size());
-                    colors.reserve(batch.size());
-                    uvOffsets.reserve(batch.size());
-                    uvScales.reserve(batch.size());
-
-                    for (const auto& [obj, camera] : batch)
+                    if (batch.front()->CanBeInstanced())
                     {
-                        glm::mat4 model = obj->GetTransform2DMatrix();
-                        glm::vec2 flip = obj->GetUVFlipVector();
-                        model = model * glm::scale(glm::mat4(1.0f), glm::vec3(flip, 1.0f));
-                        transforms.push_back(model);
+                        std::vector<glm::mat4> transforms;
+                        std::vector<glm::vec4> colors;
+                        std::vector<glm::vec2> uvOffsets;
+                        std::vector<glm::vec2> uvScales;
+                        transforms.reserve(batch.size());
+                        colors.reserve(batch.size());
+                        uvOffsets.reserve(batch.size());
+                        uvScales.reserve(batch.size());
 
-                        colors.push_back(obj->GetColor());
-                        if (obj->HasAnimation())
+                        for (const auto& obj : batch)
                         {
-                            SpriteAnimator* spriteAnimator = obj->GetSpriteAnimator();
-                            uvOffsets.push_back(spriteAnimator->GetUVOffset());
-                            uvScales.push_back(spriteAnimator->GetUVScale());
+                            glm::mat4 model = obj->GetTransform2DMatrix();
+                            glm::vec2 flip = obj->GetUVFlipVector();
+                            model = model * glm::scale(glm::mat4(1.0f), glm::vec3(flip, 1.0f));
+                            transforms.push_back(model);
+
+                            colors.push_back(obj->GetColor());
+                            if (obj->HasAnimation())
+                            {
+                                SpriteAnimator* spriteAnimator = obj->GetSpriteAnimator();
+                                uvOffsets.push_back(spriteAnimator->GetUVOffset());
+                                uvScales.push_back(spriteAnimator->GetUVScale());
+                            }
+                            else
+                            {
+                                uvOffsets.emplace_back(0.0f, 0.0f);
+                                uvScales.emplace_back(1.0f, 1.0f);
+                            }
                         }
-                        else
-                        {
-                            uvOffsets.emplace_back(0.0f, 0.0f);
-                            uvScales.emplace_back(1.0f, 1.0f);
-                        }
-                    }
 
-                    Material* material = key.material;
-                    if (!material)
-                        material = defaultMaterial;
-                    if (material != lastMaterial)
-                    {
-                        if (lastMaterial)
-                            lastMaterial->UnBind();
-                        material->Bind();
-                        lastMaterial = material;
-                    }
-
-                    Camera2D* cam = batch.front().second;
-                    bool ignoreCam = batch.front().first->ShouldIgnoreCamera();
-
-                    if (!material->HasTexture())
-                    {
-                        material->SetTexture("u_Texture", errorTexture);
-                    }
-
-                    glm::mat4 view = ignoreCam ? glm::mat4(1.0f)
-                        : (cam ? cam->GetViewMatrix() : glm::mat4(1.0f));
-
-                    int w = cam ? cam->GetScreenWidth() : engineContext.windowManager->GetWidth();
-                    int h = cam ? cam->GetScreenHeight() : engineContext.windowManager->GetHeight();
-                    glm::mat4 projection = glm::ortho(-static_cast<float>(w) / 2.0f,
-                        static_cast<float>(w) / 2.0f,
-                        -static_cast<float>(h) / 2.0f,
-                        static_cast<float>(h) / 2.0f);
-
-                    material->SetUniform("u_View", view);
-                    material->SetUniform("u_Projection", projection);
-
-                    if (batch.front().first->HasAnimation())
-                    {
-                        material->SetTexture("u_Texture", batch.front().first->GetSpriteAnimator()->GetTexture());
-                    }
-
-                    batch.front().first->Draw(engineContext);
-                    material->SendUniforms();
-                    key.mesh->UpdateInstanceBuffer(transforms, colors, uvOffsets, uvScales);
-                    key.mesh->DrawInstanced(static_cast<GLsizei>(transforms.size()));
-                }
-
-                else
-                {
-                    for (const auto& [obj, camera] : batch)
-                    {
                         Material* material = key.material;
                         if (!material)
                             material = defaultMaterial;
@@ -139,8 +94,7 @@ void RenderManager::FlushDrawCommands(const EngineContext& engineContext)
                             lastMaterial = material;
                         }
 
-                        bool ignoreCam = obj->ShouldIgnoreCamera();
-                        Camera2D* cam = camera;
+                        bool ignoreCam = batch.front()->ShouldIgnoreCamera();
 
                         if (!material->HasTexture())
                         {
@@ -148,10 +102,10 @@ void RenderManager::FlushDrawCommands(const EngineContext& engineContext)
                         }
 
                         glm::mat4 view = ignoreCam ? glm::mat4(1.0f)
-                            : (cam ? cam->GetViewMatrix() : glm::mat4(1.0f));
+                            : (renderCamera ? renderCamera->GetViewMatrix() : glm::mat4(1.0f));
 
-                        int w = cam ? cam->GetScreenWidth() : engineContext.windowManager->GetWidth();
-                        int h = cam ? cam->GetScreenHeight() : engineContext.windowManager->GetHeight();
+                        int w = renderCamera ? renderCamera->GetScreenWidth() : engineContext.windowManager->GetWidth();
+                        int h = renderCamera ? renderCamera->GetScreenHeight() : engineContext.windowManager->GetHeight();
                         glm::mat4 projection = glm::ortho(-static_cast<float>(w) / 2.0f,
                             static_cast<float>(w) / 2.0f,
                             -static_cast<float>(h) / 2.0f,
@@ -160,24 +114,71 @@ void RenderManager::FlushDrawCommands(const EngineContext& engineContext)
                         material->SetUniform("u_View", view);
                         material->SetUniform("u_Projection", projection);
 
-                        glm::mat4 model = obj->GetTransform2DMatrix();
-                        glm::vec2 flip = obj->GetUVFlipVector();
-                        model = model * glm::scale(glm::mat4(1.0f), glm::vec3(flip, 1.0f));
-
-                        material->SetUniform("u_Model", model);
-                        material->SetUniform("u_Color", obj->GetColor());
-
-                        if (obj->HasAnimation())
+                        if (batch.front()->HasAnimation())
                         {
-                            SpriteAnimator* spriteAnimator = obj->GetSpriteAnimator();
-                            material->SetUniform("u_UVOffset", spriteAnimator->GetUVOffset());
-                            material->SetUniform("u_UVScale", spriteAnimator->GetUVScale());
-                            material->SetTexture("u_Texture", spriteAnimator->GetTexture());
+                            material->SetTexture("u_Texture", batch.front()->GetSpriteAnimator()->GetTexture());
                         }
 
-                        obj->Draw(engineContext);
+                        batch.front()->Draw(engineContext);
                         material->SendUniforms();
-                        key.mesh->Draw();
+                        key.mesh->UpdateInstanceBuffer(transforms, colors, uvOffsets, uvScales);
+                        key.mesh->DrawInstanced(static_cast<GLsizei>(transforms.size()));
+                    }
+
+                    else
+                    {
+                        for (const auto& obj : batch)
+                        {
+                            Material* material = key.material;
+                            if (!material)
+                                material = defaultMaterial;
+                            if (material != lastMaterial)
+                            {
+                                if (lastMaterial)
+                                    lastMaterial->UnBind();
+                                material->Bind();
+                                lastMaterial = material;
+                            }
+
+                            bool ignoreCam = obj->ShouldIgnoreCamera();
+
+                            if (!material->HasTexture())
+                            {
+                                material->SetTexture("u_Texture", errorTexture);
+                            }
+
+                            glm::mat4 view = ignoreCam ? glm::mat4(1.0f)
+                                : (renderCamera ? renderCamera->GetViewMatrix() : glm::mat4(1.0f));
+
+                            int w = renderCamera ? renderCamera->GetScreenWidth() : engineContext.windowManager->GetWidth();
+                            int h = renderCamera ? renderCamera->GetScreenHeight() : engineContext.windowManager->GetHeight();
+                            glm::mat4 projection = glm::ortho(-static_cast<float>(w) / 2.0f,
+                                static_cast<float>(w) / 2.0f,
+                                -static_cast<float>(h) / 2.0f,
+                                static_cast<float>(h) / 2.0f);
+
+                            material->SetUniform("u_View", view);
+                            material->SetUniform("u_Projection", projection);
+
+                            glm::mat4 model = obj->GetTransform2DMatrix();
+                            glm::vec2 flip = obj->GetUVFlipVector();
+                            model = model * glm::scale(glm::mat4(1.0f), glm::vec3(flip, 1.0f));
+
+                            material->SetUniform("u_Model", model);
+                            material->SetUniform("u_Color", obj->GetColor());
+
+                            if (obj->HasAnimation())
+                            {
+                                SpriteAnimator* spriteAnimator = obj->GetSpriteAnimator();
+                                material->SetUniform("u_UVOffset", spriteAnimator->GetUVOffset());
+                                material->SetUniform("u_UVScale", spriteAnimator->GetUVScale());
+                                material->SetTexture("u_Texture", spriteAnimator->GetTexture());
+                            }
+
+                            obj->Draw(engineContext);
+                            material->SendUniforms();
+                            key.mesh->Draw();
+                        }
                     }
                 }
             }
@@ -228,8 +229,7 @@ void RenderManager::FlushDebugLineDrawCommands(const EngineContext& engineContex
             -static_cast<float>(engineContext.windowManager->GetWidth()) / 2,
             static_cast<float>(engineContext.windowManager->GetWidth()) / 2,
             -static_cast<float>(engineContext.windowManager->GetHeight()) / 2,
-            static_cast<float>(engineContext.windowManager->GetHeight()) / 2
-        );
+            static_cast<float>(engineContext.windowManager->GetHeight()) / 2);
 
         debugLineShader->SendUniform("u_View", view);
         debugLineShader->SendUniform("u_Projection", proj);
@@ -421,6 +421,7 @@ void RenderManager::Init(const EngineContext& engineContext)
 
                 void main()
                 {
+					if (texture(u_Texture, v_UV).a <= 0.0) discard;
                     FragColor = texture(u_Texture, v_UV) * u_Color;
                 }
     )");
@@ -458,13 +459,23 @@ void RenderManager::Init(const EngineContext& engineContext)
 
     glBindVertexArray(0);
 
-
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
+namespace
+{
+    constexpr float DEPTH_SCALE = 1000.0f;
+    inline int QuantizeDepth(float z)
+    {
+        return static_cast<int>(std::round(z * DEPTH_SCALE));
+    }
+}
+
 void RenderManager::BuildRenderMap(const std::vector<Object*>& source, Camera2D* camera)
 {
+    renderCamera = camera;
+
     for (auto* obj : source)
     {
         if (!obj || !obj->IsVisible())
@@ -473,12 +484,12 @@ void RenderManager::BuildRenderMap(const std::vector<Object*>& source, Camera2D*
         Material* material = obj->GetMaterial();
         Mesh* mesh = obj->GetMesh();
         SpriteAnimator* spriteAnimator = obj->GetSpriteAnimator();
-
         SpriteSheet* spritesheet = spriteAnimator ? spriteAnimator->GetSpriteSheet() : nullptr;
         Shader* shader = material ? material->GetShader() : nullptr;
 
         if (!material || !mesh || !shader)
             continue;
+
 
         uint8_t layer = renderLayerManager.GetLayerID(obj->GetRenderLayerTag()).value_or(0);
         if (layer >= RenderLayerManager::MAX_LAYERS)
@@ -487,11 +498,15 @@ void RenderManager::BuildRenderMap(const std::vector<Object*>& source, Camera2D*
             continue;
         }
 
+        const float depth = obj->GetTransform2D().GetDepth();
+        const int zbin = QuantizeDepth(depth);
+
         InstanceBatchKey key{ mesh, material, spritesheet };
-        renderMap[layer][shader][key].emplace_back(obj, camera);
+        auto& depthMap = renderMap[layer];     // std::map<int, ShaderMap>
+        auto& shaderMap = depthMap[zbin];       // ShaderMap = std::unordered_map<Shader*, std::map<InstanceBatchKey, std::vector<Object*>>>
+        shaderMap[shader][key].emplace_back(obj);
     }
 }
-
 
 /*
  * Usage:
