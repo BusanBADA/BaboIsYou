@@ -28,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\Animation.h" />
+    <ClInclude Include="Public\AsyncResourceLoader.h" />
     <ClInclude Include="Public\Camera2D.h" />
     <ClInclude Include="Public\CameraManager.h" />
     <ClInclude Include="Public\Collider.h" />
@@ -40,6 +41,7 @@
     <ClInclude Include="Public\GameState.h" />
     <ClInclude Include="Public\InputManager.h" />
     <ClInclude Include="Public\InstanceBatchKey.h" />
+    <ClInclude Include="Public\LoadingState.h" />
     <ClInclude Include="Public\Material.h" />
     <ClInclude Include="Public\Mesh.h" />
     <ClInclude Include="Public\Object.h" />
@@ -57,12 +59,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Private\Animation.cpp" />
+    <ClCompile Include="Private\AsyncResourceLoader.cpp" />
     <ClCompile Include="Private\Camera2D.cpp" />
     <ClCompile Include="Private\CameraManager.cpp" />
     <ClCompile Include="Private\Collider.cpp" />
     <ClCompile Include="Private\Debug.cpp" />
     <ClCompile Include="Private\EngineTimer.cpp" />
     <ClCompile Include="Private\Font.cpp" />
+    <ClCompile Include="Private\LoadingState.cpp" />
     <ClCompile Include="Private\Object.cpp" />
     <ClCompile Include="Private\InputManager.cpp" />
     <ClCompile Include="Private\Material.cpp" />

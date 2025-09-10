@@ -1,4 +1,4 @@
-#include <iostream>
+ï»¿#include <iostream>
 
 #include "Debug.h"
 #include "MainMenu.h"
@@ -46,14 +46,14 @@ int main(int argc, char* argv[])
     snakeEngine.GetEngineContext().renderManager->RegisterMesh(
         "[Mesh]octagon",
         std::vector<Vertex>{
-            {{  0.5f, 0.0f, 0.f }, { 1.0f,       0.5f }}, // 0 (0¡Æ)
-            { {  0.353553f,     0.353553f,     0.f }, { 0.853553f,  0.853553f  } }, // 1 (45¡Æ)
-            { {  0.0f,          0.5f,          0.f }, { 0.5f,       1.0f       } }, // 2 (90¡Æ)
-            { { -0.353553f,     0.353553f,     0.f }, { 0.146447f,  0.853553f  } }, // 3 (135¡Æ)
-            { { -0.5f,          0.0f,          0.f }, { 0.0f,       0.5f       } }, // 4 (180¡Æ)
-            { { -0.353553f,    -0.353553f,     0.f }, { 0.146447f,  0.146447f  } }, // 5 (225¡Æ)
-            { {  0.0f,         -0.5f,          0.f }, { 0.5f,       0.0f       } }, // 6 (270¡Æ)
-            { {  0.353553f,    -0.353553f,     0.f }, { 0.853553f,  0.146447f  } }, // 7 (315¡Æ)
+            {{  0.5f, 0.0f, 0.f }, { 1.0f,       0.5f }}, // 0 (0Â°)
+            { {  0.353553f,     0.353553f,     0.f }, { 0.853553f,  0.853553f  } }, // 1 (45Â°)
+            { {  0.0f,          0.5f,          0.f }, { 0.5f,       1.0f       } }, // 2 (90Â°)
+            { { -0.353553f,     0.353553f,     0.f }, { 0.146447f,  0.853553f  } }, // 3 (135Â°)
+            { { -0.5f,          0.0f,          0.f }, { 0.0f,       0.5f       } }, // 4 (180Â°)
+            { { -0.353553f,    -0.353553f,     0.f }, { 0.146447f,  0.146447f  } }, // 5 (225Â°)
+            { {  0.0f,         -0.5f,          0.f }, { 0.5f,       0.0f       } }, // 6 (270Â°)
+            { {  0.353553f,    -0.353553f,     0.f }, { 0.853553f,  0.146447f  } }, // 7 (315Â°)
             { {  0.0f,          0.0f,          0.f }, { 0.5f,       0.5f       } }, // 8 (center)
     },
         std::vector<unsigned int>{
@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
     }
     );
 
-	snakeEngine.GetEngineContext().renderManager->RegisterShader("s_instancing", { {ShaderStage::Vertex,"Shaders/instancing.vert"},{ShaderStage::Fragment,"Shaders/instancing.frag"} });
+    snakeEngine.GetEngineContext().renderManager->RegisterShader("s_instancing", { {ShaderStage::Vertex,"Shaders/instancing.vert"},{ShaderStage::Fragment,"Shaders/instancing.frag"} });
     snakeEngine.GetEngineContext().renderManager->RegisterShader("[Shader]Animation", { {ShaderStage::Vertex,"Shaders/Animation.vert"},{ShaderStage::Fragment,"Shaders/Animation.frag"} });
     snakeEngine.GetEngineContext().renderManager->RegisterMaterial("[Material]Animation", "[Shader]Animation", { });
 
@@ -71,15 +71,7 @@ int main(int argc, char* argv[])
     //snakeEngine.GetEngineContext().renderManager->RegisterMaterial("m_blueMButton", "s_default1", { std::pair<std::string, std::string>("u_Texture","blueMButton") });
 
 
-    snakeEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]PrallexBG00", 0);
-    snakeEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]PrallexBG01", 1);
-    snakeEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]PrallexBG02", 2);
-    snakeEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]PrallexBG03", 3);
-    snakeEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]PrallexBG04", 4);
-    snakeEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]PrallexBG05", 5);
-    snakeEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]PrallexBG06", 6);
-    snakeEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]PrallexBG07", 7);
-    snakeEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]PrallexBG08", 8);
+    snakeEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]Background", 0);
     snakeEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]Flag", 9);
     snakeEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]Player", 10);
     snakeEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]UI", 11);
@@ -88,7 +80,7 @@ int main(int argc, char* argv[])
     snakeEngine.GetEngineContext().renderManager->RegisterFont("[Font]default", "Fonts/NotoSans-VariableFont_wdth,wght.ttf", 50);
   
     snakeEngine.GetEngineContext().windowManager->SetBackgroundColor({ 0.2,0.2,0.4,1 });
-    snakeEngine.GetEngineContext().stateManager->ChangeState(std::make_unique<Tutorial>());
+    snakeEngine.GetEngineContext().stateManager->ChangeState(std::make_unique<MainMenu>());
 
     snakeEngine.Run();
 

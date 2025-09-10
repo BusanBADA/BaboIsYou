@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <functional>
 #include <map>
 #include <memory>
@@ -83,7 +83,14 @@ public:
     void UnregisterRenderLayer(const std::string& tag);
 
     void UnregisterSpriteSheet(const std::string& tag, const EngineContext& engineContext);
-    
+
+    bool HasTexture(const std::string& tag) const;
+
+    bool HasShader(const std::string& tag) const;
+
+    bool HasFont(const std::string& tag) const;
+
+    bool HasSpriteSheet(const std::string& tag) const;
 
     [[nodiscard]] Shader* GetShaderByTag(const std::string& tag);
 

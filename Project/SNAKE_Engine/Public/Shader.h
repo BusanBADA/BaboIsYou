@@ -1,8 +1,10 @@
-#pragma once
+﻿#pragma once
 
 #include <string>
 #include <vector>
 #include "glm.hpp"
+
+class LoadingState;
 
 enum class ShaderStage
 {
@@ -25,7 +27,7 @@ using FilePath = std::string;
 class Shader {
     friend Material;
     friend RenderManager;
-
+    friend LoadingState;
 public:
     Shader();
 

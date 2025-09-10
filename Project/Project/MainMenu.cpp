@@ -3,6 +3,8 @@
 #include "Button.h"
 #include "Debug.h"
 #include "Level1.h"
+#include "LoadingState.h"
+#include "Tutorial.h"
 
 void MainMenu::Load(const EngineContext& engineContext)
 {
@@ -13,45 +15,6 @@ void MainMenu::Init(const EngineContext& engineContext)
 {
     SNAKE_LOG("[MainMenu] init called");
 
-    //objectManager.AddObject(std::make_unique<Player>(), "player")->SetRenderLayer("Penguin");
-    //objectManager.AddObject(std::make_unique<Enemy>(glm::vec2(200,0)), "enemy");
-
-
-    //startText = static_cast<TextObject*>(objectManager.AddObject(std::make_unique<TextObject>(engineContext.renderManager->GetFontByTag("default"),"START",TextAlignH::Center, TextAlignV::Middle), "StartText"));
-    //startText->GetTransform2D().SetPosition({ 0,100 });
-    //startText->SetIgnoreCamera(true, cameraManager.GetActiveCamera());
-    //startText->SetRenderLayer("UI");
-    //startText->SetCollider(std::make_unique<AABBCollider>(startText, glm::vec2(1.f, 1.f)));
-    //startText->GetCollider()->SetUseTransformScale(true);
-    //startText->SetCollision(engineContext.stateManager->GetCurrentState()->GetObjectManager(), "button", { "player" });
-
-    //startButton = static_cast<GameObject*>(objectManager.AddObject(std::make_unique<Button>(), "StartButton"));
-    //startButton->GetTransform2D().SetPosition({ startText->GetWorldPosition() });
-    //startButton->GetTransform2D().SetScale({ startText->GetWorldScale()*1.5f });
-    //startButton->SetIgnoreCamera(true, cameraManager.GetActiveCamera());
-
-    //quitText = static_cast<TextObject*>(objectManager.AddObject(std::make_unique<TextObject>(engineContext.renderManager->GetFontByTag("default"), "QUIT", TextAlignH::Center, TextAlignV::Middle), "QuitText"));
-    //quitText->GetTransform2D().SetPosition({ 0,-100 });
-    //quitText->SetIgnoreCamera(true, cameraManager.GetActiveCamera());
-    //quitText->SetRenderLayer( "UI");
-
-    //quitButton = static_cast<GameObject*>(objectManager.AddObject(std::make_unique<Button>(), "QuitButton"));
-    //quitButton->GetTransform2D().SetPosition({ quitText->GetWorldPosition() });
-    //quitButton->GetTransform2D().SetScale({ quitText->GetWorldScale() * 1.5f });
-    //quitButton->SetIgnoreCamera(true, cameraManager.GetActiveCamera());
-
-    //bulletCountText = static_cast<TextObject*>(objectManager.AddObject(
-    //    std::make_unique<TextObject>(engineContext.renderManager->GetFontByTag("default"), "0", TextAlignH::Center, TextAlignV::Middle), "text"));
-    //bulletCountText->GetTransform2D().SetScale({ 0.5, 0.5 });
-    //bulletCountText->SetRenderLayer("UI.Penguin");
-
-    //cameraManager.RegisterCamera("minicam", std::make_unique<Camera2D>());
-    //miniCam = cameraManager.GetCamera("minicam");
-
-    //miniCam->SetZoom(0.5f);
-
-
-
 }
 
 void MainMenu::LateInit(const EngineContext& engineContext)
@@ -60,123 +23,55 @@ void MainMenu::LateInit(const EngineContext& engineContext)
 
 void MainMenu::Update(float dt, const EngineContext& engineContext)
 {
-    //if (engineContext.inputManager->IsKeyReleased(KEY_F))
-    //{
-    //    engineContext.windowManager->SetFullScreen(true);
-    //}
-    //if (engineContext.inputManager->IsKeyPressed(KEY_G))
-    //{
-    //    engineContext.windowManager->SetFullScreen(false);
-    //}
-    //if (engineContext.inputManager->IsKeyReleased(KEY_F1))
-    //{
-    //    cameraManager.SetActiveCamera("minicam");
-    //}
-    //if (engineContext.inputManager->IsKeyPressed(KEY_F2))
-    //{
-    //    cameraManager.SetActiveCamera("main");
-    //}
+    if (engineContext.inputManager->IsKeyReleased(KEY_N))
+    {
+        auto nextFactory = []() -> std::unique_ptr<GameState>
+            {
+                return std::make_unique<Tutorial>();
+            };
 
-    //if (engineContext.inputManager->IsScrolledUp())
-    //{
-    //    cameraManager.GetActiveCamera()->SetZoom(cameraManager.GetActiveCamera()->GetZoom() + 3.f*dt);
-    //}
-    //if (engineContext.inputManager->IsScrolledDown())
-    //{
-    //    cameraManager.GetActiveCamera()->SetZoom(cameraManager.GetActiveCamera()->GetZoom() + -3.f * dt);
-    //}
+        auto loading = std::make_unique<LoadingState>(nextFactory);
 
-    //if (engineContext.inputManager->IsKeyReleased(KEY_N))
-    //{
-    //    engineContext.stateManager->ChangeState(std::make_unique<Level1>());
-    //}
-    //if (engineContext.inputManager->IsKeyPressed(KEY_ESCAPE))
-    //{
-    //    engineContext.engine->RequestQuit();
-    //}
+        TextureSettings ts = { TextureMinFilter::Nearest,TextureMagFilter::Nearest,TextureWrap::ClampToBorder,TextureWrap::ClampToBorder };
+        loading->QueueTexture( engineContext, "[Texture]MainCharacter", "Textures/MainCharacter/player.png", ts);
+        loading->QueueTexture(engineContext, "[Texture]Flag", "Textures/flag.png");
+        loading->QueueTexture(engineContext, "[Texture]Leaf", "Textures/leaf.png");
+        loading->QueueTexture(engineContext, "[Texture]Background00", "Textures/Background/_09_background.png");
+        loading->QueueTexture(engineContext, "[Texture]Background01", "Textures/Background/_08_distant_clouds.png");
+        loading->QueueTexture(engineContext, "[Texture]Background02", "Textures/Background/_07_clouds.png");
+        loading->QueueTexture(engineContext, "[Texture]Background03", "Textures/Background/_06_hill2.png");
+        loading->QueueTexture(engineContext, "[Texture]Background04", "Textures/Background/_05_hill1.png");
+        loading->QueueTexture(engineContext, "[Texture]Background05", "Textures/Background/_04_bushes.png");
+        loading->QueueTexture(engineContext, "[Texture]Background06", "Textures/Background/_03_distant_trees.png");
+        loading->QueueTexture(engineContext, "[Texture]Background07", "Textures/Background/_02_trees and bushes.png");
+        loading->QueueTexture(engineContext, "[Texture]Background08", "Textures/Background/_01_ground.png");
 
-    //if (engineContext.inputManager->IsKeyPressed(KEY_3))
-    //{
-    //    engineContext.engine->RenderDebugDraws(true);
-    //}
-    //if (engineContext.inputManager->IsKeyPressed(KEY_4))
-    //{
-    //    engineContext.engine->RenderDebugDraws(false);
-    //}
+        loading->QueueShader(engineContext, "[Shader]ColorOnly", { {ShaderStage::Vertex, "Shaders/ColorOnly.vert" },{ShaderStage::Fragment,"Shaders/ColorOnly.frag"} });
+        loading->QueueShader(engineContext, "[Shader]Instancing", { {ShaderStage::Vertex, "Shaders/Instancing.vert" },{ShaderStage::Fragment,"Shaders/Instancing.frag"} });
 
-    //if (startButton->GetColor() == glm::vec4(0.3, 0.3, 0.3, 1.0))
-    //{
-    //    if (engineContext.inputManager->IsKeyPressed(KEY_SPACE))
-    //    {
-    //        engineContext.stateManager->ChangeState(std::make_unique<Level1>());
-    //    }
-    //}
-    //if (quitButton->GetColor() == glm::vec4(0.3, 0.3, 0.3, 1.0))
-    //{
-    //    if (engineContext.inputManager->IsKeyPressed(KEY_SPACE))
-    //    {
-    //        engineContext.engine->RequestQuit();
-    //    }
-    //}
+        for (int i = 0; i < 100; i++)
+        {
+            loading->QueueTexture(engineContext, "test" + std::to_string(i), "Textures/test.jpg",
+                TextureSettings{ TextureMinFilter::Linear, TextureMagFilter::Linear, TextureWrap::ClampToEdge, TextureWrap::ClampToEdge, /*generateMipmap*/true });
+        }
 
-    //if (startButton->GetCollider()->CheckPointCollision(engineContext.inputManager->GetMouseWorldPos(cameraManager.GetActiveCamera())))
-    //{
-    //    startButton->SetColor({ 0.3,0.3,0.3,1.0 });
-    //    startText->SetColor({ 0.3,0.3,0.3,1.0 });
-    //    if (engineContext.inputManager->IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
-    //    {
-    //        engineContext.stateManager->ChangeState(std::make_unique<Level1>());
-    //    }
-    //}
-    //else
-    //{
-    //    startButton->SetColor({ 1.0,1.0,1.0,1.0});
-    //    startText->SetColor({ 1.0,1.0,1.0,1.0 });
-    //}
-    //if (quitButton->GetCollider()->CheckPointCollision(engineContext.inputManager->GetMouseWorldPos(cameraManager.GetActiveCamera())))
-    //{
-    //    quitButton->SetColor({ 0.3,0.3,0.3,1.0 });
-    //    quitText->SetColor({ 0.3,0.3,0.3,1.0 });
-    //    if (engineContext.inputManager->IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
-    //    {
-    //        engineContext.engine->RequestQuit();
-    //    }
-    //}
-    //else
-    //{
-    //    quitButton->SetColor({ 1.0,1.0,1.0,1.0 });
-    //    quitText->SetColor({ 1.0,1.0,1.0,1.0 });
-    //}
-
-    //std::vector<Object*> bullets;
-    //objectManager.FindByTag("bullet", bullets);
-    //for (auto* bullet : bullets)
-    //{
-    //    engineContext.renderManager->DrawDebugLine(
-    //        bullet->GetTransform2D().GetPosition(),
-    //        objectManager.FindByTag("player")->GetWorldPosition(),
-    //        cameraManager.GetActiveCamera());
-    //}
-
-    //objectManager.FindByTag("enemyBullet", bullets);
-    //auto cnt = bullets.size();
-    //objectManager.FindByTag("111", bullets);
-    //cnt += bullets.size();
-    //bulletCountText->SetText(std::to_string(cnt));
-    //bulletCountText->GetTransform2D().SetPosition(objectManager.FindByTag("player")->GetTransform2D().GetPosition() + glm::vec2(0, 50));
-
-    //auto cam = cameraManager.GetActiveCamera();
-    //auto& input = *engineContext.inputManager;
-
-    //if (input.IsKeyDown(KEY_I)) cam->AddPosition({ 0, 100 * dt });
-    //if (input.IsKeyDown(KEY_J)) cam->AddPosition({ -100 * dt, 0 });
-    //if (input.IsKeyDown(KEY_K)) cam->AddPosition({ 0, -100 * dt });
-    //if (input.IsKeyDown(KEY_L)) cam->AddPosition({ 100 * dt, 0 });
-    //if (input.IsKeyDown(KEY_U)) cam->SetZoom(cam->GetZoom() + 0.1f * dt);
-    //if (input.IsKeyDown(KEY_O)) cam->SetZoom(cam->GetZoom() - 0.1f * dt);
+        loading->QueueShader(engineContext, "S_Sprite",
+            {
+                { ShaderStage::Vertex,   "Shaders/default.vert" },
+                { ShaderStage::Fragment, "Shaders/default.frag" }
+            });
 
 
+        loading->QueueFont(engineContext, "F_UI", "Fonts/font1.ttf", 32);
+
+        loading->QueueSound("BGM_Main", "Sounds/test.mp3", true);
+
+        loading->QueueSpriteSheet(engineContext, "[SpriteSheet]MainCharacter", "[Texture]MainCharacter", 32, 32);
+        loading->QueueSpriteSheet(engineContext, "[SpriteSheet]Flag", "[Texture]Flag", 60, 60);
+        engineContext.stateManager->ChangeState(std::move(loading));
+    }
     objectManager.UpdateAll(dt, engineContext);
+
 }
 
 void MainMenu::LateUpdate(float dt, const EngineContext& engineContext)
@@ -185,8 +80,7 @@ void MainMenu::LateUpdate(float dt, const EngineContext& engineContext)
 
 void MainMenu::Draw(const EngineContext& engineContext)
 {
-	//engineContext.renderManager->ClearBackground(0, 0, engineContext.windowManager->GetWidth(), engineContext.windowManager->GetHeight(), { 0.2,1.2,0.5,1 });
-	objectManager.DrawAll(engineContext);
+    objectManager.DrawAll(engineContext);
 }
 
 

@@ -1,4 +1,4 @@
-#include "Engine.h"
+﻿#include "Engine.h"
 
 #include <algorithm>
 #include "ext/matrix_clip_space.hpp"
@@ -856,6 +856,23 @@ void RenderManager::UnregisterSpriteSheet(const std::string& tag, const EngineCo
         }
         spritesheetMap.erase(tag);
     }
+}
+
+bool RenderManager::HasTexture(const std::string& tag) const
+{
+    return textureMap.find(tag) != textureMap.end();
+}
+bool RenderManager::HasShader(const std::string& tag)  const
+{
+    return shaderMap.find(tag) != shaderMap.end();
+}
+bool RenderManager::HasFont(const std::string& tag)    const
+{
+    return fontMap.find(tag) != fontMap.end();
+}
+bool RenderManager::HasSpriteSheet(const std::string& tag) const
+{
+    return spritesheetMap.find(tag) != spritesheetMap.end();
 }
 
 SpriteSheet* RenderManager::GetSpriteSheetByTag(const std::string& tag)

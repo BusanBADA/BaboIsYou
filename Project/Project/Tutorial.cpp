@@ -1,40 +1,25 @@
-#include "Tutorial.h"
+﻿#include "Tutorial.h"
 
 #include <random>
 
+#include "LoadingState.h"
 #include "MainMenu.h"
 
 void Tutorial::Load(const EngineContext& engineContext)
 {
     SNAKE_LOG("[Tutorial] load called");
     RenderManager* rm = engineContext.renderManager;
-    TextureSettings ts = { TextureMinFilter::Nearest,TextureMagFilter::Nearest,TextureWrap::ClampToBorder,TextureWrap::ClampToBorder };
-    rm->RegisterTexture("[Texture]MainCharacter", "Textures/MainCharacter/player.png", ts);
-    rm->RegisterTexture("[Texture]Flag", "Textures/flag.png");
-    rm->RegisterTexture("[Texture]Leaf", "Textures/leaf.png");
 
 
-    rm->RegisterSpriteSheet("[SpriteSheet]MainCharacter", "[Texture]MainCharacter", 32, 32);
-    rm->RegisterSpriteSheet("[SpriteSheet]Flag", "[Texture]Flag", 60, 60);
+    //rm->RegisterSpriteSheet("[SpriteSheet]MainCharacter", "[Texture]MainCharacter", 32, 32);
+    //rm->RegisterSpriteSheet("[SpriteSheet]Flag", "[Texture]Flag", 60, 60);
 
-
-    rm->RegisterShader("[Shader]ColorOnly", { {ShaderStage::Vertex, "Shaders/ColorOnly.vert" },{ShaderStage::Fragment,"Shaders/ColorOnly.frag"} });
     rm->RegisterMaterial("[Material]ColorOnly", "[Shader]ColorOnly", {});
 
-    rm->RegisterShader("[Shader]Instancing", { {ShaderStage::Vertex, "Shaders/Instancing.vert" },{ShaderStage::Fragment,"Shaders/Instancing.frag"} });
     rm->RegisterMaterial("[Material]Instancing", "[Shader]Instancing", { {"u_Texture","[Texture]Leaf"} });
 
-    rm->RegisterTexture("[Texture]Background00", "Textures/Background/_09_background.png");
-    rm->RegisterTexture("[Texture]Background01", "Textures/Background/_08_distant_clouds.png");
-    rm->RegisterTexture("[Texture]Background02", "Textures/Background/_07_clouds.png");
-    rm->RegisterTexture("[Texture]Background03", "Textures/Background/_06_hill2.png");
-    rm->RegisterTexture("[Texture]Background04", "Textures/Background/_05_hill1.png");
-    rm->RegisterTexture("[Texture]Background05", "Textures/Background/_04_bushes.png");
-    rm->RegisterTexture("[Texture]Background06", "Textures/Background/_03_distant_trees.png");
-    rm->RegisterTexture("[Texture]Background07", "Textures/Background/_02_trees and bushes.png");
-    rm->RegisterTexture("[Texture]Background08", "Textures/Background/_01_ground.png");
 
-	rm->RegisterMaterial("[Material]Background00", "[EngineShader]default_texture", { {"u_Texture","[Texture]Background00"} });
+    rm->RegisterMaterial("[Material]Background00", "[EngineShader]default_texture", { {"u_Texture","[Texture]Background00"} });
     rm->RegisterMaterial("[Material]Background01", "[EngineShader]default_texture", { {"u_Texture","[Texture]Background01"} });
     rm->RegisterMaterial("[Material]Background02", "[EngineShader]default_texture", { {"u_Texture","[Texture]Background02"} });
     rm->RegisterMaterial("[Material]Background03", "[EngineShader]default_texture", { {"u_Texture","[Texture]Background03"} });
@@ -53,102 +38,102 @@ void Tutorial::Load(const EngineContext& engineContext)
 
     bgObj00 = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg00"));
     bgObj00->SetMaterial(engineContext, "[Material]Background00");
-    bgObj00->SetRenderLayer("[Layer]PrallexBG00");
+    bgObj00->SetRenderLayer("[Layer]Background");
     bgObj00->SetFactor(1.0);
  
 
     bgObj01 = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg01"));
     bgObj01->SetMaterial(engineContext, "[Material]Background01");
-    bgObj01->SetRenderLayer("[Layer]PrallexBG00");
+    bgObj01->SetRenderLayer("[Layer]Background");
     bgObj01->SetFactor(0.9);
 
     bgObj02 = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg02"));
     bgObj02->SetMaterial(engineContext, "[Material]Background02");
-    bgObj02->SetRenderLayer("[Layer]PrallexBG00");
+    bgObj02->SetRenderLayer("[Layer]Background");
     bgObj02->SetFactor(0.8);
 
     bgObj03 = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg03"));
     bgObj03->SetMaterial(engineContext, "[Material]Background03");
-    bgObj03->SetRenderLayer("[Layer]PrallexBG00");
+    bgObj03->SetRenderLayer("[Layer]Background");
     bgObj03->SetFactor(0.7);
 
     bgObj04 = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg04"));
     bgObj04->SetMaterial(engineContext, "[Material]Background04");
-    bgObj04->SetRenderLayer("[Layer]PrallexBG00");
+    bgObj04->SetRenderLayer("[Layer]Background");
     bgObj04->SetFactor(0.5);
 
     bgObj05 = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg05"));
     bgObj05->SetMaterial(engineContext, "[Material]Background05");
-    bgObj05->SetRenderLayer("[Layer]PrallexBG00");
+    bgObj05->SetRenderLayer("[Layer]Background");
     bgObj05->SetFactor(0.4);
 
     bgObj06 = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg06"));
     bgObj06->SetMaterial(engineContext, "[Material]Background06");
-    bgObj06->SetRenderLayer("[Layer]PrallexBG00");
+    bgObj06->SetRenderLayer("[Layer]Background");
     bgObj06->SetFactor(0.3);
 
     bgObj07 = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg07"));
     bgObj07->SetMaterial(engineContext, "[Material]Background07");
-    bgObj07->SetRenderLayer("[Layer]PrallexBG00");
+    bgObj07->SetRenderLayer("[Layer]Background");
     bgObj07->SetFactor(0.2);
 
     bgObj08 = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg08"));
     bgObj08->SetMaterial(engineContext, "[Material]Background08");
-    bgObj08->SetRenderLayer("[Layer]PrallexBG00");
+    bgObj08->SetRenderLayer("[Layer]Background");
     bgObj08->SetFactor(0.0);
 
     bgObj00Sub = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg00"));
     bgObj00Sub->SetMaterial(engineContext, "[Material]Background00");
-    bgObj00Sub->SetRenderLayer("[Layer]PrallexBG00");
+    bgObj00Sub->SetRenderLayer("[Layer]Background");
     bgObj00Sub->SetBasePos({ engineContext.windowManager->GetWidth() ,0 });
     bgObj00Sub->SetFactor(1.0);
 
     bgObj01Sub = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg01"));
     bgObj01Sub->SetMaterial(engineContext, "[Material]Background01");
-    bgObj01Sub->SetRenderLayer("[Layer]PrallexBG00");
+    bgObj01Sub->SetRenderLayer("[Layer]Background");
     bgObj01Sub->SetBasePos({ engineContext.windowManager->GetWidth() ,0 });
     bgObj01Sub->SetFactor(0.9);
 
     bgObj02Sub = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg02"));
     bgObj02Sub->SetMaterial(engineContext, "[Material]Background02");
-    bgObj02Sub->SetRenderLayer("[Layer]PrallexBG00");
+    bgObj02Sub->SetRenderLayer("[Layer]Background");
     bgObj02Sub->SetBasePos({ engineContext.windowManager->GetWidth() ,0 });
     bgObj02Sub->SetFactor(0.8);
 
     bgObj03Sub = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg03"));
     bgObj03Sub->SetMaterial(engineContext, "[Material]Background03");
-    bgObj03Sub->SetRenderLayer("[Layer]PrallexBG00");
+    bgObj03Sub->SetRenderLayer("[Layer]Background");
     bgObj03Sub->SetBasePos({ engineContext.windowManager->GetWidth() ,0 });
     bgObj03Sub->SetFactor(0.7);
 
     bgObj04Sub = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg04"));
     bgObj04Sub->SetMaterial(engineContext, "[Material]Background04");
-    bgObj04Sub->SetRenderLayer("[Layer]PrallexBG00");
+    bgObj04Sub->SetRenderLayer("[Layer]Background");
     bgObj04Sub->SetBasePos({ engineContext.windowManager->GetWidth() ,0 });
     bgObj04Sub->SetFactor(0.5);
     bgObj04Sub->SetFlipUV_X(true);
 
     bgObj05Sub = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg05"));
     bgObj05Sub->SetMaterial(engineContext, "[Material]Background05");
-    bgObj05Sub->SetRenderLayer("[Layer]PrallexBG00");
+    bgObj05Sub->SetRenderLayer("[Layer]Background");
     bgObj05Sub->SetBasePos({ engineContext.windowManager->GetWidth() ,0 });
     bgObj05Sub->SetFactor(0.4);
 
     bgObj06Sub = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg06"));
     bgObj06Sub->SetMaterial(engineContext, "[Material]Background06");
-    bgObj06Sub->SetRenderLayer("[Layer]PrallexBG00");
+    bgObj06Sub->SetRenderLayer("[Layer]Background");
     bgObj06Sub->SetBasePos({ engineContext.windowManager->GetWidth() ,0 });
     bgObj06Sub->SetFactor(0.3);
 
     bgObj07Sub = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg07"));
     bgObj07Sub->SetMaterial(engineContext, "[Material]Background07");
-    bgObj07Sub->SetRenderLayer("[Layer]PrallexBG00");
+    bgObj07Sub->SetRenderLayer("[Layer]Background");
     bgObj07Sub->SetBasePos({ engineContext.windowManager->GetWidth() ,0 });
     bgObj07Sub->SetFactor(0.2);
 
     bgObj08Sub = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg08"));
     bgObj08Sub->SetMaterial(engineContext, "[Material]Background08");
-    bgObj08Sub->SetRenderLayer("[Layer]PrallexBG00");
+    bgObj08Sub->SetRenderLayer("[Layer]Background");
     bgObj08Sub->SetBasePos({ engineContext.windowManager->GetWidth() ,0 });
     bgObj08Sub->SetFactor(0.0);
 
@@ -217,6 +202,7 @@ void Tutorial::Load(const EngineContext& engineContext)
 void Tutorial::Init(const EngineContext& engineContext)
 {
     SNAKE_LOG("[Tutorial] init called");
+    engineContext.soundManager->Play("BGM_Main", 1, 0);
   //  engineContext.engine->RenderDebugDraws(true);
 }
 
@@ -248,7 +234,10 @@ void Tutorial::Update(float dt, const EngineContext& engineContext)
     {
         engineContext.engine->RequestQuit();
     }
-
+    if (engineContext.inputManager->IsKeyReleased(KEY_N))
+    {
+        engineContext.stateManager->ChangeState(std::make_unique<MainMenu>());
+    }
     leafSpawnTimer += dt;
     objectManager.UpdateAll(dt, engineContext);
 }
@@ -270,5 +259,10 @@ void Tutorial::Free(const EngineContext& engineContext)
 
 void Tutorial::Unload(const EngineContext& engineContext)
 {
+    for (int i = 0; i < 100; i++)
+    {
+        engineContext.renderManager->UnregisterTexture("test" + std::to_string(i), engineContext);
+    }
+
     SNAKE_LOG("[Tutorial] unload called");
 }

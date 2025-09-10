@@ -90,6 +90,12 @@
     <ClInclude Include="Public\Collider.h">
       <Filter>public</Filter>
     </ClInclude>
+    <ClInclude Include="Public\AsyncResourceLoader.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\LoadingState.h">
+      <Filter>public</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Private\StateManager.cpp">
@@ -153,6 +159,12 @@
       <Filter>private</Filter>
     </ClCompile>
     <ClCompile Include="Private\Debug.cpp">
+      <Filter>private</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\AsyncResourceLoader.cpp">
+      <Filter>private</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\LoadingState.cpp">
       <Filter>private</Filter>
     </ClCompile>
   </ItemGroup>
