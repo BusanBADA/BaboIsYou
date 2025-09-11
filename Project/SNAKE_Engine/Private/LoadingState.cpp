@@ -121,12 +121,6 @@ void LoadingState::QueueSound(const std::string& tag, const std::string& path, b
     loader.Enqueue(SoundJob{ tag, path, loop });
 }
 
-void LoadingState::QueueSpriteSheet(const EngineContext& engineContext, const std::string& tag, const std::string& textureTag, int frameW, int frameH)
-{
-    if (engineContext.renderManager->HasSpriteSheet(tag)) 
-        return;
-    loader.Enqueue(SpriteSheetJob{ tag, textureTag, frameW, frameH });
-}
 
 // ---------------- GPU Upload ----------------
 
@@ -167,10 +161,6 @@ void LoadingState::UploadToGPU(const LoadResult& r, const EngineContext& engineC
             else if constexpr (std::is_same_v<T, SoundResult>)
             {
                 engineContext.soundManager->LoadSound(res.tag, res.filePath, res.loop);
-            }
-            else if constexpr (std::is_same_v<T, SpriteSheetResult>)
-            {
-                engineContext.renderManager->RegisterSpriteSheet(res.tag, res.textureTag, res.frameW, res.frameH);
             }
         }, r);
 }

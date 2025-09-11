@@ -176,19 +176,7 @@ void AsyncResourceLoader::Worker()
                     std::lock_guard<std::mutex> lk(completedMutex);
                     completed.emplace_back(std::move(r));
                 }
-                else if constexpr (std::is_same_v<T, SpriteSheetJob>)
-                {
-                    SpriteSheetResult r;
-                    r.tag = job.tag;
-                    r.textureTag = job.textureTag;
-                    r.frameW = job.frameW;
-                    r.frameH = job.frameH;
-                    r.ok = true;
-
-                    std::lock_guard<std::mutex> lk(completedMutex);
-                    completed.emplace_back(std::move(r));
-                }
-
+               
                 loadedCount.fetch_add(1);
 
             }, req);

@@ -94,16 +94,8 @@ struct SoundResult
     bool ok = true;
 };
 
-struct SpriteSheetResult
-{
-    std::string tag;
-    std::string textureTag;
-    int frameW = 1;
-    int frameH = 1;
-    bool ok = true;
-};
 
-using LoadResult = std::variant<TextureResult, ShaderResult, FontResult, SoundResult, SpriteSheetResult>;
+using LoadResult = std::variant<TextureResult, ShaderResult, FontResult, SoundResult>;
 
 class AsyncResourceLoader
 {

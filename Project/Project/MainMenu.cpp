@@ -66,8 +66,6 @@ void MainMenu::Update(float dt, const EngineContext& engineContext)
 
         loading->QueueSound("BGM_Main", "Sounds/test.mp3", true);
 
-        loading->QueueSpriteSheet(engineContext, "[SpriteSheet]MainCharacter", "[Texture]MainCharacter", 32, 32);
-        loading->QueueSpriteSheet(engineContext, "[SpriteSheet]Flag", "[Texture]Flag", 60, 60);
         engineContext.stateManager->ChangeState(std::move(loading));
     }
     objectManager.UpdateAll(dt, engineContext);

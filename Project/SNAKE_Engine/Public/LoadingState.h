@@ -32,8 +32,6 @@ public:
 
     void QueueSound( const std::string& tag, const std::string& path, bool loop);
 
-    void QueueSpriteSheet(const EngineContext& engineContext, const std::string& tag, const std::string& textureTag, int frameW, int frameH);
-
     float GetProgress01() const { return loader.GetProgress(); }
 
 private:
