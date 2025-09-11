@@ -4,7 +4,10 @@
 #include"GameState.h"
 #include "Player.h"
 #include "InstancedObject.h"
-
+namespace TutorialState
+{
+    void AsyncLoad(const EngineContext& engineContext, LoadingState* loading);
+}
 class Tutorial :public GameState
 {
 public:

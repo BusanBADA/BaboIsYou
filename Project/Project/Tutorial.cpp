@@ -5,9 +5,52 @@
 #include "LoadingState.h"
 #include "MainMenu.h"
 
+namespace TutorialState
+{
+    void AsyncLoad(const EngineContext& engineContext,LoadingState* loading)
+    {
+        TextureSettings ts = { TextureMinFilter::Nearest,TextureMagFilter::Nearest,TextureWrap::ClampToBorder,TextureWrap::ClampToBorder };
+        loading->QueueTexture(engineContext, "[Texture]MainCharacter", "Textures/MainCharacter/player.png", ts);
+        loading->QueueTexture(engineContext, "[Texture]Flag", "Textures/flag.png");
+        loading->QueueTexture(engineContext, "[Texture]Leaf", "Textures/leaf.png");
+        loading->QueueTexture(engineContext, "[Texture]Background00", "Textures/Background/_09_background.png");
+        loading->QueueTexture(engineContext, "[Texture]Background01", "Textures/Background/_08_distant_clouds.png");
+        loading->QueueTexture(engineContext, "[Texture]Background02", "Textures/Background/_07_clouds.png");
+        loading->QueueTexture(engineContext, "[Texture]Background03", "Textures/Background/_06_hill2.png");
+        loading->QueueTexture(engineContext, "[Texture]Background04", "Textures/Background/_05_hill1.png");
+        loading->QueueTexture(engineContext, "[Texture]Background05", "Textures/Background/_04_bushes.png");
+        loading->QueueTexture(engineContext, "[Texture]Background06", "Textures/Background/_03_distant_trees.png");
+        loading->QueueTexture(engineContext, "[Texture]Background07", "Textures/Background/_02_trees and bushes.png");
+        loading->QueueTexture(engineContext, "[Texture]Background08", "Textures/Background/_01_ground.png");
+
+        loading->QueueShader(engineContext, "[Shader]ColorOnly", { {ShaderStage::Vertex, "Shaders/ColorOnly.vert" },{ShaderStage::Fragment,"Shaders/ColorOnly.frag"} });
+        loading->QueueShader(engineContext, "[Shader]Instancing", { {ShaderStage::Vertex, "Shaders/Instancing.vert" },{ShaderStage::Fragment,"Shaders/Instancing.frag"} });
+
+        for (int i = 0; i < 100; i++)
+        {
+            loading->QueueTexture(engineContext, "test" + std::to_string(i), "Textures/test.jpg",
+                TextureSettings{ TextureMinFilter::Linear, TextureMagFilter::Linear, TextureWrap::ClampToEdge, TextureWrap::ClampToEdge, /*generateMipmap*/true });
+        }
+
+        loading->QueueShader(engineContext, "S_Sprite",
+            {
+                { ShaderStage::Vertex,   "Shaders/default.vert" },
+                { ShaderStage::Fragment, "Shaders/default.frag" }
+            });
+
+
+        loading->QueueFont(engineContext, "F_UI", "Fonts/font1.ttf", 32);
+
+        loading->QueueSound("BGM_Main", "Sounds/test.mp3", true);
+
+
+    }
+}
+
 void Tutorial::Load(const EngineContext& engineContext)
 {
     SNAKE_LOG("[Tutorial] load called");
+
     RenderManager* rm = engineContext.renderManager;
 
     rm->RegisterSpriteSheet("[SpriteSheet]MainCharacter", "[Texture]MainCharacter", 32, 32);
@@ -27,18 +70,25 @@ void Tutorial::Load(const EngineContext& engineContext)
     rm->RegisterMaterial("[Material]Background07", "[EngineShader]default_texture", { {"u_Texture","[Texture]Background07"} });
     rm->RegisterMaterial("[Material]Background08", "[EngineShader]default_texture", { {"u_Texture","[Texture]Background08"} });
 
+   
+}
+
+void Tutorial::Init(const EngineContext& engineContext)
+{
+    SNAKE_LOG("[Tutorial] init called");
     text = static_cast<TextObject*>(engineContext.stateManager->GetCurrentState()->GetObjectManager().AddObject(
         std::make_unique<TextObject>(engineContext.renderManager->GetFontByTag("[Font]default"), "test", TextAlignH::Center, TextAlignV::Middle),
         "[Object]Text"));
     text->SetRenderLayer("[Layer]UIText");
-    text->GetTransform2D().SetScale({ 0.3f,0.3f });
-
+    text->GetTransform2D().SetScale({ 0.5f,0.5f });
+    text->GetTransform2D().SetPosition({ 0,250 });
+    text->SetVisibility(false);
 
     bgObj00 = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg00"));
     bgObj00->SetMaterial(engineContext, "[Material]Background00");
     bgObj00->SetRenderLayer("[Layer]Background");
     bgObj00->SetFactor(1.0f);
- 
+
 
     bgObj01 = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg01"));
     bgObj01->SetMaterial(engineContext, "[Material]Background01");
@@ -195,13 +245,8 @@ void Tutorial::Load(const EngineContext& engineContext)
     bgObj08Sub->GetTransform2D().SetDepth(80);
 
     player->GetTransform2D().SetDepth(00.0f);
-}
 
-void Tutorial::Init(const EngineContext& engineContext)
-{
-    SNAKE_LOG("[Tutorial] init called");
     engineContext.soundManager->Play("BGM_Main", 1, 0);
-  //  engineContext.engine->RenderDebugDraws(true);
 }
 
 void Tutorial::LateInit(const EngineContext& engineContext)
@@ -211,13 +256,11 @@ void Tutorial::LateInit(const EngineContext& engineContext)
 void Tutorial::Update(float dt, const EngineContext& engineContext)
 {
     text->SetText(std::to_string(objectManager.GetAllRawPtrObjects().size()));
-    if (leafSpawnTimer >=0.01f)
+
+    if (leafSpawnTimer >=1.f)
     {
         float cnt = objectManager.GetAllRawPtrObjects().size() / 10.f;
         objectManager.AddObject(std::make_unique<InstancedObject>())->GetTransform2D().SetDepth(cnt);
-        objectManager.AddObject(std::make_unique<InstancedObject>())->GetTransform2D().SetDepth(cnt);
-        objectManager.AddObject(std::make_unique<InstancedObject>())->GetTransform2D().SetDepth(cnt);
-
         leafSpawnTimer = 0.0f;
     }
     if (engineContext.inputManager->IsKeyDown(KEY_LEFT))
