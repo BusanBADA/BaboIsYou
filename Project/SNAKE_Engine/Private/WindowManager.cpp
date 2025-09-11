@@ -1,4 +1,4 @@
-#include "gl.h"
+﻿#include "gl.h"
 #include "glfw3.h"
 #include "Engine.h"
 
@@ -147,6 +147,11 @@ void WindowManager::SetFullScreen(bool enable)
 }
 void WindowManager::Free() const
 {
+    glfwSetFramebufferSizeCallback(window, nullptr);
+    glfwSetScrollCallback(window, nullptr);
+    glfwSetKeyCallback(window, nullptr);
+    glfwSetMouseButtonCallback(window, nullptr);
+    glfwSetWindowUserPointer(window, nullptr);
     glfwDestroyWindow(window);
 }
 

@@ -258,6 +258,26 @@ void RenderManager::FlushDebugLineDrawCommands(const EngineContext& engineContex
     debugLineMap.clear();
 }
 
+void RenderManager::Free()
+{
+    if (debugLineVBO)
+    {
+        glDeleteBuffers(1, &debugLineVBO);
+    }
+    if (debugLineVAO)
+    {
+        glDeleteVertexArrays(1, &debugLineVAO);
+    }
+
+    materialMap.clear();
+    meshMap.clear();
+    textureMap.clear();
+    fontMap.clear();
+    shaderMap.clear();
+    spritesheetMap.clear();
+    renderMap = {};
+}
+
 
 RenderLayerManager& RenderManager::GetRenderLayerManager()
 {

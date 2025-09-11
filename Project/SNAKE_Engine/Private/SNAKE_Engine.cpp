@@ -1,4 +1,4 @@
-#define GLAD_GL_IMPLEMENTATION
+﻿#define GLAD_GL_IMPLEMENTATION
 #include "gl.h"
 #include "glfw3.h"
 #ifdef _DEBUG
@@ -65,6 +65,7 @@ void SNAKE_Engine::Run()
     }
 
     soundManager.Free();
+    renderManager.Free();
     stateManager.Free(engineContext);
     windowManager.Free();
     Free();

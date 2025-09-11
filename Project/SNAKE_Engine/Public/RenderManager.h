@@ -122,6 +122,8 @@ private:
 
     void FlushDebugLineDrawCommands(const EngineContext& engineContext);
 
+    void Free();
+
     std::unordered_map<std::string, std::unique_ptr<Shader>> shaderMap;
     std::unordered_map<std::string, std::unique_ptr<Texture>> textureMap;
     std::unordered_map<std::string, std::unique_ptr<Mesh>> meshMap;
