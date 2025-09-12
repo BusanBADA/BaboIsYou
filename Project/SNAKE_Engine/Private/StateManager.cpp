@@ -48,5 +48,6 @@ void StateManager::Free(const EngineContext& engineContext)
 	{
 		currentState->SystemFree(engineContext);
 		currentState->SystemUnload(engineContext);
+		currentState.reset();
 	}
 }

@@ -101,6 +101,12 @@ bool WindowManager::Init(int _windowWidth, int _windowHeight, SNAKE_Engine& engi
             //if (auto* snakeEngine = (SNAKE_Engine*)glfwGetWindowUserPointer(w))
             //    snakeEngine->GetEngineContext().inputManager->Reset();
         });
+
+    glfwSetWindowCloseCallback(window, [](GLFWwindow* w) {
+        if (auto* e = static_cast<SNAKE_Engine*>(glfwGetWindowUserPointer(w)))
+            e->RequestQuit();
+        });
+
     return true;
 }
 
@@ -147,12 +153,16 @@ void WindowManager::SetFullScreen(bool enable)
 }
 void WindowManager::Free() const
 {
-    glfwSetFramebufferSizeCallback(window, nullptr);
-    glfwSetScrollCallback(window, nullptr);
-    glfwSetKeyCallback(window, nullptr);
-    glfwSetMouseButtonCallback(window, nullptr);
-    glfwSetWindowUserPointer(window, nullptr);
-    glfwDestroyWindow(window);
+    if (window)
+    {
+        glfwSetFramebufferSizeCallback(window, nullptr);
+        glfwSetScrollCallback(window, nullptr);
+        glfwSetKeyCallback(window, nullptr);
+        glfwSetMouseButtonCallback(window, nullptr);
+        glfwSetWindowUserPointer(window, nullptr);
+        glfwSetWindowCloseCallback(window, nullptr);
+        glfwDestroyWindow(window);
+    }
 }
 
 void WindowManager::SwapBuffers() const
