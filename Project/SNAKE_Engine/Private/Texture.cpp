@@ -1,4 +1,4 @@
-#include "Engine.h"
+﻿#include "Engine.h"
 #include "gl.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -103,6 +103,9 @@ void Texture::GenerateTexture(const unsigned char* data, const TextureSettings& 
         pixelFormat = GL_RGBA;
     }
 
+    GLint prev = 0;
+    glGetIntegerv(GL_UNPACK_ALIGNMENT, &prev);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glCreateTextures(GL_TEXTURE_2D, 1, &id);
     glTextureStorage2D(id, settings.generateMipmap? 1 + floor(log2(std::max(width, height))) : 1, internalFormat, width, height);
     glTextureSubImage2D(id, 0, 0, 0, width, height, pixelFormat, GL_UNSIGNED_BYTE, data);
@@ -116,4 +119,5 @@ void Texture::GenerateTexture(const unsigned char* data, const TextureSettings& 
     {
         glGenerateTextureMipmap(id);
     }
+    glPixelStorei(GL_UNPACK_ALIGNMENT, prev);
 }

@@ -38,7 +38,7 @@ bool CircleCollider::CheckCollision(const Collider* other) const
 bool CircleCollider::DispatchAgainst(const CircleCollider& other) const
 {
     glm::vec2 a = owner->GetWorldPosition()+ GetOffset();
-    glm::vec2 b = other.GetOwner()->GetWorldPosition();
+    glm::vec2 b = other.GetOwner()->GetWorldPosition() + other.GetOwner()->GetCollider()->GetOffset();
 
     float distSqr = glm::length2(a - b);
     float rSum = GetRadius() + other.GetRadius();

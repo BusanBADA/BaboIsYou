@@ -1,4 +1,4 @@
-#include "Engine.h"
+﻿#include "Engine.h"
 
 #include <algorithm>
 #include <sstream>
@@ -84,7 +84,8 @@ void Font::BakeAtlas(RenderManager& renderManager)
     int texWidth = 128;
     int texHeight = 128;
     std::vector<unsigned char> pixels(texWidth * texHeight, 0);
-
+    GLint prevAlignment = 0;
+    glGetIntegerv(GL_UNPACK_ALIGNMENT, &prevAlignment);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     atlasTexture = std::make_unique<Texture>(pixels.data(), texWidth, texHeight, 1);
 
@@ -96,6 +97,7 @@ void Font::BakeAtlas(RenderManager& renderManager)
     nextX = 0;
     nextY = 0;
     maxRowHeight = 0;
+    glPixelStorei(GL_UNPACK_ALIGNMENT, prevAlignment);
 }
 
 bool Font::TryBakeGlyph(char32_t c)
@@ -145,6 +147,8 @@ bool Font::TryBakeGlyph(char32_t c)
 
     if (hasBitmap && g->bitmap.buffer)
     {
+        GLint prevAlignment = 0;
+        glGetIntegerv(GL_UNPACK_ALIGNMENT, &prevAlignment);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glTextureSubImage2D(
             atlasTexture->GetID(), 0,
@@ -152,6 +156,7 @@ bool Font::TryBakeGlyph(char32_t c)
             GL_RED, GL_UNSIGNED_BYTE,
             g->bitmap.buffer
         );
+        glPixelStorei(GL_UNPACK_ALIGNMENT, prevAlignment);
     }
     else
     {

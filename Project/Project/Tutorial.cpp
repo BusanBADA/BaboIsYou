@@ -26,7 +26,7 @@ namespace TutorialState
         loading->QueueShader(engineContext, "[Shader]ColorOnly", { {ShaderStage::Vertex, "Shaders/ColorOnly.vert" },{ShaderStage::Fragment,"Shaders/ColorOnly.frag"} });
         loading->QueueShader(engineContext, "[Shader]Instancing", { {ShaderStage::Vertex, "Shaders/Instancing.vert" },{ShaderStage::Fragment,"Shaders/Instancing.frag"} });
 
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < 10; i++)
         {
             loading->QueueTexture(engineContext, "test" + std::to_string(i), "Textures/test.jpg",
                 TextureSettings{ TextureMinFilter::Linear, TextureMagFilter::Linear, TextureWrap::ClampToEdge, TextureWrap::ClampToEdge, /*generateMipmap*/true });
@@ -279,6 +279,14 @@ void Tutorial::Update(float dt, const EngineContext& engineContext)
     {
         engineContext.stateManager->ChangeState(std::make_unique<MainMenu>());
     }
+    if (engineContext.inputManager->IsKeyReleased(KEY_O))
+    {
+        engineContext.engine->RenderDebugDraws(true);
+    }
+    if (engineContext.inputManager->IsKeyReleased(KEY_P))
+    {
+        engineContext.engine->RenderDebugDraws(false);
+    }
     leafSpawnTimer += dt;
     objectManager.UpdateAll(dt, engineContext);
 }
@@ -300,7 +308,7 @@ void Tutorial::Free(const EngineContext& engineContext)
 
 void Tutorial::Unload(const EngineContext& engineContext)
 {
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < 10; i++)
     {
         engineContext.renderManager->UnregisterTexture("test" + std::to_string(i), engineContext);
     }
