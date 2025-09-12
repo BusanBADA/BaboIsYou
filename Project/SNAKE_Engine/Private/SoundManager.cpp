@@ -7,6 +7,7 @@
 #include <queue>
 #include <string>
 
+#define MA_NO_WASAPI
 #define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"
 
