@@ -1,9 +1,11 @@
-#include "Engine.h"
+﻿#include "Engine.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <unordered_set>
 
 #include "gtx/norm.hpp"
+
+constexpr int LARGE_OBJECT_THRESHOLD = 128;
 
 float CircleCollider::GetRadius() const
 {
@@ -176,13 +178,15 @@ bool AABBCollider::DispatchAgainst(const CircleCollider& other) const
 void SpatialHashGrid::Clear()
 {
     grid.clear();
+    objects.clear();
+    largeObjects.clear();
 }
 
 void SpatialHashGrid::Insert(Object* obj)
 {
     if (!obj->IsAlive() || !obj->GetCollider())
         return;
-
+    objects.push_back(obj);
     Collider* collider = obj->GetCollider();
     glm::vec2 offset = collider? collider->GetOffset(): glm::vec2(0);
 	glm::vec2 pos = obj->GetWorldPosition()+ offset;
@@ -190,6 +194,12 @@ void SpatialHashGrid::Insert(Object* obj)
 
     glm::ivec2 minCell = GetCell(pos - glm::vec2(radius));
     glm::ivec2 maxCell = GetCell(pos + glm::vec2(radius));
+    int coveredCells = (maxCell.x - minCell.x + 1) * (maxCell.y - minCell.y + 1);
+     if (coveredCells > LARGE_OBJECT_THRESHOLD)
+    {
+        largeObjects.push_back(obj);
+        return;
+    }
 
     for (int y = minCell.y; y <= maxCell.y; ++y)
     {
@@ -201,6 +211,13 @@ void SpatialHashGrid::Insert(Object* obj)
 }
 void SpatialHashGrid::ComputeCollisions(std::function<void(Object*, Object*)> onCollision)
 {
+    for (auto obj : largeObjects)
+    {
+        for (auto* other : objects)
+        {
+            if (obj != other) onCollision(obj, other);
+        }
+    }
     for (auto& [cell, list] : grid)
     {
         const size_t count = list.size();

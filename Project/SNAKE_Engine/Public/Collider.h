@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <functional>
 #include <string>
 #include <unordered_map>
@@ -153,6 +153,8 @@ private:
 
     int cellSize = 50; 
     std::unordered_map<glm::ivec2, std::vector<Object*>, Vec2Hash> grid;
+    std::vector<Object*> largeObjects;
+    std::vector<Object*> objects;
 };
 
 class CollisionGroupRegistry
