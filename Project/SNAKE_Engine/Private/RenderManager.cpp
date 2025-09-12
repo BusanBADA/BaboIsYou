@@ -464,8 +464,8 @@ void RenderManager::Init(const EngineContext& engineContext)
     RegisterSpriteSheet("[EngineSpriteSheet]default", "[EngineTexture]error", 1, 1);
     defaultSpriteSheet = GetSpriteSheetByTag("[EngineSpriteSheet]default");
 
-    glGenVertexArrays(1, &debugLineVAO);
-    glGenBuffers(1, &debugLineVBO);
+    glCreateVertexArrays(1, &debugLineVAO);
+    glCreateBuffers(1, &debugLineVBO);
 
     glBindVertexArray(debugLineVAO);
     glBindBuffer(GL_ARRAY_BUFFER, debugLineVBO);
