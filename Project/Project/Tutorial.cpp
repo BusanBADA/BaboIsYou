@@ -11,6 +11,7 @@ namespace TutorialState
     {
         TextureSettings ts = { TextureMinFilter::Nearest,TextureMagFilter::Nearest,TextureWrap::ClampToBorder,TextureWrap::ClampToBorder };
         loading->QueueTexture(engineContext, "[Texture]MainCharacter", "Textures/MainCharacter/player.png", ts);
+        loading->QueueTexture(engineContext, "[Texture]MainCharacter1", "Textures/MainCharacter/player1.png", ts);
         loading->QueueTexture(engineContext, "[Texture]Flag", "Textures/flag.png");
         loading->QueueTexture(engineContext, "[Texture]Leaf", "Textures/leaf.png");
         loading->QueueTexture(engineContext, "[Texture]Background00", "Textures/Background/_09_background.png");
@@ -54,6 +55,7 @@ void Tutorial::Load(const EngineContext& engineContext)
     RenderManager* rm = engineContext.renderManager;
 
     rm->RegisterSpriteSheet("[SpriteSheet]MainCharacter", "[Texture]MainCharacter", 32, 32);
+    rm->RegisterSpriteSheet("[SpriteSheet]MainCharacter1", "[Texture]MainCharacter1", 32, 32);
     rm->RegisterSpriteSheet("[SpriteSheet]Flag", "[Texture]Flag", 60, 60);
 
     rm->RegisterMaterial("[Material]ColorOnly", "[Shader]ColorOnly", {});

@@ -126,25 +126,21 @@ void Mesh::SetupMesh(const std::vector<Vertex>& vertices, const std::vector<unsi
     useIndex = !indices.empty();
     indexCount = useIndex ? static_cast<GLsizei>(indices.size()) : static_cast<GLsizei>(vertices.size());
 
-    // Create VAO
     glCreateVertexArrays(1, &vao);
 
-    // Create and bind VBO
     glCreateBuffers(1, &vbo);
     glNamedBufferData(vbo, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
 
-    // Bind VBO to VAO
     glVertexArrayVertexBuffer(vao, 0, vbo, 0,  sizeof(Vertex));
 
-    glEnableVertexArrayAttrib(vao, 0); // position
+    glEnableVertexArrayAttrib(vao, 0);
     glVertexArrayAttribFormat(vao, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
     glVertexArrayAttribBinding(vao, 0, 0);
 
-    glEnableVertexArrayAttrib(vao, 1); // uv
+    glEnableVertexArrayAttrib(vao, 1);
     glVertexArrayAttribFormat(vao, 1, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, uv));
     glVertexArrayAttribBinding(vao, 1, 0);
 
-    // EBO (Element Buffer)
     if (useIndex)
     {
         glCreateBuffers(1, &ebo);

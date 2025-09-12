@@ -1,4 +1,4 @@
-#include "Player.h"
+﻿#include "Player.h"
 #include "Engine.h"
 
 void Player::Init(const EngineContext& engineContext)
@@ -10,6 +10,9 @@ void Player::Init(const EngineContext& engineContext)
     SpriteSheet* sheet = engineContext.renderManager->GetSpriteSheetByTag("[SpriteSheet]MainCharacter");
     sheet->AddClip("[Clip]Idle", { 0,1,2,3,4,5,6,7 }, 0.15f, true);
     sheet->AddClip("[Clip]Running", {8,9,10,11,12,13}, 0.08f, true);
+    sheet = engineContext.renderManager->GetSpriteSheetByTag("[SpriteSheet]MainCharacter1");
+    sheet->AddClip("[Clip]Idle", { 0,1,2,3,4,5,6,7 }, 0.15f, true);
+    sheet->AddClip("[Clip]Running", { 8,9,10,11,12,13 }, 0.08f, true);
     AttachAnimator(sheet, 0.08f);
     auto collider = std::make_unique<AABBCollider>(this, glm::vec2(1.0, 1.0));
     collider->SetUseTransformScale(false);
@@ -26,7 +29,24 @@ void Player::LateInit(const EngineContext& engineContext)
 
 void Player::Update(float dt, const EngineContext& engineContext)
 {
-
+    if (engineContext.inputManager->IsKeyReleased(KEY_Z))
+    {
+        AttachAnimator(engineContext.renderManager->GetSpriteSheetByTag("[SpriteSheet]MainCharacter1"), 0.08f);
+        checkIdle_prevFrame = false;
+        if (engineContext.inputManager->IsKeyDown(KEY_A) || engineContext.inputManager->IsKeyDown(KEY_D))
+        {
+            spriteAnimator->PlayClip("[Clip]Running");
+        }
+    }
+    if (engineContext.inputManager->IsKeyReleased(KEY_X))
+    {
+        AttachAnimator(engineContext.renderManager->GetSpriteSheetByTag("[SpriteSheet]MainCharacter"), 0.08f);
+        checkIdle_prevFrame = false;
+        if (engineContext.inputManager->IsKeyDown(KEY_A) || engineContext.inputManager->IsKeyDown(KEY_D))
+        {
+            spriteAnimator->PlayClip("[Clip]Running");
+        }
+    }
     checkIdle = true;
     if (engineContext.inputManager->IsKeyDown(KEY_A))
     {
@@ -56,7 +76,7 @@ void Player::Update(float dt, const EngineContext& engineContext)
         spriteAnimator->PlayClip("[Clip]Running");
     }
 
-    if (checkIdle && !checkIdle_prevFrame)
+    if (spriteAnimator && checkIdle && !checkIdle_prevFrame)
     {
         static_cast<AABBCollider*>(collider.get())->SetSize({ 70,70 });
         collider->SetOffset({ glm::vec2(0,10.f) });
