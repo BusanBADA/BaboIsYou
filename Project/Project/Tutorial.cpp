@@ -248,6 +248,14 @@ void Tutorial::Init(const EngineContext& engineContext)
 
     player->GetTransform2D().SetDepth(00.0f);
 
+    engineContext.renderManager->RegisterShader("[Shader]Glitch", { {ShaderStage::Vertex,"Shaders/Default.vert"},{ShaderStage::Fragment,"Shaders/Glitch.frag"}});
+    engineContext.renderManager->RegisterMaterial("[Material]Glitch", "[Shader]Glitch", { {"u_Scene", "[EngineTexture]RenderTexture"} });
+    fbTexture = static_cast<GameObject*>(objectManager.AddObject(std::make_unique<GameObject>(), "[Object]fb"));
+    fbTexture->SetMesh(engineContext, "[EngineMesh]default");
+    fbTexture->SetMaterial(engineContext, "[Material]Glitch");
+    fbTexture->GetTransform2D().SetScale({engineContext.windowManager->GetWidth(), engineContext.windowManager->GetHeight()});
+    fbTexture->SetRenderLayer("[Layer]FrameBufferTexture");
+    fbTexture->SetIgnoreCamera(true, cameraManager.GetActiveCamera());
     engineContext.soundManager->Play("BGM_Main", 1, 0);
 }
 
@@ -257,6 +265,7 @@ void Tutorial::LateInit(const EngineContext& engineContext)
 
 void Tutorial::Update(float dt, const EngineContext& engineContext)
 {
+    timer += dt;
     text->SetText(std::to_string(objectManager.GetAllRawPtrObjects().size()));
 
     if (leafSpawnTimer >=1.f)
@@ -289,6 +298,14 @@ void Tutorial::Update(float dt, const EngineContext& engineContext)
     {
         engineContext.engine->RenderDebugDraws(false);
     }
+    if (engineContext.inputManager->IsKeyReleased(KEY_C))
+    {
+        enableGlitch = true;
+    }
+    if (engineContext.inputManager->IsKeyReleased(KEY_V))
+    {
+        enableGlitch = false;
+    }
     leafSpawnTimer += dt;
     objectManager.UpdateAll(dt, engineContext);
 }
@@ -299,7 +316,20 @@ void Tutorial::LateUpdate(float dt, const EngineContext& engineContext)
 
 void Tutorial::Draw(const EngineContext& engineContext)
 {
+    fbTexture->SetVisibility(false);
     objectManager.DrawAll(engineContext);
+}
+
+void Tutorial::PostProcessing(const EngineContext& engineContext)
+{
+    fbTexture->SetVisibility(enableGlitch);
+    auto mat = engineContext.renderManager->GetMaterialByTag("[Material]Glitch");
+    mat->SetUniform("u_Time", timer);
+    mat->SetUniform("u_Amount", 0.6f);
+    mat->SetUniform("u_Resolution", glm::vec2{engineContext.windowManager->GetWidth(),engineContext.windowManager->GetHeight()});
+
+    objectManager.DrawObjectsWithTag(engineContext, "[Object]fb");
+
 }
 
 

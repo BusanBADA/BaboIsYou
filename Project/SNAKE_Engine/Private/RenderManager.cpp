@@ -15,8 +15,101 @@ void RenderManager::Submit(const std::vector<Object*>& objects, const EngineCont
     }
 }
 
+void RenderManager::CreateSceneTarget(int w, int h)
+{
+    DestroySceneTarget();
+
+    rtWidth = w;
+    rtHeight = h;
+
+    glGenFramebuffers(1, &sceneFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO);
+
+    glGenTextures(1, &sceneColor);
+    glBindTexture(GL_TEXTURE_2D, sceneColor);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, rtWidth, rtHeight, 0, GL_RGBA, GL_FLOAT, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, sceneColor, 0);
+    RegisterTexture("[EngineTexture]RenderTexture", std::make_unique<Texture>(sceneColor,rtWidth,rtHeight,4));
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    {
+        SNAKE_ERR("sceneFBO incomplete!");
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void RenderManager::DestroySceneTarget()
+{
+    if (sceneColor)
+    {
+        glDeleteTextures(1, &sceneColor);
+        sceneColor = 0;
+    }
+    if (sceneFBO)
+    {
+        glDeleteFramebuffers(1, &sceneFBO);
+        sceneFBO = 0;
+    }
+    rtWidth = rtHeight = 0;
+}
+
+void RenderManager::BeginFrame(const EngineContext& engineContext)
+{
+    if (!useOffscreen)
+        return;
+
+    const int w = engineContext.windowManager->GetWidth();
+    const int h = engineContext.windowManager->GetHeight();
+    if (w != rtWidth || h != rtHeight || !sceneFBO)
+    {
+        CreateSceneTarget(w, h);
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO);
+    glViewport(0, 0, rtWidth, rtHeight);
+
+    glm::vec4 backgroundColor =  engineContext.windowManager->GetBackgroundColor();
+    glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void RenderManager::EndFrame(const EngineContext& engineContext)
+{
+    if (!useOffscreen || !sceneFBO)
+        return;
+
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, sceneFBO);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+    const int w = engineContext.windowManager->GetWidth();
+    const int h = engineContext.windowManager->GetHeight();
+
+    glBlitFramebuffer(
+        0, 0, rtWidth, rtHeight,
+        0, 0, w, h,
+        GL_COLOR_BUFFER_BIT,
+        GL_LINEAR
+    );
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void RenderManager::OnResize(int width, int height)
+{
+    if (!useOffscreen)
+        return;
+
+    if (width > 0 && height > 0)
+    {
+        CreateSceneTarget(width, height);
+    }
+}
+
 void FrustumCuller::CullVisible(const Camera2D& camera, const std::vector<Object*>& allObjects,
-    std::vector<Object*>& outVisibleList, glm::vec2 viewportSize)
+                                std::vector<Object*>& outVisibleList, glm::vec2 viewportSize)
 {
     outVisibleList.clear();
     for (Object* obj : allObjects)
@@ -268,7 +361,7 @@ void RenderManager::Free()
     {
         glDeleteVertexArrays(1, &debugLineVAO);
     }
-
+    DestroySceneTarget();
     materialMap.clear();
     meshMap.clear();
     textureMap.clear();
@@ -481,6 +574,10 @@ void RenderManager::Init(const EngineContext& engineContext)
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    int w = engineContext.windowManager->GetWidth();
+    int h = engineContext.windowManager->GetHeight();
+    CreateSceneTarget(w, h);
 }
 
 namespace

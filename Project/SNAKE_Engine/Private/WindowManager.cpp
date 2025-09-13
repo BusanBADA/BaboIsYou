@@ -15,7 +15,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
         {
             state->GetCameraManager().SetScreenSizeForAll(width, height);
         }
-        //snakeEngine->GetEngineContext().inputManager->Reset();
+        snakeEngine->GetEngineContext().renderManager->OnResize(width, height);
         SNAKE_LOG("changed: " << snakeEngine->GetEngineContext().windowManager->GetWidth() << " " << snakeEngine->GetEngineContext().windowManager->GetHeight());
     }
 }

@@ -18,6 +18,7 @@
 #include "GameObject.h"
 #include "InstanceBatchKey.h"
 #include "RenderLayerManager.h"
+#include "WindowManager.h"
 
 struct TextInstance;
 class SNAKE_Engine;
@@ -44,7 +45,6 @@ class RenderManager
     friend ObjectManager;
     friend StateManager;
     friend SNAKE_Engine;
-
 public:
     void RegisterShader(const std::string& tag, const std::vector<std::pair<ShaderStage, FilePath>>& sources);
 
@@ -113,6 +113,9 @@ public:
     void DrawDebugLine(const glm::vec2& from, const glm::vec2& to, Camera2D* camera = nullptr, const glm::vec4& color = { 1,1,1,1 }, float lineWidth = 1.0f);
 
     [[nodiscard]] RenderLayerManager& GetRenderLayerManager();
+    void BeginFrame(const EngineContext& engineContext);
+    void EndFrame(const EngineContext& engineContext);
+    void OnResize(int width, int height);
 private:
     void Init(const EngineContext& engineContext);
 
@@ -153,6 +156,16 @@ private:
     Camera2D* renderCamera;
 
     Texture* errorTexture;
+
+
+    unsigned int sceneFBO = 0;
+    unsigned int sceneColor = 0;
+    int rtWidth = 0;
+    int rtHeight = 0;
+    bool useOffscreen = true;
+
+    void CreateSceneTarget(int w, int h);
+    void DestroySceneTarget();
 };
 
 

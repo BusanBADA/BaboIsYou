@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "BackgroundObject.h"
 #include "FlagObject.h"
 #include"GameState.h"
@@ -23,6 +23,8 @@ public:
 
     void Draw(const EngineContext& engineContext) override;
 
+    void PostProcessing(const EngineContext& engineContext) override;
+
     void Free(const EngineContext& engineContext) override;
 
     void Unload(const EngineContext& engineContext) override;
@@ -33,6 +35,10 @@ private:
     BackgroundObject* bgObj00Sub, * bgObj01Sub, * bgObj02Sub, * bgObj03Sub, * bgObj04Sub, * bgObj05Sub, * bgObj06Sub, * bgObj07Sub, * bgObj08Sub;
     FlagObject* flag00, *flag01, *flag02, *flag03;
     TextObject* text;
+    GameObject* fbTexture;
     float leafSpawnTimer = 0.0f;
+    float timer = 0;
+    bool enableGlitch = false;
 };
+
 

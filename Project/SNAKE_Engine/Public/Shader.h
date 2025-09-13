@@ -47,10 +47,11 @@ public:
 
     [[nodiscard]] GLuint GetProgramID() const { return programID; }
 
-private:
     void Use() const;
 
     void Unuse() const;
+private:
+
 
     [[nodiscard]] bool SupportsInstancing() const;
 

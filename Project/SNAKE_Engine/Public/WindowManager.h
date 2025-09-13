@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <string>
 #include "vec4.hpp"
 class SNAKE_Engine;
@@ -23,6 +23,8 @@ public:
     void SetTitle(const std::string& title) const;
 
     void SetBackgroundColor(glm::vec4 color) { backgroundColor = color; }
+
+    glm::vec4 GetBackgroundColor() const { return backgroundColor; }
 
     void SetFullScreen(bool enable);
 
