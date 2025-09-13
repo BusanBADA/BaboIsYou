@@ -32,6 +32,7 @@ public:
 
     void RestrictResizing(bool shouldRestrict);
 
+    void SetCursorVisible(bool visible);
 private:
     bool Init(int _windowWidth, int _windowHeight, SNAKE_Engine& engine);
 
@@ -53,6 +54,7 @@ private:
     glm::vec4 backgroundColor;
 
     bool isFullscreen = false;
+    bool isCursorVisible = false;
     int windowedPosX = 100, windowedPosY = 100;
     int windowedWidth = 800, windowedHeight = 600;
 };

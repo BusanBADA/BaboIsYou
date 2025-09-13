@@ -115,6 +115,7 @@ public:
     [[nodiscard]] RenderLayerManager& GetRenderLayerManager();
     void BeginFrame(const EngineContext& engineContext);
     void EndFrame(const EngineContext& engineContext);
+    void DispatchCompute(ComputeMaterial* material);
     void OnResize(int width, int height);
 private:
     void Init(const EngineContext& engineContext);

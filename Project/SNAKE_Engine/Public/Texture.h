@@ -35,6 +35,22 @@ struct TextureSettings
     bool generateMipmap = true;
 };
 
+enum class ImageAccess
+{
+    ReadOnly,
+    WriteOnly,
+    ReadWrite
+};
+
+enum class ImageFormat
+{
+    R8, RG8, RGBA8,
+    R16F, RG16F, RGBA16F,
+    R32F, RG32F, RGBA32F,
+    R8UI, RG8UI, RGBA8UI,
+    R32UI, RG32UI, RGBA32UI
+};
+
 class Texture
 {
     friend class Material;
@@ -49,6 +65,7 @@ public:
     [[nodiscard]] unsigned int GetID() const { return id; }
 
     void BindToUnit(unsigned int unit) const;
+    void BindAsImage(unsigned int unit, ImageAccess access, ImageFormat format, int level = 0) const;
     void UnBind(unsigned int unit) const;
 
 private:

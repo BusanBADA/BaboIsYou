@@ -35,10 +35,25 @@ private:
     BackgroundObject* bgObj00Sub, * bgObj01Sub, * bgObj02Sub, * bgObj03Sub, * bgObj04Sub, * bgObj05Sub, * bgObj06Sub, * bgObj07Sub, * bgObj08Sub;
     FlagObject* flag00, *flag01, *flag02, *flag03;
     TextObject* text;
-    GameObject* fbTexture;
+    GameObject* fbTexture, *cursor;
     float leafSpawnTimer = 0.0f;
     float timer = 0;
     bool enableGlitch = false;
+    bool enableWaterDrop = true;
+
+    ComputeMaterial* computeMat;
+    Material* glitchMat;
+    struct RippleCPU {
+        glm::vec2 centerPx;
+        float     startTime;
+        float     amplitude;
+        float     wavelength;
+        float     speed;
+        float     damping;
+        float     life;
+    };
+
+    std::vector<RippleCPU> g_ripples;
 };
 
 

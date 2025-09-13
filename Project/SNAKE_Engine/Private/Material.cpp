@@ -1,3 +1,5 @@
+﻿#include <gl.h>
+
 #include "Engine.h"
 
 void Material::Bind() const
@@ -15,6 +17,12 @@ void Material::UnBind() const
         unit++;
     }
     shader->Unuse();
+}
+
+void Material::SendData()
+{
+    SendTextures();
+    SendUniforms();
 }
 
 bool Material::IsInstancingSupported() const
@@ -49,6 +57,17 @@ void Material::EnableInstancing(bool enable, Mesh* mesh)
 
 void Material::SendUniforms()
 {
+    for (const auto& [name, value] : uniforms)
+    {
+        std::visit([&](auto&& val)
+            {
+                shader->SendUniform(name, val);
+            }, value);
+    }
+}
+
+void Material::SendTextures()
+{
     int unit = 0;
     for (const auto& [uniformName, tex] : textures)
     {
@@ -56,14 +75,6 @@ void Material::SendUniforms()
         tex->BindToUnit(unit);
         shader->SendUniform(uniformName, unit);
         unit++;
-    }
-
-    for (const auto& [name, value] : uniforms)
-    {
-        std::visit([&](auto&& val)
-            {
-                shader->SendUniform(name, val);
-            }, value);
     }
 }
 
@@ -82,4 +93,18 @@ bool Material::HasTexture(Texture* texture) const
 bool Material::HasShader(Shader* shader_) const
 {
     return shader == shader_;
+}
+
+
+void ComputeMaterial::SendData()
+{
+    int unit = 0;
+    for (const auto& [uniformName, img] : images)
+    {
+        if (!img.tex) continue;
+        img.tex->BindAsImage(unit, img.access, img.format, img.level);
+        shader->SendUniform(uniformName, unit);
+        unit++;
+    }
+    SendUniforms();
 }

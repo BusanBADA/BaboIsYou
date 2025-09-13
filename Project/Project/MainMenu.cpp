@@ -13,7 +13,11 @@ void MainMenu::Init(const EngineContext& engineContext)
 {
     SNAKE_LOG("[MainMenu] init called");
     mainText = static_cast<TextObject*>( objectManager.AddObject(std::make_unique<TextObject>(engineContext.renderManager->GetFontByTag("[Font]default"), "MainMenu", TextAlignH::Center, TextAlignV::Middle)));
-
+    cursor = static_cast<GameObject*>(objectManager.AddObject(std::make_unique<GameObject>()));
+    cursor->SetMaterial(engineContext, "[Material]cursor");
+    cursor->SetMesh(engineContext, "[EngineMesh]default");
+    cursor->GetTransform2D().SetScale({30,30});
+    cursor->SetRenderLayer("[Layer]Cursor");
 }
 
 void MainMenu::LateInit(const EngineContext& engineContext)
@@ -22,6 +26,15 @@ void MainMenu::LateInit(const EngineContext& engineContext)
 
 void MainMenu::Update(float dt, const EngineContext& engineContext)
 {
+    cursor->GetTransform2D().SetPosition(engineContext.inputManager->GetMouseWorldPos(cameraManager.GetActiveCamera())+glm::vec2(11,-11));
+    if (engineContext.inputManager->IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || engineContext.inputManager->IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE) || engineContext.inputManager->IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
+    {
+        cursor->SetColor({ 0.7f, 0.7f, 0.7f, 1.0f });
+    }
+    if (engineContext.inputManager->IsMouseButtonReleased(MOUSE_BUTTON_LEFT) || engineContext.inputManager->IsMouseButtonReleased(MOUSE_BUTTON_MIDDLE) || engineContext.inputManager->IsMouseButtonReleased(MOUSE_BUTTON_RIGHT))
+    {
+        cursor->SetColor({ 1.0f, 1.0f,1.0f,1.0f });
+    }
     if (engineContext.inputManager->IsKeyReleased(KEY_N))
     {
         auto nextFactory = []() -> std::unique_ptr<GameState>

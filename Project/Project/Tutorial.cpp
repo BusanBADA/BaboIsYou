@@ -58,6 +58,8 @@ void Tutorial::Load(const EngineContext& engineContext)
     rm->RegisterSpriteSheet("[SpriteSheet]MainCharacter1", "[Texture]MainCharacter1", 32, 32);
     rm->RegisterSpriteSheet("[SpriteSheet]Flag", "[Texture]Flag", 60, 60);
 
+    rm->RegisterMaterial("[Material]default", "[EngineShader]default_texture", { {"u_Texture","[EngineTexture]RenderTexture"} });
+
     rm->RegisterMaterial("[Material]ColorOnly", "[Shader]ColorOnly", {});
 
     rm->RegisterMaterial("[Material]Instancing", "[Shader]Instancing", { {"u_Texture","[Texture]Leaf"} });
@@ -72,6 +74,10 @@ void Tutorial::Load(const EngineContext& engineContext)
     rm->RegisterMaterial("[Material]Background07", "[EngineShader]default_texture", { {"u_Texture","[Texture]Background07"} });
     rm->RegisterMaterial("[Material]Background08", "[EngineShader]default_texture", { {"u_Texture","[Texture]Background08"} });
 
+
+    rm->RegisterShader("[Shader]WaterDrop", { { ShaderStage::Compute,"Shaders/WaterDrop.comp" } });
+    rm->RegisterMaterial("[Material]ComputeWaterDrop", std::make_unique<ComputeMaterial>(engineContext.renderManager->GetShaderByTag("[Shader]WaterDrop")));
+    rm->RegisterTexture("[PostProcessedTexture]WaterDrop", std::make_unique<Texture>(nullptr, 1280, 720, 4));
    
 }
 
@@ -248,6 +254,25 @@ void Tutorial::Init(const EngineContext& engineContext)
 
     player->GetTransform2D().SetDepth(00.0f);
 
+    cursor = static_cast<GameObject*>(objectManager.AddObject(std::make_unique<GameObject>(),"[Object]cursor"));
+    cursor->SetMaterial(engineContext, "[Material]cursor");
+    cursor->SetMesh(engineContext, "[EngineMesh]default");
+    cursor->GetTransform2D().SetScale({ 30,30 });
+    cursor->SetRenderLayer("[Layer]Cursor");
+
+    computeMat = static_cast<ComputeMaterial*>(engineContext.renderManager->GetMaterialByTag("[Material]ComputeWaterDrop"));
+    computeMat->SetImage("u_Src", engineContext.renderManager->GetTextureByTag("[EngineTexture]RenderTexture"), ImageAccess::ReadOnly, ImageFormat::RGBA16F, 0);
+    computeMat->SetImage("u_Dst", engineContext.renderManager->GetTextureByTag("[PostProcessedTexture]WaterDrop"), ImageAccess::WriteOnly, ImageFormat::RGBA8, 0);
+    computeMat->SetUniform("u_Resolution", glm::vec2(1280, 720));
+    computeMat->SetUniform("u_Time", timer);
+    computeMat->SetUniform("u_RippleCount", 0);
+    computeMat->SetUniform("u_TimeDamping", 1.2f);
+    computeMat->SetUniform("u_RingSigmaScale", 0.35f);
+    computeMat->SetUniform("u_CutoffPx", 0.02f);
+    computeMat->SetUniform("u_SubRingCount", 4);
+    computeMat->SetUniform("u_SubRingSpacing", 120.0f);
+    computeMat->SetUniform("u_SubRingFalloff", 1.35f);
+
     engineContext.renderManager->RegisterShader("[Shader]Glitch", { {ShaderStage::Vertex,"Shaders/Default.vert"},{ShaderStage::Fragment,"Shaders/Glitch.frag"}});
     engineContext.renderManager->RegisterMaterial("[Material]Glitch", "[Shader]Glitch", { {"u_Scene", "[EngineTexture]RenderTexture"} });
     fbTexture = static_cast<GameObject*>(objectManager.AddObject(std::make_unique<GameObject>(), "[Object]fb"));
@@ -265,6 +290,16 @@ void Tutorial::LateInit(const EngineContext& engineContext)
 
 void Tutorial::Update(float dt, const EngineContext& engineContext)
 {
+    cursor->GetTransform2D().SetPosition(engineContext.inputManager->GetMouseWorldPos(cameraManager.GetActiveCamera()) + glm::vec2(11, -11));
+    if (engineContext.inputManager->IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || engineContext.inputManager->IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE) || engineContext.inputManager->IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
+    {
+        cursor->SetColor({ 0.7f, 0.7f, 0.7f, 1.0f});
+    }
+    if (engineContext.inputManager->IsMouseButtonReleased(MOUSE_BUTTON_LEFT)|| engineContext.inputManager->IsMouseButtonReleased(MOUSE_BUTTON_MIDDLE)|| engineContext.inputManager->IsMouseButtonReleased(MOUSE_BUTTON_RIGHT))
+    {
+        cursor->SetColor({ 1.0f, 1.0f,1.0f,1.0f });
+    }
+
     timer += dt;
     text->SetText(std::to_string(objectManager.GetAllRawPtrObjects().size()));
 
@@ -306,6 +341,27 @@ void Tutorial::Update(float dt, const EngineContext& engineContext)
     {
         enableGlitch = false;
     }
+    if (engineContext.inputManager->IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+    {
+        double mx = engineContext.inputManager->GetMouseX();
+        double my = engineContext.inputManager->GetMouseY();
+        int    w = engineContext.windowManager->GetWidth();
+        int    h = engineContext.windowManager->GetHeight();
+
+        RippleCPU r;
+        r.centerPx = glm::vec2((float)mx, (float)(h - my));
+        r.startTime = timer;
+
+        r.amplitude = 6.0f;
+        r.wavelength = 120.0f;
+        r.speed = 1000.0f;
+        r.damping = 0.004f;
+        r.life = 1.2f;
+
+        if (g_ripples.size() >= 16) g_ripples.erase(g_ripples.begin());
+        g_ripples.push_back(r);
+    }
+
     leafSpawnTimer += dt;
     objectManager.UpdateAll(dt, engineContext);
 }
@@ -316,19 +372,56 @@ void Tutorial::LateUpdate(float dt, const EngineContext& engineContext)
 
 void Tutorial::Draw(const EngineContext& engineContext)
 {
+    cursor->SetVisibility(false);
     fbTexture->SetVisibility(false);
     objectManager.DrawAll(engineContext);
 }
 
 void Tutorial::PostProcessing(const EngineContext& engineContext)
 {
-    fbTexture->SetVisibility(enableGlitch);
-    auto mat = engineContext.renderManager->GetMaterialByTag("[Material]Glitch");
-    mat->SetUniform("u_Time", timer);
-    mat->SetUniform("u_Amount", 0.6f);
-    mat->SetUniform("u_Resolution", glm::vec2{engineContext.windowManager->GetWidth(),engineContext.windowManager->GetHeight()});
+    cursor->SetVisibility(true);
+    fbTexture->SetVisibility(true);
+    fbTexture->SetMaterial(engineContext, "[Material]default");
+    engineContext.renderManager->GetMaterialByTag("[Material]default")->SetTexture("u_Texture", engineContext.renderManager->GetTextureByTag("[EngineTexture]RenderTexture"));
+
+    computeMat->SetUniform("u_Time", timer);
+    engineContext.renderManager->DispatchCompute(computeMat);
+    auto now = timer;
+    g_ripples.erase(
+        std::remove_if(g_ripples.begin(), g_ripples.end(),
+            [&](const RippleCPU& r) { return now - r.startTime > r.life; }),
+        g_ripples.end());
+
+    const int MAX_RIPPLES = 16;
+    int count = std::min<int>((int)g_ripples.size(), MAX_RIPPLES);
+    computeMat->SetUniform("u_RippleCount", count);
+
+    for (int i = 0; i < count; ++i)
+    {
+        const auto& r = g_ripples[i];
+        computeMat->SetUniform("u_Ripples[" + std::to_string(i) + "].center", r.centerPx);
+        computeMat->SetUniform("u_Ripples[" + std::to_string(i) + "].startTime", r.startTime);
+        computeMat->SetUniform("u_Ripples[" + std::to_string(i) + "].amplitude", r.amplitude);
+        computeMat->SetUniform("u_Ripples[" + std::to_string(i) + "].wavelength", r.wavelength);
+        computeMat->SetUniform("u_Ripples[" + std::to_string(i) + "].speed", r.speed);
+        computeMat->SetUniform("u_Ripples[" + std::to_string(i) + "].damping", r.damping);
+    }
+
+    if (enableWaterDrop)
+    {
+        engineContext.renderManager->GetMaterialByTag("[Material]default")->SetTexture("u_Texture", engineContext.renderManager->GetTextureByTag("[PostProcessedTexture]WaterDrop"));
+    }
+    if (enableGlitch)
+    {
+        fbTexture->SetMaterial(engineContext, "[Material]Glitch");
+        auto mat = engineContext.renderManager->GetMaterialByTag("[Material]Glitch");
+        mat->SetUniform("u_Time", timer);
+        mat->SetUniform("u_Amount", 0.6f);
+        mat->SetUniform("u_Resolution", glm::vec2{ engineContext.windowManager->GetWidth(),engineContext.windowManager->GetHeight() });
+    }
 
     objectManager.DrawObjectsWithTag(engineContext, "[Object]fb");
+    objectManager.DrawObjectsWithTag(engineContext, "[Object]cursor");
 
 }
 
@@ -347,3 +440,4 @@ void Tutorial::Unload(const EngineContext& engineContext)
 
     SNAKE_LOG("[Tutorial] unload called");
 }
+

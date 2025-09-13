@@ -22,23 +22,25 @@ void RenderManager::CreateSceneTarget(int w, int h)
     rtWidth = w;
     rtHeight = h;
 
-    glGenFramebuffers(1, &sceneFBO);
-    glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO);
+    glCreateFramebuffers(1, &sceneFBO);
 
-    glGenTextures(1, &sceneColor);
-    glBindTexture(GL_TEXTURE_2D, sceneColor);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, rtWidth, rtHeight, 0, GL_RGBA, GL_FLOAT, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, sceneColor, 0);
+    glCreateTextures(GL_TEXTURE_2D, 1, &sceneColor);
+    glTextureStorage2D(sceneColor, 1, GL_RGBA16F, rtWidth, rtHeight);
+    glTextureParameteri(sceneColor, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTextureParameteri(sceneColor, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTextureParameteri(sceneColor, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTextureParameteri(sceneColor, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glNamedFramebufferTexture(sceneFBO, GL_COLOR_ATTACHMENT0, sceneColor, 0);
+    const GLenum buf = GL_COLOR_ATTACHMENT0;
+    glNamedFramebufferDrawBuffers(sceneFBO, 1, &buf);
+
     RegisterTexture("[EngineTexture]RenderTexture", std::make_unique<Texture>(sceneColor,rtWidth,rtHeight,4));
 
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    GLenum status = glCheckNamedFramebufferStatus(sceneFBO, GL_FRAMEBUFFER);
+    if (status != GL_FRAMEBUFFER_COMPLETE)
     {
-        SNAKE_ERR("sceneFBO incomplete!");
+        SNAKE_ERR("sceneFBO incomplete!" << status);
     }
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void RenderManager::DestroySceneTarget()
@@ -95,6 +97,23 @@ void RenderManager::EndFrame(const EngineContext& engineContext)
     );
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void RenderManager::DispatchCompute(ComputeMaterial* material)
+{
+    const int w = material->GetDstTexture()->GetWidth();
+    const int h = material->GetDstTexture()->GetHeight();
+    const GLuint gx = (w + 7) / 8;
+    const GLuint gy = (h + 7) / 8;
+    if (!material) 
+        return;
+    material->Bind();
+    material->SendData();
+    glDispatchCompute(gx, gy, 1);
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT |
+        GL_TEXTURE_FETCH_BARRIER_BIT |
+        GL_SHADER_STORAGE_BARRIER_BIT);
+    material->UnBind();
 }
 
 void RenderManager::OnResize(int width, int height)
@@ -213,7 +232,7 @@ void RenderManager::FlushDrawCommands(const EngineContext& engineContext)
                         }
 
                         batch.front()->Draw(engineContext);
-                        material->SendUniforms();
+                        material->SendData();
                         key.mesh->UpdateInstanceBuffer(transforms, colors, uvOffsets, uvScales);
                         key.mesh->DrawInstanced(static_cast<GLsizei>(transforms.size()));
                     }
@@ -269,7 +288,7 @@ void RenderManager::FlushDrawCommands(const EngineContext& engineContext)
                             }
 
                             obj->Draw(engineContext);
-                            material->SendUniforms();
+                            material->SendData();
                             key.mesh->Draw();
                         }
                     }
@@ -534,7 +553,6 @@ void RenderManager::Init(const EngineContext& engineContext)
 
                 void main()
                 {
-					if (texture(u_Texture, v_UV).a <= 0.0) discard;
                     FragColor = texture(u_Texture, v_UV) * u_Color;
                 }
     )");

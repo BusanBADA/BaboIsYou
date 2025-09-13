@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include"GameState.h"
 #include "TextObject.h"
 
@@ -24,5 +24,6 @@ public:
 
 private:
     TextObject* mainText = nullptr;
+    GameObject* cursor = nullptr;
 };
 

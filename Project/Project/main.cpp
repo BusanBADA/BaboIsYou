@@ -11,9 +11,8 @@ int main(int argc, char* argv[])
 {
     SNAKE_Engine snakeEngine;
     DebugLogger::SetLogLevel(LogLevel::All);
-    float multiplier = 1.5f;
-    int width = 800 * multiplier;
-    int height = 480 * multiplier;
+    int width = 1280;
+    int height = 720;
 
     try
     {
@@ -77,9 +76,17 @@ int main(int argc, char* argv[])
     snakeEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]UI", 11);
     snakeEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]UIText", 12);
     snakeEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]FrameBufferTexture", 13);
+    snakeEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]Cursor", 14);
     snakeEngine.GetEngineContext().renderManager->RegisterFont("[Font]default", "Fonts/NotoSans-VariableFont_wdth,wght.ttf", 50);
-  
+
+
+    snakeEngine.GetEngineContext().windowManager->SetCursorVisible(false);
     snakeEngine.GetEngineContext().windowManager->SetBackgroundColor({ 0.2,0.2,0.4,1 });
+
+
+    snakeEngine.GetEngineContext().renderManager->RegisterTexture("[Texture]Cursor", "Textures/cursor.png");
+    snakeEngine.GetEngineContext().renderManager->RegisterMaterial("[Material]cursor", "[EngineShader]default_texture", { {"u_Texture","[Texture]Cursor"} });
+
     snakeEngine.GetEngineContext().stateManager->ChangeState(std::make_unique<MainMenu>());
 
     snakeEngine.Run();
