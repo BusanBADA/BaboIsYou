@@ -61,6 +61,11 @@ bool InputManager::IsMouseButtonReleased(int button) const
     return !currentMouseState.test(button) && previousMouseState.test(button);
 }
 
+bool InputManager::IsMouseButtonDragging(int button) const
+{
+    return currentMouseState.test(button) && previousMouseState.test(button);
+}
+
 double InputManager::GetMouseX() const
 {
     return mouseX;
