@@ -18,6 +18,10 @@ void MainMenu::Init(const EngineContext& engineContext)
     cursor->SetMesh(engineContext, "[EngineMesh]default");
     cursor->GetTransform2D().SetScale({30,30});
     cursor->SetRenderLayer("[Layer]Cursor");
+
+    TextObject* tmpText = static_cast<TextObject*>(objectManager.AddObject(std::make_unique<TextObject>(engineContext.renderManager->GetFontByTag("[Font]default"), "Press N to continue", TextAlignH::Center, TextAlignV::Middle)));
+    tmpText->GetTransform2D().SetPosition({ 0,-50 });
+    tmpText->GetTransform2D().SetScale({ 0.35,0.35 });
 }
 
 void MainMenu::LateInit(const EngineContext& engineContext)

@@ -229,6 +229,16 @@ void Tutorial::Init(const EngineContext& engineContext)
     flag02->GetTransform2D().SetPosition(glm::vec2(800, -170));
     flag02->SetGuide("Objects are managed via ObjectManager.\n Each State has its own ObjectManager.");
 
+    flag03 = static_cast<FlagObject*>(objectManager.AddObject(std::make_unique<FlagObject>(), "[Object]flag"));
+    flag03->SetRenderLayer("[Layer]Flag");
+    flag03->GetTransform2D().SetPosition(glm::vec2(1400, -170));
+    flag03->SetGuide("Engine supports async loading.\nUse loading state for large files(texture, audio..etc).");
+
+    flag04 = static_cast<FlagObject*>(objectManager.AddObject(std::make_unique<FlagObject>(), "[Object]flag"));
+    flag04->SetRenderLayer("[Layer]Flag");
+    flag04->GetTransform2D().SetPosition(glm::vec2(2000, -170));
+    flag04->SetGuide("Objects are rendered to the \"[EngineTexture]RenderTexture\". \nUse this texture to do postprocessing with compute shader.\nPress \'c\' to enable glitch.\nPress \'v\' to disable glitch.");
+
     player = static_cast<Player*>(objectManager.AddObject(std::make_unique<Player>(), "[Object]player"));
     player->SetRenderLayer("[Layer]Player");
 
