@@ -284,8 +284,8 @@
       <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>xcopy /E /I /Y "$(ProjectDir)Public" "$(OutDir)Headers"
+xcopy /E /I /Y "$(ProjectDir)thirdparty\include" "$(OutDir)Thirdparty"</Command>
     </PostBuildEvent>
     <Lib>
       <AdditionalDependencies>glfw3.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
