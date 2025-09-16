@@ -24,11 +24,11 @@ public:
 
     void SetBackgroundColor(glm::vec4 color) { backgroundColor = color; }
 
-    glm::vec4 GetBackgroundColor() const { return backgroundColor; }
+    [[nodiscard]] glm::vec4 GetBackgroundColor() const { return backgroundColor; }
 
     void SetFullScreen(bool enable);
 
-    bool IsFullScreen() const { return isFullscreen; }
+    [[nodiscard]] bool IsFullScreen() const { return isFullscreen; }
 
     void RestrictResizing(bool shouldRestrict);
 

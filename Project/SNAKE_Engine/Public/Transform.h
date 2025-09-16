@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "glm.hpp"
 
 class Transform2D
@@ -58,7 +58,7 @@ public:
 
     [[nodiscard]] const glm::vec2& GetScale() const { return scale; }
 
-	[[nodiscard]] float GetDepth() const { return depth; }
+    [[nodiscard]] float GetDepth() const { return depth; }
 
     [[nodiscard]] glm::mat4& GetMatrix();
 
