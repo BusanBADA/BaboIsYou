@@ -10,17 +10,7 @@ Object* ObjectManager::AddObject(std::unique_ptr<Object> obj, const std::string&
 
     obj->SetTag(tag);
 
-    if (!tag.empty())
-    {
-        if (objectMap.find(tag) != objectMap.end())
-            SNAKE_LOG("Duplicate Object ID");
-
-        Object* rawPointer = obj.get();
-        objectMap[tag] = rawPointer;
-    }
-
     Object* returnVal = obj.get();
-    rawPtrObjects.push_back(obj.get());
     pendingObjects.push_back(std::move(obj));
     return returnVal;
 }
@@ -67,7 +57,11 @@ void ObjectManager::AddAllPendingObjects(const EngineContext& engineContext)
     for (auto& obj : tmp)
     {
         obj->LateInit(engineContext);
+        Object* rawPointer = obj.get();
+        objectMap[obj->GetTag()] = rawPointer;
+        rawPtrObjects.push_back(rawPointer);
         objects.push_back(std::move(obj));
+ 
     }
 }
 
