@@ -15,5 +15,6 @@ public:
     bool CheckIdle();
 private:
     bool checkIdle = true;
+    bool checkIdle_prevFrame = false;
 };
 

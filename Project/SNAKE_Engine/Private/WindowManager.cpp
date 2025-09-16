@@ -1,4 +1,4 @@
-#include "gl.h"
+﻿#include "gl.h"
 #include "glfw3.h"
 #include "Engine.h"
 
@@ -15,10 +15,24 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
         {
             state->GetCameraManager().SetScreenSizeForAll(width, height);
         }
-        //snakeEngine->GetEngineContext().inputManager->Reset();
+        snakeEngine->GetEngineContext().renderManager->OnResize(width, height);
         SNAKE_LOG("changed: " << snakeEngine->GetEngineContext().windowManager->GetWidth() << " " << snakeEngine->GetEngineContext().windowManager->GetHeight());
     }
 }
+
+void WindowManager::RestrictResizing(bool shouldRestrict)
+{
+    glfwSetWindowAttrib(window, GLFW_RESIZABLE, shouldRestrict? GLFW_FALSE : GLFW_TRUE);
+}
+
+void WindowManager::SetCursorVisible(bool visible)
+{
+    if (visible)
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    else
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+}
+
 bool WindowManager::Init(int _windowWidth, int _windowHeight, SNAKE_Engine& engine)
 {
 
@@ -96,6 +110,11 @@ bool WindowManager::Init(int _windowWidth, int _windowHeight, SNAKE_Engine& engi
             //    snakeEngine->GetEngineContext().inputManager->Reset();
         });
 
+    glfwSetWindowCloseCallback(window, [](GLFWwindow* w) {
+        if (auto* e = static_cast<SNAKE_Engine*>(glfwGetWindowUserPointer(w)))
+            e->RequestQuit();
+        });
+
     return true;
 }
 
@@ -142,7 +161,16 @@ void WindowManager::SetFullScreen(bool enable)
 }
 void WindowManager::Free() const
 {
-    glfwDestroyWindow(window);
+    if (window)
+    {
+        glfwSetFramebufferSizeCallback(window, nullptr);
+        glfwSetScrollCallback(window, nullptr);
+        glfwSetKeyCallback(window, nullptr);
+        glfwSetMouseButtonCallback(window, nullptr);
+        glfwSetWindowUserPointer(window, nullptr);
+        glfwSetWindowCloseCallback(window, nullptr);
+        glfwDestroyWindow(window);
+    }
 }
 
 void WindowManager::SwapBuffers() const

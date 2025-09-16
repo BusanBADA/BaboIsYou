@@ -1,4 +1,4 @@
-#include "Engine.h"
+﻿#include "Engine.h"
 
 GameState* StateManager::GetCurrentState() const
 {
@@ -33,13 +33,20 @@ void StateManager::Update(float dt, const EngineContext& engineContext)
 
 void StateManager::Draw(const EngineContext& engineContext)
 {
-	if (currentState != nullptr)
-	{
-		currentState->Draw(engineContext);
-		engineContext.renderManager->FlushDrawCommands(engineContext);
-                if (engineContext.engine->ShouldRenderDebugDraws())
-		    engineContext.renderManager->FlushDebugLineDrawCommands(engineContext);
-	}
+    if (currentState != nullptr)
+    {
+	engineContext.renderManager->BeginFrame(engineContext);
+
+	currentState->Draw(engineContext);
+	engineContext.renderManager->FlushDrawCommands(engineContext);
+	if (engineContext.engine->ShouldRenderDebugDraws())
+	    engineContext.renderManager->FlushDebugLineDrawCommands(engineContext);
+
+	engineContext.renderManager->EndFrame(engineContext);
+
+	currentState->PostProcessing(engineContext);
+	engineContext.renderManager->FlushDrawCommands(engineContext);
+    }
 }
 
 void StateManager::Free(const EngineContext& engineContext)
@@ -48,5 +55,6 @@ void StateManager::Free(const EngineContext& engineContext)
 	{
 		currentState->SystemFree(engineContext);
 		currentState->SystemUnload(engineContext);
+		currentState.reset();
 	}
 }

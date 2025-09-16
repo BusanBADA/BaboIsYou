@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <string>
 #include "vec4.hpp"
 class SNAKE_Engine;
@@ -24,10 +24,15 @@ public:
 
     void SetBackgroundColor(glm::vec4 color) { backgroundColor = color; }
 
+    glm::vec4 GetBackgroundColor() const { return backgroundColor; }
+
     void SetFullScreen(bool enable);
 
     bool IsFullScreen() const { return isFullscreen; }
 
+    void RestrictResizing(bool shouldRestrict);
+
+    void SetCursorVisible(bool visible);
 private:
     bool Init(int _windowWidth, int _windowHeight, SNAKE_Engine& engine);
 
@@ -49,6 +54,7 @@ private:
     glm::vec4 backgroundColor;
 
     bool isFullscreen = false;
+    bool isCursorVisible = false;
     int windowedPosX = 100, windowedPosY = 100;
     int windowedWidth = 800, windowedHeight = 600;
 };

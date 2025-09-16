@@ -1,31 +1,25 @@
-#include "Player.h"
-#include <random>
-
-#include "Bullet.h"
-#include "Bullet1.h"
-#include "Button.h"
-#include "Debug.h"
+﻿#include "Player.h"
 #include "Engine.h"
-#include"Enemy.h"
 
 void Player::Init(const EngineContext& engineContext)
 {
-    transform2D.SetPosition(glm::vec2(0, 0));
-    transform2D.SetScale(glm::vec2(50.f));
-    SetMesh(engineContext.renderManager->GetMeshByTag("default"));
-    SetMaterial(engineContext, "m_animation");
-    SpriteSheet* sheet = engineContext.renderManager->GetSpriteSheetByTag("animTest");
-    sheet->AddClip("sidewalk", { 0,1,2,3,4,5,6,7,8 }, 0.08f, true);
-    sheet->AddClip("frontwalk", { 86,87,88,89,90,91 }, 0.08f, true);
-    sheet->AddClip("backwalk", { 80,81,82,83,84,85 }, 0.08f, true);
-    sheet->AddClip("idle", { 9 }, 0.08f, false);
+    transform2D.SetPosition(glm::vec2(0, -200));
+    transform2D.SetScale(glm::vec2(100.f));
+    SetMesh(engineContext, "[EngineMesh]default");
+    SetMaterial(engineContext, "[Material]Animation");
+    SpriteSheet* sheet = engineContext.renderManager->GetSpriteSheetByTag("[SpriteSheet]MainCharacter");
+    sheet->AddClip("[Clip]Idle", { 0,1,2,3,4,5,6,7 }, 0.15f, true);
+    sheet->AddClip("[Clip]Running", {8,9,10,11,12,13}, 0.08f, true);
+    sheet = engineContext.renderManager->GetSpriteSheetByTag("[SpriteSheet]MainCharacter1");
+    sheet->AddClip("[Clip]Idle", { 0,1,2,3,4,5,6,7 }, 0.15f, true);
+    sheet->AddClip("[Clip]Running", { 8,9,10,11,12,13 }, 0.08f, true);
     AttachAnimator(sheet, 0.08f);
-    spriteAnimator->PlayClip("idle");
-
     auto collider = std::make_unique<AABBCollider>(this, glm::vec2(1.0, 1.0));
-    collider->SetUseTransformScale(true);
+    collider->SetUseTransformScale(false);
+    collider->SetSize({ 90,70 });
+    collider->SetOffset({ glm::vec2(0,10.f) });
     SetCollider(std::move(collider));
-    SetCollision(engineContext.stateManager->GetCurrentState()->GetObjectManager(), "player", { "bullet","enemy", "button" });
+    SetCollision(engineContext.stateManager->GetCurrentState()->GetObjectManager(), "[CollisionTag]player", { "[CollisionTag]flag" });
 }
 
 void Player::LateInit(const EngineContext& engineContext)
@@ -35,80 +29,70 @@ void Player::LateInit(const EngineContext& engineContext)
 
 void Player::Update(float dt, const EngineContext& engineContext)
 {
-    checkIdle = true;
-    if (engineContext.inputManager->IsKeyDown(KEY_W))
+    if (engineContext.inputManager->IsKeyReleased(KEY_Z))
     {
-        checkIdle = false;
-        transform2D.AddPosition(glm::vec2(0, 150 * dt));
+        AttachAnimator(engineContext.renderManager->GetSpriteSheetByTag("[SpriteSheet]MainCharacter1"), 0.08f);
+        checkIdle_prevFrame = false;
+        if (engineContext.inputManager->IsKeyDown(KEY_A) || engineContext.inputManager->IsKeyDown(KEY_D))
+        {
+            spriteAnimator->PlayClip("[Clip]Running");
+        }
     }
+    if (engineContext.inputManager->IsKeyReleased(KEY_X))
+    {
+        AttachAnimator(engineContext.renderManager->GetSpriteSheetByTag("[SpriteSheet]MainCharacter"), 0.08f);
+        checkIdle_prevFrame = false;
+        if (engineContext.inputManager->IsKeyDown(KEY_A) || engineContext.inputManager->IsKeyDown(KEY_D))
+        {
+            spriteAnimator->PlayClip("[Clip]Running");
+        }
+    }
+    checkIdle = true;
     if (engineContext.inputManager->IsKeyDown(KEY_A))
     {
         checkIdle = false;
-        transform2D.AddPosition(glm::vec2(-150 * dt, 0));
-    }
-    if (engineContext.inputManager->IsKeyDown(KEY_S))
-    {
-        checkIdle = false;
-        transform2D.AddPosition(glm::vec2(0, -150 * dt));
+        checkIdle_prevFrame = false;
+        transform2D.AddPosition(glm::vec2(-350 * dt, 0));
     }
     if (engineContext.inputManager->IsKeyDown(KEY_D))
     {
         checkIdle = false;
-        transform2D.AddPosition(glm::vec2(150 * dt, 0));
+        checkIdle_prevFrame = false;
+        transform2D.AddPosition(glm::vec2(350 * dt, 0));
     }
 
-    if (spriteAnimator && engineContext.inputManager->IsKeyPressed(KEY_W))
-    {
-        spriteAnimator->PlayClip("backwalk");
-    }
     if (spriteAnimator && engineContext.inputManager->IsKeyPressed(KEY_A))
     {
+        static_cast<AABBCollider*>(collider.get())->SetSize({ 90,70 });
+        collider->SetOffset({ glm::vec2(0,10.f) });
         SetFlipUV_X(true);
-        spriteAnimator->PlayClip("sidewalk");
-    }
-    if (spriteAnimator && engineContext.inputManager->IsKeyPressed(KEY_S))
-    {
-        spriteAnimator->PlayClip("frontwalk");
+        spriteAnimator->PlayClip("[Clip]Running");
     }
     if (spriteAnimator && engineContext.inputManager->IsKeyPressed(KEY_D))
     {
+        static_cast<AABBCollider*>(collider.get())->SetSize({ 90,70 });
+        collider->SetOffset({ glm::vec2(0,10.f) });
         SetFlipUV_X(false);
-        spriteAnimator->PlayClip("sidewalk");
+        spriteAnimator->PlayClip("[Clip]Running");
     }
 
-    if (spriteAnimator&&checkIdle)
+    if (spriteAnimator && checkIdle && !checkIdle_prevFrame)
     {
-        spriteAnimator->PlayClip("idle");
+        static_cast<AABBCollider*>(collider.get())->SetSize({ 70,70 });
+        collider->SetOffset({ glm::vec2(0,10.f) });
+        checkIdle_prevFrame = true;
+        spriteAnimator->PlayClip("[Clip]Idle");
     }
-    if (engineContext.inputManager->IsKeyPressed(KEY_SPACE))
+    Camera2D* cam = engineContext.stateManager->GetCurrentState()->GetActiveCamera();
+    if (cam->GetPosition().x + cam->GetScreenWidth() / 2.f - 350.f < GetWorldPosition().x)
     {
-        SNAKE_LOG("player shot the bullet");
-
-        static std::random_device rd;
-        static std::mt19937 gen(rd());
-        static std::uniform_real_distribution<float> angleDist(0.0f, 2.0f * glm::pi<float>());
-
-        float angle = angleDist(gen);
-        std::unique_ptr<Bullet> b = std::make_unique<Bullet>(GetWorldPosition(), glm::vec2(std::cos(angle), std::sin(angle)));
-        engineContext.stateManager->GetCurrentState()->GetObjectManager().AddObject(std::move(b), "bullet");
+        cam->AddPosition({ 350 * dt ,0 });
     }
-
-
-    if (engineContext.inputManager->IsKeyDown(KEY_Z))
+    if (cam->GetPosition().x - cam->GetScreenWidth() / 2.f + 350.f > GetWorldPosition().x)
     {
-        SNAKE_LOG("player shot the bullet");
-
-        static std::random_device rd;
-        static std::mt19937 gen(rd());
-        static std::uniform_real_distribution<float> angleDist(0.0f, 2.0f * glm::pi<float>());
-
-        for (int i = 0; i < 10; i++)
-        {
-            float angle = angleDist(gen);
-            std::unique_ptr<Bullet1> b = std::make_unique<Bullet1>(transform2D.GetPosition(), glm::vec2(std::cos(angle), std::sin(angle)));
-            engineContext.stateManager->GetCurrentState()->GetObjectManager().AddObject(std::move(b), "111");
-        }
+        cam->AddPosition({ -350 * dt ,0 });
     }
+
 }
 
 void Player::Draw(const EngineContext& engineContext)
@@ -128,44 +112,44 @@ void Player::LateFree(const EngineContext& engineContext)
 
 void Player::OnCollision(Object* other)
 {
-    if (other->GetTag() == "enemyBullet")
-    {
-        other->Kill();
-    }
-    if (other->GetTag() == "enemy" && this < other)
-    {
-        glm::vec2 halfSize = GetWorldScale() / glm::vec2(2);
-        glm::vec2 otherHalfSize = other->GetWorldScale() / glm::vec2(2);
+    //if (other->GetTag() == "enemyBullet")
+    //{
+    //    other->Kill();
+    //}
+    //if (other->GetTag() == "enemy" && this < other)
+    //{
+    //    glm::vec2 halfSize = GetWorldScale() / glm::vec2(2);
+    //    glm::vec2 otherHalfSize = other->GetWorldScale() / glm::vec2(2);
 
-        glm::vec2 center = GetWorldPosition() + halfSize;
-        glm::vec2 otherCenter = other->GetWorldPosition() + otherHalfSize;
+    //    glm::vec2 center = GetWorldPosition() + halfSize;
+    //    glm::vec2 otherCenter = other->GetWorldPosition() + otherHalfSize;
 
-        glm::vec2 delta = center - otherCenter;
-        glm::vec2 overlap = halfSize + otherHalfSize - glm::abs(delta);
+    //    glm::vec2 delta = center - otherCenter;
+    //    glm::vec2 overlap = halfSize + otherHalfSize - glm::abs(delta);
 
-        if (overlap.x > 0 && overlap.y > 0)
-        {
-            glm::vec2 correction = { 0, 0 };
+    //    if (overlap.x > 0 && overlap.y > 0)
+    //    {
+    //        glm::vec2 correction = { 0, 0 };
 
-            if (overlap.x < overlap.y)
-            {
-                correction.x = (delta.x > 0 ? overlap.x : -overlap.x) * 0.5f;
-            }
-            else
-            {
-                correction.y = (delta.y > 0 ? overlap.y : -overlap.y) * 0.5f;
-            }
-            if (!static_cast<Enemy*>(other)->CheckIdle())
-                other->GetTransform2D().AddPosition(-correction);
-            if (!checkIdle)
-                GetTransform2D().AddPosition(correction);
-				
-        }
-    }
-    if (other->GetTag() == "StartButton" || other->GetTag() == "QuitButton")
-    {
-        other->SetColor({ 0.3,0.3,0.3,1.0 });
-    }
+    //        if (overlap.x < overlap.y)
+    //        {
+    //            correction.x = (delta.x > 0 ? overlap.x : -overlap.x) * 0.5f;
+    //        }
+    //        else
+    //        {
+    //            correction.y = (delta.y > 0 ? overlap.y : -overlap.y) * 0.5f;
+    //        }
+    //        if (!static_cast<Enemy*>(other)->CheckIdle())
+    //            other->GetTransform2D().AddPosition(-correction);
+    //        if (!checkIdle)
+    //            GetTransform2D().AddPosition(correction);
+				//
+    //    }
+    //}
+    //if (other->GetTag() == "StartButton" || other->GetTag() == "QuitButton")
+    //{
+    //    other->SetColor({ 0.3,0.3,0.3,1.0 });
+    //}
 }
 
 bool Player::CheckIdle()

@@ -1,9 +1,11 @@
-#include "Engine.h"
+﻿#include "Engine.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <unordered_set>
 
 #include "gtx/norm.hpp"
+
+constexpr int LARGE_OBJECT_THRESHOLD = 128;
 
 float CircleCollider::GetRadius() const
 {
@@ -35,8 +37,8 @@ bool CircleCollider::CheckCollision(const Collider* other) const
 
 bool CircleCollider::DispatchAgainst(const CircleCollider& other) const
 {
-    glm::vec2 a = owner->GetWorldPosition();
-    glm::vec2 b = other.GetOwner()->GetWorldPosition();
+    glm::vec2 a = owner->GetWorldPosition()+ GetOffset();
+    glm::vec2 b = other.GetOwner()->GetWorldPosition() + other.GetOwner()->GetCollider()->GetOffset();
 
     float distSqr = glm::length2(a - b);
     float rSum = GetRadius() + other.GetRadius();
@@ -58,14 +60,14 @@ void CircleCollider::SyncWithTransformScale()
 
 bool CircleCollider::CheckPointCollision(const glm::vec2& point) const
 {
-    glm::vec2 center = owner->GetWorldPosition();
+    glm::vec2 center = owner->GetWorldPosition() + GetOffset();
     float distSqr = glm::dot(center - point, center - point);
     return distSqr <= GetRadius() * GetRadius();
 }
 
 void CircleCollider::DrawDebug(RenderManager* rm, Camera2D* cam, const glm::vec4& color) const
 {
-    glm::vec2 center = owner->GetWorldPosition();
+    glm::vec2 center = owner->GetWorldPosition() + GetOffset();
     float r = GetRadius();
     const int segments = 20;
     const float angleStep = glm::two_pi<float>() / segments;
@@ -115,7 +117,7 @@ bool AABBCollider::CheckCollision(const Collider* other) const
 
 bool AABBCollider::CheckPointCollision(const glm::vec2& point) const
 {
-    glm::vec2 center = owner->GetWorldPosition();
+    glm::vec2 center = owner->GetWorldPosition() + GetOffset();
     glm::vec2 half = GetHalfSize();
 
     glm::vec2 min = center - half;
@@ -127,8 +129,8 @@ bool AABBCollider::CheckPointCollision(const glm::vec2& point) const
 
 bool AABBCollider::DispatchAgainst(const AABBCollider& other) const
 {
-    glm::vec2 aPos = owner->GetWorldPosition();
-    glm::vec2 bPos = other.GetOwner()->GetWorldPosition();
+    glm::vec2 aPos = owner->GetWorldPosition() + GetOffset();
+    glm::vec2 bPos = other.GetOwner()->GetWorldPosition()+other.GetOwner()->GetCollider()->GetOffset();
 
     glm::vec2 aHalf = GetHalfSize();
     glm::vec2 bHalf = other.GetHalfSize();
@@ -145,7 +147,7 @@ void AABBCollider::SyncWithTransformScale()
 
 void AABBCollider::DrawDebug(RenderManager* rm, Camera2D* cam, const glm::vec4& color) const
 {
-    glm::vec2 center = owner->GetWorldPosition();
+    glm::vec2 center = owner->GetWorldPosition()+GetOffset();
     glm::vec2 half = GetHalfSize();
 
     glm::vec2 min = center - half;
@@ -159,10 +161,10 @@ void AABBCollider::DrawDebug(RenderManager* rm, Camera2D* cam, const glm::vec4& 
 
 bool AABBCollider::DispatchAgainst(const CircleCollider& other) const
 {
-    glm::vec2 aPos = owner->GetWorldPosition();
+    glm::vec2 aPos = owner->GetWorldPosition() + GetOffset();
     glm::vec2 half = GetHalfSize();
 
-    glm::vec2 circlePos = other.GetOwner()->GetWorldPosition();
+    glm::vec2 circlePos = other.GetOwner()->GetWorldPosition() + other.GetOwner()->GetCollider()->GetOffset();
     float radius = other.GetRadius();
 
     glm::vec2 closest = glm::clamp(circlePos, aPos - half, aPos + half);
@@ -176,18 +178,28 @@ bool AABBCollider::DispatchAgainst(const CircleCollider& other) const
 void SpatialHashGrid::Clear()
 {
     grid.clear();
+    objects.clear();
+    largeObjects.clear();
 }
 
 void SpatialHashGrid::Insert(Object* obj)
 {
     if (!obj->IsAlive() || !obj->GetCollider())
         return;
-
-    glm::vec2 pos = obj->GetWorldPosition();
+    objects.push_back(obj);
+    Collider* collider = obj->GetCollider();
+    glm::vec2 offset = collider? collider->GetOffset(): glm::vec2(0);
+	glm::vec2 pos = obj->GetWorldPosition()+ offset;
     float radius = obj->GetCollider()->GetBoundingRadius();
 
     glm::ivec2 minCell = GetCell(pos - glm::vec2(radius));
     glm::ivec2 maxCell = GetCell(pos + glm::vec2(radius));
+    int coveredCells = (maxCell.x - minCell.x + 1) * (maxCell.y - minCell.y + 1);
+     if (coveredCells > LARGE_OBJECT_THRESHOLD)
+    {
+        largeObjects.push_back(obj);
+        return;
+    }
 
     for (int y = minCell.y; y <= maxCell.y; ++y)
     {
@@ -199,6 +211,13 @@ void SpatialHashGrid::Insert(Object* obj)
 }
 void SpatialHashGrid::ComputeCollisions(std::function<void(Object*, Object*)> onCollision)
 {
+    for (auto obj : largeObjects)
+    {
+        for (auto* other : objects)
+        {
+            if (obj != other) onCollision(obj, other);
+        }
+    }
     for (auto& [cell, list] : grid)
     {
         const size_t count = list.size();

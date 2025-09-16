@@ -1,4 +1,4 @@
-#include "Engine.h"
+﻿#include "Engine.h"
 #include "gl.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -40,7 +40,43 @@ static GLint ConvertWrap(TextureWrap wrap)
     }
     return GL_CLAMP_TO_EDGE;
 }
+inline GLenum ConvertAccess(ImageAccess access)
+{
+    switch (access)
+    {
+    case ImageAccess::ReadOnly:  return GL_READ_ONLY;
+    case ImageAccess::WriteOnly: return GL_WRITE_ONLY;
+    case ImageAccess::ReadWrite: return GL_READ_WRITE;
+    }
+    return GL_READ_ONLY;
+}
 
+inline GLenum ConvertFormat(ImageFormat fmt)
+{
+    switch (fmt)
+    {
+    case ImageFormat::R8:       return GL_R8;
+    case ImageFormat::RG8:      return GL_RG8;
+    case ImageFormat::RGBA8:    return GL_RGBA8;
+
+    case ImageFormat::R16F:     return GL_R16F;
+    case ImageFormat::RG16F:    return GL_RG16F;
+    case ImageFormat::RGBA16F:  return GL_RGBA16F;
+
+    case ImageFormat::R32F:     return GL_R32F;
+    case ImageFormat::RG32F:    return GL_RG32F;
+    case ImageFormat::RGBA32F:  return GL_RGBA32F;
+
+    case ImageFormat::R8UI:     return GL_R8UI;
+    case ImageFormat::RG8UI:    return GL_RG8UI;
+    case ImageFormat::RGBA8UI:  return GL_RGBA8UI;
+
+    case ImageFormat::R32UI:    return GL_R32UI;
+    case ImageFormat::RG32UI:   return GL_RG32UI;
+    case ImageFormat::RGBA32UI: return GL_RGBA32UI;
+    }
+    return GL_RGBA8;
+}
 
 Texture::Texture(const std::string& path, const TextureSettings& settings) :id(0), width(0), height(0), channels(0)
 {
@@ -76,7 +112,10 @@ void Texture::BindToUnit(unsigned int unit) const
 {
     glBindTextureUnit(unit, id);
 }
-
+void Texture::BindAsImage(unsigned int  unit, ImageAccess access, ImageFormat  format, int level) const
+{
+    glBindImageTexture(unit, id, level, GL_FALSE, 0, ConvertAccess(access), ConvertFormat(format));
+}
 void Texture::UnBind(unsigned int unit) const
 {
     glBindTextureUnit(unit, 0);
@@ -103,10 +142,26 @@ void Texture::GenerateTexture(const unsigned char* data, const TextureSettings& 
         pixelFormat = GL_RGBA;
     }
 
+    GLint prev = 0;
+    glGetIntegerv(GL_UNPACK_ALIGNMENT, &prev);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glCreateTextures(GL_TEXTURE_2D, 1, &id);
-    glTextureStorage2D(id, settings.generateMipmap? 1 + floor(log2(std::max(width, height))) : 1, internalFormat, width, height);
-    glTextureSubImage2D(id, 0, 0, 0, width, height, pixelFormat, GL_UNSIGNED_BYTE, data);
-
+    glTextureStorage2D(id, settings.generateMipmap ? 1 + floor(log2(std::max(width, height))) : 1, internalFormat, width, height);
+    if (data)
+        glTextureSubImage2D(id, 0, 0, 0, width, height, pixelFormat, GL_UNSIGNED_BYTE, data);
+    else
+    {
+        if (pixelFormat == GL_RGBA)
+        {
+            const GLuint zero[4] = { 0,0,0,0 };
+            glClearTexImage(id, 0, GL_RGBA, GL_UNSIGNED_INT, zero);
+        }
+        else if (pixelFormat == GL_RGB)
+        {
+            const GLuint zero[3] = { 0,0,0 };
+            glClearTexImage(id, 0, GL_RGB, GL_UNSIGNED_INT, zero);
+        }
+    }
     glTextureParameteri(id, GL_TEXTURE_MIN_FILTER, ConvertMinFilter(settings.minFilter));
     glTextureParameteri(id, GL_TEXTURE_MAG_FILTER, ConvertMagFilter(settings.magFilter));
     glTextureParameteri(id, GL_TEXTURE_WRAP_S, ConvertWrap(settings.wrapS));
@@ -116,4 +171,5 @@ void Texture::GenerateTexture(const unsigned char* data, const TextureSettings& 
     {
         glGenerateTextureMipmap(id);
     }
+    glPixelStorei(GL_UNPACK_ALIGNMENT, prev);
 }

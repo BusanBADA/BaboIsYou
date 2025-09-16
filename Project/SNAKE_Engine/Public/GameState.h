@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "CameraManager.h"
 #include "EngineContext.h"
 #include "ObjectManager.h"
@@ -36,6 +36,8 @@ protected:
     {
         objectManager.DrawAll(engineContext);
     }
+
+    virtual void PostProcessing([[maybe_unused]] const EngineContext& engineContext) {}
 
     virtual void Free([[maybe_unused]] const EngineContext& engineContext) {}
 

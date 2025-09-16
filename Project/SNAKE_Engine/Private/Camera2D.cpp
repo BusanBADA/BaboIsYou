@@ -1,3 +1,5 @@
+﻿#include <algorithm>
+
 #include "Engine.h"
 #include "gtc/matrix_transform.hpp"
 
@@ -24,7 +26,7 @@ void Camera2D::AddPosition(const glm::vec2& pos)
 
 void Camera2D::SetZoom(float z)
 {
-    zoom = z;
+    zoom = std::clamp<float>(z,0.1f,100.f);
 }
 
 const glm::vec2& Camera2D::GetPosition() const

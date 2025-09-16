@@ -1,9 +1,7 @@
-#pragma once
-#include "Enemy.h"
+﻿#pragma once
 #include"GameState.h"
-#include "Player.h"
+#include "TextObject.h"
 
-class TextObject;
 
 class MainMenu :public GameState
 {
@@ -25,8 +23,7 @@ public:
     void Unload(const EngineContext& engineContext) override;
 
 private:
-    GameObject* startButton = nullptr, * quitButton = nullptr, *player;
-    TextObject* startText = nullptr, * quitText = nullptr, * bulletCountText = nullptr;
-    Camera2D* miniCam = nullptr;
+    TextObject* mainText = nullptr;
+    GameObject* cursor = nullptr;
 };
 

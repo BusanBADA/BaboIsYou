@@ -26,6 +26,8 @@ public:
 
     [[nodiscard]] bool IsMouseButtonReleased(int button) const;
 
+    [[nodiscard]] bool IsMouseButtonDragging(int button) const;
+
     [[nodiscard]] double GetMouseX() const;
 
     [[nodiscard]] double GetMouseY() const;

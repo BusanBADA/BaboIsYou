@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <functional>
 #include <string>
 #include <unordered_map>
@@ -30,14 +30,14 @@ class Collider
     friend SpatialHashGrid;
 public:
     Collider() = delete;
-    Collider(Object* owner_) : owner(owner_), worldPosition(){}
+    Collider(Object* owner_) : owner(owner_), offset(){}
     virtual ~Collider() = default;
 
     void SetUseTransformScale(bool use) { useTransformScale = use; }
     [[nodiscard]] bool IsUsingTransformScale() const { return useTransformScale; }
 
-    void SetWorldPosition(const glm::vec2& pos) { worldPosition = pos; }
-    const glm::vec2& GetWorldPosition() const { return worldPosition; }
+    void SetOffset(const glm::vec2& pos) { offset = pos; }
+    const glm::vec2& GetOffset() const { return offset; }
 
     virtual bool CheckPointCollision(const glm::vec2& point) const = 0;
 
@@ -59,7 +59,7 @@ protected:
 
     Object* owner;
     bool useTransformScale = true;
-    glm::vec2 worldPosition;
+    glm::vec2 offset;
 };
 
 
@@ -153,6 +153,8 @@ private:
 
     int cellSize = 50; 
     std::unordered_map<glm::ivec2, std::vector<Object*>, Vec2Hash> grid;
+    std::vector<Object*> largeObjects;
+    std::vector<Object*> objects;
 };
 
 class CollisionGroupRegistry

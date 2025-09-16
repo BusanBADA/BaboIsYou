@@ -44,8 +44,6 @@ public:
 
     [[nodiscard]] bool HasAnimation() const override { return false; }
 
-    [[nodiscard]] SpriteAnimator* GetAnimator() override { return nullptr; }
-
     [[nodiscard]] SpriteAnimator* GetSpriteAnimator() const override { return nullptr; }
 
     [[nodiscard]] glm::vec2 GetWorldPosition() const override;

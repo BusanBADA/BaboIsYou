@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <functional>
 #include <map>
 #include <memory>
@@ -18,6 +18,7 @@
 #include "GameObject.h"
 #include "InstanceBatchKey.h"
 #include "RenderLayerManager.h"
+#include "WindowManager.h"
 
 struct TextInstance;
 class SNAKE_Engine;
@@ -28,8 +29,8 @@ using UniformName = std::string;
 using FilePath = std::string;
 using RenderCommand = std::function<void()>;
 
-using ShaderMap = std::map<Shader*, std::map<InstanceBatchKey, std::vector<std::pair<Object*, Camera2D*>>>>;
-using RenderMap = std::array<ShaderMap, RenderLayerManager::MAX_LAYERS>;
+using ShaderMap = std::unordered_map<Shader*, std::map<InstanceBatchKey, std::vector<Object*>>>;
+using RenderMap = std::array<std::map<int,ShaderMap>, RenderLayerManager::MAX_LAYERS>;
 
 struct LineInstance
 {
@@ -44,7 +45,6 @@ class RenderManager
     friend ObjectManager;
     friend StateManager;
     friend SNAKE_Engine;
-
 public:
     void RegisterShader(const std::string& tag, const std::vector<std::pair<ShaderStage, FilePath>>& sources);
 
@@ -83,7 +83,14 @@ public:
     void UnregisterRenderLayer(const std::string& tag);
 
     void UnregisterSpriteSheet(const std::string& tag, const EngineContext& engineContext);
-    
+
+    bool HasTexture(const std::string& tag) const;
+
+    bool HasShader(const std::string& tag) const;
+
+    bool HasFont(const std::string& tag) const;
+
+    bool HasSpriteSheet(const std::string& tag) const;
 
     [[nodiscard]] Shader* GetShaderByTag(const std::string& tag);
 
@@ -106,6 +113,10 @@ public:
     void DrawDebugLine(const glm::vec2& from, const glm::vec2& to, Camera2D* camera = nullptr, const glm::vec4& color = { 1,1,1,1 }, float lineWidth = 1.0f);
 
     [[nodiscard]] RenderLayerManager& GetRenderLayerManager();
+    void BeginFrame(const EngineContext& engineContext);
+    void EndFrame(const EngineContext& engineContext);
+    void DispatchCompute(ComputeMaterial* material);
+    void OnResize(int width, int height);
 private:
     void Init(const EngineContext& engineContext);
 
@@ -114,6 +125,8 @@ private:
     void Submit(const std::vector<Object*>& objects, const EngineContext& engineContext);
 
     void FlushDebugLineDrawCommands(const EngineContext& engineContext);
+
+    void Free();
 
     std::unordered_map<std::string, std::unique_ptr<Shader>> shaderMap;
     std::unordered_map<std::string, std::unique_ptr<Texture>> textureMap;
@@ -138,11 +151,22 @@ private:
     Material* defaultMaterial;
     SpriteSheet* defaultSpriteSheet;
     Mesh* defaultMesh;
-
     RenderMap renderMap;
     RenderLayerManager renderLayerManager;
 
+    Camera2D* renderCamera;
+
     Texture* errorTexture;
+
+
+    unsigned int sceneFBO = 0;
+    unsigned int sceneColor = 0;
+    int rtWidth = 0;
+    int rtHeight = 0;
+    bool useOffscreen = true;
+
+    void CreateSceneTarget(int w, int h);
+    void DestroySceneTarget();
 };
 
 

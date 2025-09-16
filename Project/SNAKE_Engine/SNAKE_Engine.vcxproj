@@ -28,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\Animation.h" />
+    <ClInclude Include="Public\AsyncResourceLoader.h" />
     <ClInclude Include="Public\Camera2D.h" />
     <ClInclude Include="Public\CameraManager.h" />
     <ClInclude Include="Public\Collider.h" />
@@ -40,6 +41,7 @@
     <ClInclude Include="Public\GameState.h" />
     <ClInclude Include="Public\InputManager.h" />
     <ClInclude Include="Public\InstanceBatchKey.h" />
+    <ClInclude Include="Public\LoadingState.h" />
     <ClInclude Include="Public\Material.h" />
     <ClInclude Include="Public\Mesh.h" />
     <ClInclude Include="Public\Object.h" />
@@ -57,12 +59,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Private\Animation.cpp" />
+    <ClCompile Include="Private\AsyncResourceLoader.cpp" />
     <ClCompile Include="Private\Camera2D.cpp" />
     <ClCompile Include="Private\CameraManager.cpp" />
     <ClCompile Include="Private\Collider.cpp" />
     <ClCompile Include="Private\Debug.cpp" />
     <ClCompile Include="Private\EngineTimer.cpp" />
     <ClCompile Include="Private\Font.cpp" />
+    <ClCompile Include="Private\LoadingState.cpp" />
     <ClCompile Include="Private\Object.cpp" />
     <ClCompile Include="Private\InputManager.cpp" />
     <ClCompile Include="Private\Material.cpp" />
@@ -250,11 +254,12 @@
       <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y /D "$(ProjectDir)\ThirdParty\fmod\lib\x64\fmodL.dll" "$(OutDir)"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <Lib>
-      <AdditionalDependencies>glfw3.lib;fmodL_vc.lib;freetyped.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)ThirdParty\fmod\lib\x64;$(ProjectDir)ThirdParty\glfw3;$(ProjectDir)ThirdParty\glad;$(ProjectDir)ThirdParty\freetype</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;freetyped.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)ThirdParty\glfw3;$(ProjectDir)ThirdParty\glad;$(ProjectDir)ThirdParty\freetype</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='EngineOnly|x64'">
@@ -279,11 +284,12 @@
       <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y /D "$(ProjectDir)\ThirdParty\fmod\lib\x64\fmod.dll" "$(OutDir)"</Command>
+      <Command>xcopy /E /I /Y "$(ProjectDir)Public" "$(OutDir)Headers"
+xcopy /E /I /Y "$(ProjectDir)thirdparty\include" "$(OutDir)Thirdparty"</Command>
     </PostBuildEvent>
     <Lib>
-      <AdditionalDependencies>glfw3.lib;fmod_vc.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)ThirdParty\fmod\lib\x64;$(ProjectDir)ThirdParty\glfw3;$(ProjectDir)ThirdParty\glad;$(ProjectDir)ThirdParty\freetype</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)ThirdParty\glfw3;$(ProjectDir)ThirdParty\glad;$(ProjectDir)ThirdParty\freetype</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -304,11 +310,12 @@
       <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y /D "$(ProjectDir)\ThirdParty\fmod\lib\x64\fmod.dll" "$(OutDir)"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <Lib>
-      <AdditionalDependencies>glfw3.lib;fmod_vc.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)ThirdParty\fmod\lib\x64;$(ProjectDir)ThirdParty\glfw3;$(ProjectDir)ThirdParty\glad;$(ProjectDir)ThirdParty\freetype</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)ThirdParty\glfw3;$(ProjectDir)ThirdParty\glad;$(ProjectDir)ThirdParty\freetype</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

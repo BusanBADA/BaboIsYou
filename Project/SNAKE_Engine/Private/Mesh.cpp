@@ -1,4 +1,4 @@
-#include "Engine.h"
+﻿#include "Engine.h"
 #include "gl.h"
 
 
@@ -85,7 +85,7 @@ void Mesh::SetupInstanceAttributes()
         glVertexArrayElementBuffer(instanceVAO, ebo);
 
     if (!instanceVBO[0])
-        glGenBuffers(4, instanceVBO);
+        glCreateBuffers(4, instanceVBO);
     GLuint loc;
     glVertexArrayVertexBuffer(instanceVAO, 1, instanceVBO[0], 0, sizeof(glm::mat4));
 
@@ -126,25 +126,21 @@ void Mesh::SetupMesh(const std::vector<Vertex>& vertices, const std::vector<unsi
     useIndex = !indices.empty();
     indexCount = useIndex ? static_cast<GLsizei>(indices.size()) : static_cast<GLsizei>(vertices.size());
 
-    // Create VAO
     glCreateVertexArrays(1, &vao);
 
-    // Create and bind VBO
     glCreateBuffers(1, &vbo);
     glNamedBufferData(vbo, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
 
-    // Bind VBO to VAO
     glVertexArrayVertexBuffer(vao, 0, vbo, 0,  sizeof(Vertex));
 
-    glEnableVertexArrayAttrib(vao, 0); // position
+    glEnableVertexArrayAttrib(vao, 0);
     glVertexArrayAttribFormat(vao, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
     glVertexArrayAttribBinding(vao, 0, 0);
 
-    glEnableVertexArrayAttrib(vao, 1); // uv
+    glEnableVertexArrayAttrib(vao, 1);
     glVertexArrayAttribFormat(vao, 1, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, uv));
     glVertexArrayAttribBinding(vao, 1, 0);
 
-    // EBO (Element Buffer)
     if (useIndex)
     {
         glCreateBuffers(1, &ebo);
@@ -155,18 +151,8 @@ void Mesh::SetupMesh(const std::vector<Vertex>& vertices, const std::vector<unsi
 
 void Mesh::UpdateInstanceBuffer(const std::vector<glm::mat4>& transforms, const std::vector<glm::vec4>& colors, const std::vector<glm::vec2>& uvOffsets, const std::vector<glm::vec2>& uvScales) const
 {
-    BindVAO(true);
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO[0]);
-    glBufferData(GL_ARRAY_BUFFER, transforms.size() * sizeof(glm::mat4), transforms.data(), GL_DYNAMIC_DRAW);
-
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO[1]);
-    glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(glm::vec4), colors.data(), GL_DYNAMIC_DRAW);
-
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO[2]);
-    glBufferData(GL_ARRAY_BUFFER, uvOffsets.size() * sizeof(glm::vec2), uvOffsets.data(), GL_DYNAMIC_DRAW);
-
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO[3]);
-    glBufferData(GL_ARRAY_BUFFER, uvScales.size() * sizeof(glm::vec2), uvScales.data(), GL_DYNAMIC_DRAW);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glNamedBufferData(instanceVBO[0], transforms.size() * sizeof(glm::mat4), transforms.data(), GL_DYNAMIC_DRAW);
+    glNamedBufferData(instanceVBO[1], colors.size() * sizeof(glm::vec4), colors.data(), GL_DYNAMIC_DRAW);
+    glNamedBufferData(instanceVBO[2], uvOffsets.size() * sizeof(glm::vec2), uvOffsets.data(), GL_DYNAMIC_DRAW);
+    glNamedBufferData(instanceVBO[3], uvScales.size() * sizeof(glm::vec2), uvScales.data(), GL_DYNAMIC_DRAW);
 }
