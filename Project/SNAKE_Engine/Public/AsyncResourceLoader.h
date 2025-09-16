@@ -108,14 +108,14 @@ public:
 
     void Enqueue(const LoadRequest& req);
 
-    float GetProgress() const;
+    [[nodiscard]] float GetProgress() const;
 
-    bool HasFinished() const;
+    [[nodiscard]] bool HasFinished() const;
 
-    std::vector<LoadResult> FetchCompleted();
+    [[nodiscard]] std::vector<LoadResult> FetchCompleted();
 
-    int GetTotalCount() const { return totalCount.load(); }
-    int GetLoadedCount() const { return loadedCount.load(); }
+    [[nodiscard]] int GetTotalCount() const { return totalCount.load(); }
+    [[nodiscard]] int GetLoadedCount() const { return loadedCount.load(); }
 
 private:
     void Worker();

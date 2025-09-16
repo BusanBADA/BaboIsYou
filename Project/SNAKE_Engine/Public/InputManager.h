@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <bitset>
 #include "vec2.hpp"
 
@@ -42,12 +42,12 @@ public:
 
     void AddScroll(double dx, double dy);
 
-    glm::vec2 GetScrollDelta() const;
-    double GetScrollXDelta() const;
-    double GetScrollYDelta() const;
+    [[nodiscard]] glm::vec2 GetScrollDelta() const;
+    [[nodiscard]] double GetScrollXDelta() const;
+    [[nodiscard]] double GetScrollYDelta() const;
 
-    bool IsScrolledUp() const;
-    bool IsScrolledDown() const;
+    [[nodiscard]] bool IsScrolledUp() const;
+    [[nodiscard]] bool IsScrolledDown() const;
 
     void OnKey(int key, int, int action, int);
     void OnMouseButton(int button, int action, int);

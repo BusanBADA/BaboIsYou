@@ -84,13 +84,13 @@ public:
 
     void UnregisterSpriteSheet(const std::string& tag, const EngineContext& engineContext);
 
-    bool HasTexture(const std::string& tag) const;
+    [[nodiscard]] bool HasTexture(const std::string& tag) const;
 
-    bool HasShader(const std::string& tag) const;
+    [[nodiscard]] bool HasShader(const std::string& tag) const;
 
-    bool HasFont(const std::string& tag) const;
+    [[nodiscard]] bool HasFont(const std::string& tag) const;
 
-    bool HasSpriteSheet(const std::string& tag) const;
+    [[nodiscard]] bool HasSpriteSheet(const std::string& tag) const;
 
     [[nodiscard]] Shader* GetShaderByTag(const std::string& tag);
 
@@ -102,7 +102,7 @@ public:
 
     [[nodiscard]] Font* GetFontByTag(const std::string& tag);
 
-    SpriteSheet* GetSpriteSheetByTag(const std::string& tag);
+    [[nodiscard]] SpriteSheet* GetSpriteSheetByTag(const std::string& tag);
 
     void FlushDrawCommands(const EngineContext& engineContext);
 

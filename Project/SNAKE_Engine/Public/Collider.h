@@ -37,9 +37,9 @@ public:
     [[nodiscard]] bool IsUsingTransformScale() const { return useTransformScale; }
 
     void SetOffset(const glm::vec2& pos) { offset = pos; }
-    const glm::vec2& GetOffset() const { return offset; }
+    [[nodiscard]] const glm::vec2& GetOffset() const { return offset; }
 
-    virtual bool CheckPointCollision(const glm::vec2& point) const = 0;
+    [[nodiscard]] virtual bool CheckPointCollision(const glm::vec2& point) const = 0;
 
 protected:
     [[nodiscard]] Object* GetOwner() const { return owner; }

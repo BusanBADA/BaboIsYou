@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <unordered_map>
 
 #include "vec2.hpp"
@@ -62,7 +62,7 @@ public:
     void SetFrame(int frame) { currentFrame = frame; }
     [[nodiscard]] int GetCurrentFrame() const { return currentFrame; }
 
-    SpriteSheet* GetSpriteSheet() const { return sheet; }
+    [[nodiscard]] SpriteSheet* GetSpriteSheet() const { return sheet; }
 
 private:
     SpriteSheet* sheet;

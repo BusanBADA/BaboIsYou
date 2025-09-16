@@ -32,7 +32,7 @@ public:
 
     void QueueSound( const std::string& tag, const std::string& path, bool loop);
 
-    float GetProgress01() const { return loader.GetProgress(); }
+    [[nodiscard]] float GetProgress01() const { return loader.GetProgress(); }
 
 private:
     void UploadToGPU(const LoadResult& r, const EngineContext& engineContext);

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "SNAKE_Engine.h"
 #include "GameState.h"
@@ -26,6 +26,9 @@
 #include "Camera2D.h"
 #include "Collider.h"
 #include "Animation.h"
+
+#include "AsyncResourceLoader.h"
+#include "LoadingState.h"
 
 #include "Debug.h"
 

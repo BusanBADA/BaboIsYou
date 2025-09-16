@@ -59,11 +59,11 @@ protected:
 private:
     void SendTextures();
 
-    bool HasTexture() const { return !textures.empty(); }
+    [[nodiscard]] bool HasTexture() const { return !textures.empty(); }
 
-    bool HasTexture(Texture* texture) const;
+    [[nodiscard]] bool HasTexture(Texture* texture) const;
 
-    bool HasShader(Shader* shader_) const;
+    [[nodiscard]] bool HasShader(Shader* shader_) const;
 
     [[nodiscard]] Shader* GetShader() const { return shader; }
 
@@ -84,7 +84,7 @@ class ComputeMaterial : public Material
     std::unordered_map<std::string, ImageBind> images;
 public:
     ComputeMaterial(Shader* _shader) : Material(_shader) {}
-    bool IsCompute() const override { return true; }
+    [[nodiscard]] bool IsCompute() const override { return true; }
     void SetImage(const std::string& uniformName, Texture* texture, ImageAccess access, ImageFormat format, int level)
     {
         ImageBind img = { texture,access,format,level};
@@ -92,7 +92,7 @@ public:
         if (uniformName == "u_Dst")
             destinationTexture = texture;
     }
-    Texture* GetDstTexture() const { return destinationTexture; }
+    [[nodiscard]] Texture* GetDstTexture() const { return destinationTexture; }
     void EnableInstancing(bool enable, Mesh* mesh) = delete;
     void SetTexture(const std::string& uniformName, Texture* texture) = delete;
     void SendData() override;
