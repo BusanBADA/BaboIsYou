@@ -2,19 +2,42 @@
 All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [1.1.2] - 2025-09-17
 
-## [1.1.1] - 2025-08-10
 ### Added
-- temp
+- Added asynchronous loader (usable via `LoadingState`).  
+- Added asset checker functions in `RenderManager`.  
+- Added a post-processing pass to `GameState`. This pass runs after all objects submitted in the `Draw` function have been rendered.  
+- Added mouse dragging detection function in `InputManager`.  
 
 ### Changed
-- temp
+- Replaced audio backend from **FMOD** to **miniaudio**.  
+- Removed redundant functions from the `Object` class.  
+- Updated `Collider` to support offset values.  
+- Because of limitations of the 2D quad mesh, GPU depth testing was difficult to apply consistently. Now objects are sorted by **layer first**, and within the same layer they are sorted by **depth** before rendering.  
+- Replaced legacy OpenGL API calls with modern DSA (Direct State Access) functions.  
 
 ### Fixed
-- temp
+- Fixed crash issue when **miniaudio** and **GLFW** were released in conflicting order.  
+- Fixed performance issue where large objects caused excessive cell insertions in the spatial hash grid.  
+- Fixed issue where objects were added to `rawPtrObjects` and `objectMap` too early; now they are only added once they actively participate in the update cycle.  
 
-### Performance
-- temp
+
+## [1.1.1] - 2025-08-10
+
+### Added
+- Added `unregister` functions in `RenderManager` for assets (Texture, Material, Shader, etc.).  
+- If an asset has errors, the engine now falls back to built-in shaders and materials to visually indicate the error.  
+- Added a function in `WindowManager` to set the background color.  
+- Added the ability for users to explicitly control render layer ordering.  
+
+### Changed
+- `Camera` no longer stores an orthographic matrix; it only manages the view matrix. The orthographic projection is now handled by `RenderManager`.  
+
+### Fixed
+- Fixed a bug where the font texture atlas did not expand correctly.  
+- Fixed an issue where UVs were not properly updated after the font texture atlas expanded.  
+- Fixed incorrect world scale and world position calculations for objects that ignore the camera.  
 
 ## [1.1.0] - 2025-08-05
 
@@ -25,3 +48,4 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 [1.0.0]: https://github.com/Nero-TheThrill/SNAKE_ENGINE/compare/v_1.0.0...v_1.0.0
 [1.1.0]: https://github.com/Nero-TheThrill/SNAKE_Engine/compare/v_1.0.0...v_1.1.0
 [1.1.1]: https://github.com/Nero-TheThrill/SNAKE_Engine/compare/v_1.1.0...v_1.1.1
+[1.1.2]: https://github.com/Nero-TheThrill/SNAKE_Engine/compare/v_1.1.1...v_1.1.2
