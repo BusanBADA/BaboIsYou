@@ -53,6 +53,11 @@ void LoadingState::Update(float dt, const EngineContext& engineContext)
 
     if (loader.HasFinished() && nextFactory)
     {
+        auto done = loader.FetchCompleted();
+        for (auto& r : done)
+        {
+            UploadToGPU(r, engineContext);
+        }
         engineContext.stateManager->ChangeState(nextFactory());
     }
 }
