@@ -54,7 +54,7 @@ const SpriteClip* SpriteSheet::GetClip(const std::string& name) const
 
 
 SpriteAnimator::SpriteAnimator(SpriteSheet* sheet_, float frameTime_, bool loop_)
-    : sheet(sheet_), frameTime(frameTime_), loop(loop_) {
+    : sheet(sheet_), frameTime(frameTime_), loop(loop_), isClipFinished(false) {
     if (frameTime == 0.f) frameTime = 0.001f;
 
 }
@@ -67,6 +67,7 @@ void SpriteAnimator::PlayClip(int start, int end, bool loop_)
     this->loop = loop_;
     currentFrame = start;
     elapsed = 0.0f;
+    isClipFinished = false;
 }
 void SpriteAnimator::PlayClip(const std::string& clipName)
 {
@@ -85,6 +86,7 @@ void SpriteAnimator::PlayClip(const std::string& clipName)
     clipFrameIndex = 0;
     elapsed = 0.0f;
     currentFrame = clip->frameIndices[clipFrameIndex];
+    isClipFinished = false;
 }
 
 void SpriteAnimator::Update(float dt)
@@ -93,39 +95,54 @@ void SpriteAnimator::Update(float dt)
 
     if (playingClip)
     {
-        if (elapsed >= playingClip->frameDuration)
+        const float dur = playingClip->frameDuration > 0.f ? playingClip->frameDuration : 0.0001f;
+        while (elapsed >= dur)
         {
-            elapsed -= playingClip->frameDuration;
+            elapsed -= dur;
             ++clipFrameIndex;
 
             if (clipFrameIndex >= static_cast<int>(playingClip->frameIndices.size()))
             {
                 if (playingClip->looping)
+                {
                     clipFrameIndex = 0;
+                }
                 else
+                {
+                    isClipFinished = true;
                     clipFrameIndex = static_cast<int>(playingClip->frameIndices.size()) - 1;
+                    break;
+                }
             }
-
-            currentFrame = playingClip->frameIndices[clipFrameIndex];
         }
+
+        currentFrame = playingClip->frameIndices[clipFrameIndex];
     }
     else
     {
-        if (elapsed >= frameTime)
+        const float dur = frameTime > 0.f ? frameTime : 0.0001f;
+        while (elapsed >= dur)
         {
-            elapsed -= frameTime;
+            elapsed -= dur;
             ++currentFrame;
 
             if (currentFrame > endFrame)
             {
                 if (loop)
+                {
                     currentFrame = startFrame;
+                }
                 else
+                {
+                    isClipFinished = true;
                     currentFrame = endFrame;
+                    break;
+                }
             }
         }
     }
 }
+
 
 
 glm::vec2 SpriteAnimator::GetUVOffset() const

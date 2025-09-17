@@ -57,13 +57,14 @@ public:
     [[nodiscard]] glm::vec2 GetUVOffset() const;
     [[nodiscard]] glm::vec2 GetUVScale() const;
 
-    [[nodiscard]] Texture* GetTexture() { return sheet->GetTexture();}
+    [[nodiscard]] Texture* GetTexture() { return sheet? sheet->GetTexture() : nullptr;}
 
     void SetFrame(int frame) { currentFrame = frame; }
     [[nodiscard]] int GetCurrentFrame() const { return currentFrame; }
 
     [[nodiscard]] SpriteSheet* GetSpriteSheet() const { return sheet; }
 
+    [[nodiscard]] bool IsClipFinished() const { return isClipFinished; }
 private:
     SpriteSheet* sheet;
     float frameTime;
@@ -74,4 +75,5 @@ private:
     bool loop = true;
     const SpriteClip* playingClip = nullptr;
     int clipFrameIndex = 0;
+    bool isClipFinished;
 };
