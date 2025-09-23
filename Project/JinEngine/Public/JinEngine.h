@@ -1,10 +1,10 @@
 #pragma once
 #include "EngineContext.h"
 
-class SNAKE_Engine
+class JinEngine
 {
 public:
-    SNAKE_Engine() = default;
+    JinEngine() = default;
 
     [[nodiscard]] bool Init(int windowWidth, int windowHeight);
 

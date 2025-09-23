@@ -102,12 +102,12 @@ void Player::Draw(const EngineContext& engineContext)
 
 void Player::Free(const EngineContext& engineContext)
 {
-    SNAKE_LOG("Player Free Called");
+    JIN_LOG("Player Free Called");
 }
 
 void Player::LateFree(const EngineContext& engineContext)
 {
-    SNAKE_LOG("Player LateFree Called");
+    JIN_LOG("Player LateFree Called");
 }
 
 void Player::OnCollision(Object* other)

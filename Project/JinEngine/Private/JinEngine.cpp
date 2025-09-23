@@ -7,7 +7,7 @@
 #include "Engine.h"
 
 
-void SNAKE_Engine::SetEngineContext()
+void JinEngine::SetEngineContext()
 {
     engineContext.stateManager = &stateManager;
     engineContext.windowManager = &windowManager;
@@ -18,18 +18,18 @@ void SNAKE_Engine::SetEngineContext()
 }
 
 
-bool SNAKE_Engine::Init(int windowWidth, int windowHeight)
+bool JinEngine::Init(int windowWidth, int windowHeight)
 {
     SetEngineContext();
     if (!windowManager.Init(windowWidth, windowHeight, *this))
     {
-        SNAKE_ERR("WindowManager Initialization failed.");
+        JIN_ERR("WindowManager Initialization failed.");
         return false;
     }
     inputManager.Init(windowManager.GetHandle());
     if (!soundManager.Init())
     {
-        SNAKE_ERR("SoundManager Initialization failed.");
+        JIN_ERR("SoundManager Initialization failed.");
         return false;
     }
     renderManager.Init(engineContext);
@@ -38,7 +38,7 @@ bool SNAKE_Engine::Init(int windowWidth, int windowHeight)
 }
 
 
-void SNAKE_Engine::Run()
+void JinEngine::Run()
 {
     EngineTimer timer;
     timer.Start();
@@ -49,7 +49,7 @@ void SNAKE_Engine::Run()
         float fps = 0.0f;
         if (timer.ShouldUpdateFPS(fps))
         {
-            windowManager.SetTitle("SNAKE_Engine - FPS: " + std::to_string(static_cast<int>(fps)));
+            windowManager.SetTitle("JinEngine - FPS: " + std::to_string(static_cast<int>(fps)));
         }
 
         windowManager.PollEvents();
@@ -71,12 +71,12 @@ void SNAKE_Engine::Run()
     Free();
 }
 
-void SNAKE_Engine::Free() const
+void JinEngine::Free() const
 {
     glfwTerminate();
 }
 
-void SNAKE_Engine::RequestQuit()
+void JinEngine::RequestQuit()
 {
     shouldRun = false;
 }

@@ -252,7 +252,7 @@ uint32_t CollisionGroupRegistry::GetGroupBit(const std::string& tag)
 
     if (currentBit >= 32)
     {
-        SNAKE_ERR("Exceeded maximum number of collision groups");
+        JIN_ERR("Exceeded maximum number of collision groups");
         return UINT32_MAX;
     }
 

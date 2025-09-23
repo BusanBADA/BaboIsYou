@@ -50,7 +50,7 @@ namespace TutorialState
 
 void Tutorial::Load(const EngineContext& engineContext)
 {
-    SNAKE_LOG("[Tutorial] load called");
+    JIN_LOG("[Tutorial] load called");
 
     RenderManager* rm = engineContext.renderManager;
 
@@ -83,7 +83,7 @@ void Tutorial::Load(const EngineContext& engineContext)
 
 void Tutorial::Init(const EngineContext& engineContext)
 {
-    SNAKE_LOG("[Tutorial] init called");
+    JIN_LOG("[Tutorial] init called");
     text = static_cast<TextObject*>(engineContext.stateManager->GetCurrentState()->GetObjectManager().AddObject(
         std::make_unique<TextObject>(engineContext.renderManager->GetFontByTag("[Font]default"), "test", TextAlignH::Center, TextAlignV::Middle),
         "[Object]Text"));
@@ -438,7 +438,7 @@ void Tutorial::PostProcessing(const EngineContext& engineContext)
 
 void Tutorial::Free(const EngineContext& engineContext)
 {
-    SNAKE_LOG("[Tutorial] free called");
+    JIN_LOG("[Tutorial] free called");
 }
 
 void Tutorial::Unload(const EngineContext& engineContext)
@@ -448,6 +448,6 @@ void Tutorial::Unload(const EngineContext& engineContext)
         engineContext.renderManager->UnregisterTexture("test" + std::to_string(i), engineContext);
     }
 
-    SNAKE_LOG("[Tutorial] unload called");
+    JIN_LOG("[Tutorial] unload called");
 }
 

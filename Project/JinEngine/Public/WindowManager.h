@@ -1,13 +1,13 @@
 ﻿#pragma once
 #include <string>
 #include "vec4.hpp"
-class SNAKE_Engine;
+class JinEngine;
 struct GLFWwindow;
 struct EngineContext;
 
 class WindowManager
 {
-    friend SNAKE_Engine;
+    friend JinEngine;
     friend void framebuffer_size_callback(GLFWwindow*, int, int);
 public:
     WindowManager() :window(nullptr), windowWidth(800), windowHeight(600), backgroundColor(0.4,0.4,0.4,1){}
@@ -34,7 +34,7 @@ public:
 
     void SetCursorVisible(bool visible);
 private:
-    bool Init(int _windowWidth, int _windowHeight, SNAKE_Engine& engine);
+    bool Init(int _windowWidth, int _windowHeight, JinEngine& engine);
 
     void SetWidth(int width) { this->windowWidth = width; }
 

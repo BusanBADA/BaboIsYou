@@ -7,7 +7,7 @@
 #include "WindowManager.h"
 
 struct GLFWwindow;
-class SNAKE_Engine;
+class JinEngine;
 
 struct EngineContext
 {
@@ -16,5 +16,5 @@ struct EngineContext
     InputManager* inputManager = nullptr;
     RenderManager* renderManager = nullptr;
     SoundManager* soundManager = nullptr;
-    SNAKE_Engine* engine = nullptr;
+    JinEngine* engine = nullptr;
 };

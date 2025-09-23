@@ -31,13 +31,13 @@ private:
     {
         if (nameToID.find(tag) != nameToID.end())
         {
-            SNAKE_WRN("Layer already exists: " << tag);
+            JIN_WRN("Layer already exists: " << tag);
             return false;
         }
 
         if (layer >= MAX_LAYERS || !idToName[layer].empty())
         {
-            SNAKE_ERR("Layer ID " << layer << " is already in use or out of range");
+            JIN_ERR("Layer ID " << layer << " is already in use or out of range");
             return false;
         }
 
@@ -51,7 +51,7 @@ private:
         auto it = nameToID.find(name);
         if (it == nameToID.end())
         {
-            SNAKE_LOG("Cannot unregister: layer '" << name << "' not found");
+            JIN_LOG("Cannot unregister: layer '" << name << "' not found");
             return;
         }
 

@@ -154,7 +154,7 @@ void LoadingState::UploadToGPU(const LoadResult& r, const EngineContext& engineC
                 }
                 if (!shader->Link())
                 {
-                    SNAKE_ERR("Shader link failed (tag=" << res.tag << ")");
+                    JIN_ERR("Shader link failed (tag=" << res.tag << ")");
                     return;
                 }
                 engineContext.renderManager->RegisterShader(res.tag, std::move(shader));

@@ -39,7 +39,7 @@ void RenderManager::CreateSceneTarget(int w, int h)
     GLenum status = glCheckNamedFramebufferStatus(sceneFBO, GL_FRAMEBUFFER);
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
-        SNAKE_ERR("sceneFBO incomplete!" << status);
+        JIN_ERR("sceneFBO incomplete!" << status);
     }
 }
 
@@ -629,7 +629,7 @@ void RenderManager::BuildRenderMap(const std::vector<Object*>& source, Camera2D*
         uint8_t layer = renderLayerManager.GetLayerID(obj->GetRenderLayerTag()).value_or(0);
         if (layer >= RenderLayerManager::MAX_LAYERS)
         {
-            SNAKE_WRN("render skipped - invalid layer\n");
+            JIN_WRN("render skipped - invalid layer\n");
             continue;
         }
 
@@ -654,7 +654,7 @@ void RenderManager::RegisterShader(const std::string& tag, const std::vector<std
 {
     if (shaderMap.find(tag) != shaderMap.end())
     {
-        SNAKE_LOG("Shader with tag \"" << tag << "\" already registered.");
+        JIN_LOG("Shader with tag \"" << tag << "\" already registered.");
         return;
     }
     auto shader = std::make_unique<Shader>();
@@ -663,14 +663,14 @@ void RenderManager::RegisterShader(const std::string& tag, const std::vector<std
     {
         if (!shader->AttachFromFile(stage, path))
         {
-            SNAKE_ERR("Failed to register shader [" << tag << "].");
+            JIN_ERR("Failed to register shader [" << tag << "].");
             return;
         }
     }
 
     if (!shader->Link())
     {
-        SNAKE_ERR("Failed to register shader [" << tag << "].");
+        JIN_ERR("Failed to register shader [" << tag << "].");
         return;
     }
     shaderMap[tag] = std::move(shader);
@@ -680,7 +680,7 @@ void RenderManager::RegisterShader(const std::string& tag, std::unique_ptr<Shade
 {
     if (shaderMap.find(tag) != shaderMap.end())
     {
-        SNAKE_LOG("Shader with tag \"" << tag << "\" already registered.");
+        JIN_LOG("Shader with tag \"" << tag << "\" already registered.");
         return;
     }
     shaderMap[tag] = std::move(shader);
@@ -690,7 +690,7 @@ void RenderManager::RegisterTexture(const std::string& tag, const FilePath& path
 {
     if (textureMap.find(tag) != textureMap.end())
     {
-        SNAKE_LOG("Texture with tag \"" << tag << "\" already registered.");
+        JIN_LOG("Texture with tag \"" << tag << "\" already registered.");
         return;
     }
     textureMap[tag] = std::make_unique<Texture>(path, settings);
@@ -700,7 +700,7 @@ void RenderManager::RegisterTexture(const std::string& tag, std::unique_ptr<Text
 {
     if (textureMap.find(tag) != textureMap.end())
     {
-        SNAKE_LOG("Texture with tag \"" << tag << "\" already registered.");
+        JIN_LOG("Texture with tag \"" << tag << "\" already registered.");
         return;
     }
     textureMap[tag] = std::move(texture);
@@ -711,7 +711,7 @@ void RenderManager::RegisterMesh(const std::string& tag, const std::vector<Verte
 {
     if (meshMap.find(tag) != meshMap.end())
     {
-        SNAKE_LOG("Mesh with tag \"" << tag << "\" already registered.");
+        JIN_LOG("Mesh with tag \"" << tag << "\" already registered.");
         return;
     }
     meshMap[tag] = std::make_unique<Mesh>(vertices, indices, primitiveType);
@@ -721,7 +721,7 @@ void RenderManager::RegisterMesh(const std::string& tag, std::unique_ptr<Mesh> m
 {
     if (meshMap.find(tag) != meshMap.end())
     {
-        SNAKE_LOG("Mesh with tag \"" << tag << "\" already registered.");
+        JIN_LOG("Mesh with tag \"" << tag << "\" already registered.");
         return;
     }
     meshMap[tag] = std::move(mesh);
@@ -732,14 +732,14 @@ void RenderManager::RegisterMaterial(const std::string& tag, const std::string& 
 {
     if (materialMap.find(tag) != materialMap.end())
     {
-        SNAKE_LOG("Material tag already registered: " << tag);
+        JIN_LOG("Material tag already registered: " << tag);
         return;
     }
 
     Shader* shader = shaderMap[shaderTag].get();
     if (!shader)
     {
-        SNAKE_WRN("Shader not found: " << shaderTag);
+        JIN_WRN("Shader not found: " << shaderTag);
         return;
     }
 
@@ -751,7 +751,7 @@ void RenderManager::RegisterMaterial(const std::string& tag, const std::string& 
         if (it != textureMap.end())
             material->SetTexture(uniformName, it->second.get());
         else
-            SNAKE_WRN("Texture not found: " << textureTag);
+            JIN_WRN("Texture not found: " << textureTag);
     }
 
     materialMap[tag] = std::move(material);
@@ -761,7 +761,7 @@ void RenderManager::RegisterMaterial(const std::string& tag, std::unique_ptr<Mat
 {
     if (materialMap.find(tag) != materialMap.end())
     {
-        SNAKE_LOG("Material tag already registered: " << tag);
+        JIN_LOG("Material tag already registered: " << tag);
         return;
     }
     materialMap[tag] = std::move(material);
@@ -771,7 +771,7 @@ void RenderManager::RegisterFont(const std::string& tag, const std::string& ttfP
 {
     if (fontMap.find(tag) != fontMap.end())
     {
-        SNAKE_LOG("Font tag already registered: " << tag);
+        JIN_LOG("Font tag already registered: " << tag);
         return;
     }
     const uint32_t minSize = 4;
@@ -779,7 +779,7 @@ void RenderManager::RegisterFont(const std::string& tag, const std::string& ttfP
 
     if (pixelSize < minSize || pixelSize > maxSize)
     {
-        SNAKE_ERR("Font pixelSize out of bounds: " << pixelSize << " (allowed: " << minSize << " - " << maxSize << ")");
+        JIN_ERR("Font pixelSize out of bounds: " << pixelSize << " (allowed: " << minSize << " - " << maxSize << ")");
         return;
     }
 
@@ -792,7 +792,7 @@ void RenderManager::RegisterFont(const std::string& tag, std::unique_ptr<Font> f
 {
     if (fontMap.find(tag) != fontMap.end())
     {
-        SNAKE_LOG("Font tag already registered: " << tag);
+        JIN_LOG("Font tag already registered: " << tag);
         return;
     }
     fontMap[tag] = std::move(font);
@@ -807,14 +807,14 @@ void RenderManager::RegisterSpriteSheet(const std::string& tag, const std::strin
 {
     if (spritesheetMap.find(tag) != spritesheetMap.end())
     {
-        SNAKE_LOG("SpriteSheet already registered: " << tag);
+        JIN_LOG("SpriteSheet already registered: " << tag);
         return;
     }
 
     Texture* texture = GetTextureByTag(textureTag);
     if (!texture)
     {
-        SNAKE_ERR("Texture not found for SpriteSheet: " << textureTag);
+        JIN_ERR("Texture not found for SpriteSheet: " << textureTag);
         return;
     }
 
@@ -826,7 +826,7 @@ void RenderManager::UnregisterShader(const std::string& tag, const EngineContext
     auto it = shaderMap.find(tag);
     if (it == shaderMap.end())
     {
-        SNAKE_LOG("Cannot delete the shader [" << tag << "] because it was not found.");
+        JIN_LOG("Cannot delete the shader [" << tag << "] because it was not found.");
         return;
     }
     Shader* target = it->second.get();
@@ -839,7 +839,7 @@ void RenderManager::UnregisterShader(const std::string& tag, const EngineContext
             Material* material = obj->GetMaterial();
             if (material && material->HasShader(target))
             {
-                SNAKE_WRN("Cannot delete the shader [" << tag << "] while there are objects referencing it.");
+                JIN_WRN("Cannot delete the shader [" << tag << "] while there are objects referencing it.");
                 return;
             }
         }
@@ -852,7 +852,7 @@ void RenderManager::UnregisterTexture(const std::string& tag, const EngineContex
     auto it = textureMap.find(tag);
     if (it == textureMap.end())
     {
-        SNAKE_LOG("Cannot delete the texture [" << tag << "] because it was not found.");
+        JIN_LOG("Cannot delete the texture [" << tag << "] because it was not found.");
         return;
     }
     Texture* target = it->second.get();
@@ -865,7 +865,7 @@ void RenderManager::UnregisterTexture(const std::string& tag, const EngineContex
             Material* material = obj->GetMaterial();
             if (material && material->HasTexture(target))
             {
-                SNAKE_WRN("Cannot delete the texture [" << tag << "] while there are objects referencing it.");
+                JIN_WRN("Cannot delete the texture [" << tag << "] while there are objects referencing it.");
                 return;
             }
             SpriteAnimator* spriteAnimator = obj->GetSpriteAnimator();
@@ -877,7 +877,7 @@ void RenderManager::UnregisterTexture(const std::string& tag, const EngineContex
                     Texture* texture = spriteSheet->GetTexture();
                     if (texture && texture == target)
                     {
-                        SNAKE_WRN("Cannot delete the texture [" << tag << "] while there are objects referencing it.");
+                        JIN_WRN("Cannot delete the texture [" << tag << "] while there are objects referencing it.");
                         return;
                     }
                 }
@@ -892,7 +892,7 @@ void RenderManager::UnregisterMesh(const std::string& tag, const EngineContext& 
     auto it = meshMap.find(tag);
     if (it == meshMap.end())
     {
-        SNAKE_LOG("Cannot delete the mesh [" << tag << "] because it was not found.");
+        JIN_LOG("Cannot delete the mesh [" << tag << "] because it was not found.");
         return;
     }
     Mesh* target = it->second.get();
@@ -904,7 +904,7 @@ void RenderManager::UnregisterMesh(const std::string& tag, const EngineContext& 
         {
             if (obj->GetMesh() == target)
             {
-                SNAKE_WRN("Cannot delete the mesh [" << tag << "] while there are objects referencing it.");
+                JIN_WRN("Cannot delete the mesh [" << tag << "] while there are objects referencing it.");
                 return;
             }
         }
@@ -917,7 +917,7 @@ void RenderManager::UnregisterMaterial(const std::string& tag, const EngineConte
     auto it = materialMap.find(tag);
     if (it == materialMap.end())
     {
-        SNAKE_LOG("Cannot delete the material [" << tag << "] because it was not found.");
+        JIN_LOG("Cannot delete the material [" << tag << "] because it was not found.");
         return;
     }
     Material* target = it->second.get();
@@ -929,7 +929,7 @@ void RenderManager::UnregisterMaterial(const std::string& tag, const EngineConte
         {
             if (obj->GetMaterial() == target)
             {
-                SNAKE_WRN("Cannot delete the material [" << tag << "] while there are objects referencing it.");
+                JIN_WRN("Cannot delete the material [" << tag << "] while there are objects referencing it.");
                 return;
             }
         }
@@ -942,7 +942,7 @@ void RenderManager::UnregisterFont(const std::string& tag, const EngineContext& 
     auto it = fontMap.find(tag);
     if (it == fontMap.end())
     {
-        SNAKE_LOG("Cannot delete the font [" << tag << "] because it was not found.");
+        JIN_LOG("Cannot delete the font [" << tag << "] because it was not found.");
         return;
     }
     Font* target = it->second.get();
@@ -954,7 +954,7 @@ void RenderManager::UnregisterFont(const std::string& tag, const EngineContext& 
         {
             if (obj->GetType() == ObjectType::TEXT && dynamic_cast<TextObject*>(obj)->GetTextInstance()->font == target)
             {
-                SNAKE_WRN("Cannot delete the font [" << tag << "] while there are objects referencing it.");
+                JIN_WRN("Cannot delete the font [" << tag << "] while there are objects referencing it.");
                 return;
             }
         }
@@ -972,7 +972,7 @@ void RenderManager::UnregisterSpriteSheet(const std::string& tag, const EngineCo
     auto it = spritesheetMap.find(tag);
     if (it == spritesheetMap.end())
     {
-        SNAKE_LOG("Cannot delete the sprite sheet [" << tag << "] because it was not found.");
+        JIN_LOG("Cannot delete the sprite sheet [" << tag << "] because it was not found.");
         return;
     }
     SpriteSheet* target = it->second.get();
@@ -985,7 +985,7 @@ void RenderManager::UnregisterSpriteSheet(const std::string& tag, const EngineCo
             SpriteAnimator* spriteAnimator = obj->GetSpriteAnimator();
             if (spriteAnimator && spriteAnimator->GetSpriteSheet() == target)
             {
-                SNAKE_WRN("Cannot delete the sprite sheet [" << tag << "] while there are objects referencing it.");
+                JIN_WRN("Cannot delete the sprite sheet [" << tag << "] while there are objects referencing it.");
                 return;
             }
         }
@@ -1017,7 +1017,7 @@ SpriteSheet* RenderManager::GetSpriteSheetByTag(const std::string& tag)
         return it->second.get();
     else
     {
-        SNAKE_ERR("There is no SpriteSheet named '" << tag << "'");
+        JIN_ERR("There is no SpriteSheet named '" << tag << "'");
         return defaultSpriteSheet;
     }
 }
@@ -1029,7 +1029,7 @@ Shader* RenderManager::GetShaderByTag(const std::string& tag)
         return it->second.get();
     else
     {
-        SNAKE_ERR("There is no Shader named '" << tag << "'");
+        JIN_ERR("There is no Shader named '" << tag << "'");
         return defaultShader;
     }
 }
@@ -1041,7 +1041,7 @@ Texture* RenderManager::GetTextureByTag(const std::string& tag)
         return it->second.get();
     else
     {
-        SNAKE_ERR("There is no Texture named '" << tag << "'");
+        JIN_ERR("There is no Texture named '" << tag << "'");
         return errorTexture;
     }
 }
@@ -1053,7 +1053,7 @@ Mesh* RenderManager::GetMeshByTag(const std::string& tag)
         return it->second.get();
     else
     {
-        SNAKE_ERR("There is no Mesh named '" << tag << "'");
+        JIN_ERR("There is no Mesh named '" << tag << "'");
         return defaultMesh;
     }
 }
@@ -1065,7 +1065,7 @@ Material* RenderManager::GetMaterialByTag(const std::string& tag)
         return it->second.get();
     else
     {
-        SNAKE_ERR("There is no Material named '" << tag << "'");
+        JIN_ERR("There is no Material named '" << tag << "'");
         return defaultMaterial;
     }
 }
@@ -1077,7 +1077,7 @@ Font* RenderManager::GetFontByTag(const std::string& tag)
         return it->second.get();
     else
     {
-        SNAKE_ERR("There is no Font named '" << tag << "'");
+        JIN_ERR("There is no Font named '" << tag << "'");
         return nullptr;
     }
 }

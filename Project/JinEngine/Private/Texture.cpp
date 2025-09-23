@@ -84,7 +84,7 @@ Texture::Texture(const std::string& path, const TextureSettings& settings) :id(0
     unsigned char* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
     if (!data)
     {
-        SNAKE_ERR("Failed to load texture: " << path);
+        JIN_ERR("Failed to load texture: " << path);
         return;
     }
     GenerateTexture(data, settings);

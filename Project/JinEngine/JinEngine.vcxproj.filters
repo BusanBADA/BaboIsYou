@@ -15,7 +15,7 @@
     <ClInclude Include="Public\GameState.h">
       <Filter>public</Filter>
     </ClInclude>
-    <ClInclude Include="Public\SNAKE_Engine.h">
+    <ClInclude Include="Public\JinEngine.h">
       <Filter>public</Filter>
     </ClInclude>
     <ClInclude Include="Public\EngineContext.h">
@@ -101,7 +101,7 @@
     <ClCompile Include="Private\StateManager.cpp">
       <Filter>private</Filter>
     </ClCompile>
-    <ClCompile Include="Private\SNAKE_Engine.cpp">
+    <ClCompile Include="Private\JinEngine.cpp">
       <Filter>private</Filter>
     </ClCompile>
     <ClCompile Include="Private\InputManager.cpp">

@@ -6,12 +6,12 @@
 
 void MainMenu::Load(const EngineContext& engineContext)
 {
-    SNAKE_LOG("[MainMenu] load called");
+    JIN_LOG("[MainMenu] load called");
 }
 
 void MainMenu::Init(const EngineContext& engineContext)
 {
-    SNAKE_LOG("[MainMenu] init called");
+    JIN_LOG("[MainMenu] init called");
     mainText = static_cast<TextObject*>( objectManager.AddObject(std::make_unique<TextObject>(engineContext.renderManager->GetFontByTag("[Font]default"), "MainMenu", TextAlignH::Center, TextAlignV::Middle)));
     cursor = static_cast<GameObject*>(objectManager.AddObject(std::make_unique<GameObject>()));
     cursor->SetMaterial(engineContext, "[Material]cursor");
@@ -68,10 +68,10 @@ void MainMenu::Draw(const EngineContext& engineContext)
 
 void MainMenu::Free(const EngineContext& engineContext)
 {
-    SNAKE_LOG("[MainMenu] free called");
+    JIN_LOG("[MainMenu] free called");
 }
 
 void MainMenu::Unload(const EngineContext& engineContext)
 {
-    SNAKE_LOG("[MainMenu] unload called");
+    JIN_LOG("[MainMenu] unload called");
 }

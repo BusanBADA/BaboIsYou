@@ -107,7 +107,7 @@ bool Font::TryBakeGlyph(char32_t c)
 
     if (FT_Load_Char(face, c, FT_LOAD_RENDER))
     {
-        SNAKE_ERR("FT_Load_Char failed for: U+" << std::hex << (int)c);
+        JIN_ERR("FT_Load_Char failed for: U+" << std::hex << (int)c);
         return false;
     }
 
@@ -119,7 +119,7 @@ bool Font::TryBakeGlyph(char32_t c)
 
     if (!hasBitmap && !hasAdvance)
     {
-        SNAKE_WRN("Glyph has no bitmap or advance: U+" << std::hex << (int)c);
+        JIN_WRN("Glyph has no bitmap or advance: U+" << std::hex << (int)c);
         return false;
     }
 
@@ -259,7 +259,7 @@ Mesh* Font::GenerateTextMesh(const std::string& text, TextAlignH alignH, TextAli
         for (char32_t c : u32Line)
             if (!TryBakeGlyph(c))
             {
-                SNAKE_WRN("Failed to bake glyph");
+                JIN_WRN("Failed to bake glyph");
             }
 
         float lineWidth = 0.0f;
@@ -297,7 +297,7 @@ Mesh* Font::GenerateTextMesh(const std::string& text, TextAlignH alignH, TextAli
         {
             if (!TryBakeGlyph(c))
             {
-                SNAKE_WRN("Failed to bake glyph");
+                JIN_WRN("Failed to bake glyph");
             }
             const Glyph& glyph = GetGlyph(c);
             float xpos = xCursor + (float)glyph.bearing.x;
@@ -356,7 +356,7 @@ void Font::ExpandAtlas()
     {
         if (!TryBakeGlyph(c))
         {
-            SNAKE_WRN("Failed to bake glyph");
+            JIN_WRN("Failed to bake glyph");
         }
     }
     atlasVersion++;

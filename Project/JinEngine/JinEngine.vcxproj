@@ -49,7 +49,7 @@
     <ClInclude Include="Public\RenderLayerManager.h" />
     <ClInclude Include="Public\RenderManager.h" />
     <ClInclude Include="Public\Shader.h" />
-    <ClInclude Include="Public\SNAKE_Engine.h" />
+    <ClInclude Include="Public\JinEngine.h" />
     <ClInclude Include="Public\SoundManager.h" />
     <ClInclude Include="Public\StateManager.h" />
     <ClInclude Include="Public\TextObject.h" />
@@ -74,7 +74,7 @@
     <ClCompile Include="Private\ObjectManager.cpp" />
     <ClCompile Include="Private\RenderManager.cpp" />
     <ClCompile Include="Private\Shader.cpp" />
-    <ClCompile Include="Private\SNAKE_Engine.cpp" />
+    <ClCompile Include="Private\JinEngine.cpp" />
     <ClCompile Include="Private\SoundManager.cpp" />
     <ClCompile Include="Private\StateManager.cpp" />
     <ClCompile Include="Private\TextObject.cpp" />
@@ -86,8 +86,9 @@
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{0ea468ba-e86b-4d2d-bceb-889452e31ecf}</ProjectGuid>
-    <RootNamespace>SNAKEEngine</RootNamespace>
+    <RootNamespace>JinEngine</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>JinEngine</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

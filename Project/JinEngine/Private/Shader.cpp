@@ -65,13 +65,13 @@ bool Shader::AttachFromFile(ShaderStage stage, const FilePath& path)
         }
         else
         {
-            SNAKE_ERR("Shader attach failed: shader source from [" << path << "] compile failed");
+            JIN_ERR("Shader attach failed: shader source from [" << path << "] compile failed");
             return false;
         }
     }
     else
     {
-        SNAKE_ERR("Shader attach failed: shader source from [" << path << "] load failed");
+        JIN_ERR("Shader attach failed: shader source from [" << path << "] load failed");
         return false;
     }
 }
@@ -89,7 +89,7 @@ bool Shader::AttachFromSource(ShaderStage stage, const std::string& source)
     }
     else
     {
-        SNAKE_ERR("Shader attach failed: shader source["<< source <<"] compile failed");
+        JIN_ERR("Shader attach failed: shader source["<< source <<"] compile failed");
         return false;
     }
 }
@@ -108,7 +108,7 @@ bool Shader::Link()
 
     if (hasTCS != hasTES)
     {
-        SNAKE_ERR("[Shader] Tessellation shaders must come in pairs (TCS + TES).");
+        JIN_ERR("[Shader] Tessellation shaders must come in pairs (TCS + TES).");
         return false;
     }
     glLinkProgram(programID);
@@ -119,7 +119,7 @@ bool Shader::Link()
     {
         char infoLog[1024];
         glGetProgramInfoLog(programID, 1024, nullptr, infoLog);
-        SNAKE_ERR("Shader program link error:\n" << infoLog);
+        JIN_ERR("Shader program link error:\n" << infoLog);
         return false;
     }
 
@@ -147,7 +147,7 @@ void Shader::SendUniform(const std::string& name, int value) const
     GLint location = glGetUniformLocation(programID, name.c_str());
     if (location == -1)
     {
-        //SNAKE_LOG("[Shader] Uniform not found: " << name);
+        //JIN_LOG("[Shader] Uniform not found: " << name);
         return;
     }
     glUniform1i(location, value);
@@ -158,7 +158,7 @@ void Shader::SendUniform(const std::string& name, float value) const
     GLint location = glGetUniformLocation(programID, name.c_str());
     if (location == -1)
     {
-        //SNAKE_LOG("[Shader] Uniform not found: " << name);
+        //JIN_LOG("[Shader] Uniform not found: " << name);
         return;
     }
     glUniform1f(location, value);
@@ -169,7 +169,7 @@ void Shader::SendUniform(const std::string& name, const glm::vec2& value) const
     GLint location = glGetUniformLocation(programID, name.c_str());
     if (location == -1)
     {
-        //SNAKE_LOG("Uniform not found: " << name);
+        //JIN_LOG("Uniform not found: " << name);
         return;
     }
 
@@ -181,7 +181,7 @@ void Shader::SendUniform(const std::string& name, const glm::vec3& value) const
     GLint location = glGetUniformLocation(programID, name.c_str());
     if (location == -1)
     {
-        //SNAKE_LOG("Uniform not found: " << name);
+        //JIN_LOG("Uniform not found: " << name);
         return;
     }
 
@@ -193,7 +193,7 @@ void Shader::SendUniform(const std::string& name, const glm::vec4& value) const
     GLint location = glGetUniformLocation(programID, name.c_str());
     if (location == -1)
     {
-        //SNAKE_LOG("Uniform not found: " << name);
+        //JIN_LOG("Uniform not found: " << name);
         return;
     }
 
@@ -205,7 +205,7 @@ void Shader::SendUniform(const std::string& name, const glm::mat4& value) const
     GLint location = glGetUniformLocation(programID, name.c_str());
     if (location == -1)
     {
-        //SNAKE_LOG("Uniform not found: " << name);
+        //JIN_LOG("Uniform not found: " << name);
         return;
     }
 
@@ -229,7 +229,7 @@ std::string Shader::LoadShaderSource(const FilePath& filepath, GLint& success)
     std::ifstream file(filepath);
     if (!file.is_open())
     {
-        SNAKE_ERR("[Shader] Failed to open shader file: " << filepath);
+        JIN_ERR("[Shader] Failed to open shader file: " << filepath);
         success = GL_FALSE;
         return "";
     }
@@ -253,7 +253,7 @@ GLuint Shader::CompileShader(ShaderStage stage, const std::string& source, GLint
     {
         char infoLog[1024];
         glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
-        SNAKE_ERR("[Shader] Compilation failed (" << ShaderStageToString(stage) << "):\n" << infoLog);
+        JIN_ERR("[Shader] Compilation failed (" << ShaderStageToString(stage) << "):\n" << infoLog);
     }
 
     return shader;

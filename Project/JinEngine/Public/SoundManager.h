@@ -9,12 +9,12 @@
 struct ma_engine;
 struct ma_sound;
 
-class SNAKE_Engine;
+class JinEngine;
 using SoundInstanceID = uint64_t;
 
 class SoundManager
 {
-    friend SNAKE_Engine;
+    friend JinEngine;
 
 public:
     SoundManager();

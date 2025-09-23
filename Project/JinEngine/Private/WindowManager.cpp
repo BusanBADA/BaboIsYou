@@ -5,18 +5,18 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
-    SNAKE_Engine* snakeEngine = static_cast<SNAKE_Engine*>(glfwGetWindowUserPointer(window));
-    if (snakeEngine)
+    JinEngine* jinEngine = static_cast<JinEngine*>(glfwGetWindowUserPointer(window));
+    if (jinEngine)
     {
-        snakeEngine->GetEngineContext().windowManager->SetWidth(width);
-        snakeEngine->GetEngineContext().windowManager->SetHeight(height);
-        auto* state = snakeEngine->GetEngineContext().stateManager->GetCurrentState();
+        jinEngine->GetEngineContext().windowManager->SetWidth(width);
+        jinEngine->GetEngineContext().windowManager->SetHeight(height);
+        auto* state = jinEngine->GetEngineContext().stateManager->GetCurrentState();
         if (state)
         {
             state->GetCameraManager().SetScreenSizeForAll(width, height);
         }
-        snakeEngine->GetEngineContext().renderManager->OnResize(width, height);
-        SNAKE_LOG("changed: " << snakeEngine->GetEngineContext().windowManager->GetWidth() << " " << snakeEngine->GetEngineContext().windowManager->GetHeight());
+        jinEngine->GetEngineContext().renderManager->OnResize(width, height);
+        JIN_LOG("changed: " << jinEngine->GetEngineContext().windowManager->GetWidth() << " " << jinEngine->GetEngineContext().windowManager->GetHeight());
     }
 }
 
@@ -33,12 +33,12 @@ void WindowManager::SetCursorVisible(bool visible)
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 }
 
-bool WindowManager::Init(int _windowWidth, int _windowHeight, SNAKE_Engine& engine)
+bool WindowManager::Init(int _windowWidth, int _windowHeight, JinEngine& engine)
 {
 
     if (!glfwInit())
     {
-        SNAKE_ERR("Failed to initialize GLFW");
+        JIN_ERR("Failed to initialize GLFW");
         return false;
     }
 
@@ -49,10 +49,10 @@ bool WindowManager::Init(int _windowWidth, int _windowHeight, SNAKE_Engine& engi
     windowWidth = _windowWidth;
     windowHeight = _windowHeight;
 
-    window = glfwCreateWindow(windowWidth, windowHeight, "SNAKE ENGINE", nullptr, nullptr);
+    window = glfwCreateWindow(windowWidth, windowHeight, "JIN ENGINE", nullptr, nullptr);
     if (!window)
     {
-        SNAKE_ERR("Failed to create GLFW window");
+        JIN_ERR("Failed to create GLFW window");
         glfwTerminate();
         return false;
     }
@@ -61,7 +61,7 @@ bool WindowManager::Init(int _windowWidth, int _windowHeight, SNAKE_Engine& engi
 
     if (!gladLoadGL(glfwGetProcAddress))
     {
-        SNAKE_ERR("Failed to initialize GLAD");
+        JIN_ERR("Failed to initialize GLAD");
         return false;
     }
     glEnable(GL_DEBUG_OUTPUT);
@@ -73,9 +73,9 @@ bool WindowManager::Init(int _windowWidth, int _windowHeight, SNAKE_Engine& engi
         [](GLenum /*src*/, GLenum type, GLuint id, GLenum severity, GLsizei, const GLchar* msg, const void*) {
             if (severity == GL_DEBUG_SEVERITY_NOTIFICATION) return;
             if (type == GL_DEBUG_TYPE_OTHER) return;
-            if (severity == GL_DEBUG_SEVERITY_HIGH) { SNAKE_ERR(std::string("[GL] ") + msg); }
-            else if (severity == GL_DEBUG_SEVERITY_MEDIUM) { SNAKE_WRN(std::string("[GL] ") + msg); }
-            else { SNAKE_LOG(std::string("[GL] ") + msg); }
+            if (severity == GL_DEBUG_SEVERITY_HIGH) { JIN_ERR(std::string("[GL] ") + msg); }
+            else if (severity == GL_DEBUG_SEVERITY_MEDIUM) { JIN_WRN(std::string("[GL] ") + msg); }
+            else { JIN_LOG(std::string("[GL] ") + msg); }
         }, nullptr);
 
     glViewport(0, 0, windowWidth, windowHeight);
@@ -85,33 +85,33 @@ bool WindowManager::Init(int _windowWidth, int _windowHeight, SNAKE_Engine& engi
     glfwSetScrollCallback(window,
         [](GLFWwindow* w, double xoff, double yoff)
         {
-            SNAKE_Engine* snakeEngine = static_cast<SNAKE_Engine*>(glfwGetWindowUserPointer(w));
-            if (snakeEngine)
-                snakeEngine->GetEngineContext().inputManager->AddScroll(xoff, yoff);
+            JinEngine* jinEngine = static_cast<JinEngine*>(glfwGetWindowUserPointer(w));
+            if (jinEngine)
+                jinEngine->GetEngineContext().inputManager->AddScroll(xoff, yoff);
         });
     glfwSetKeyCallback(window,
         [](GLFWwindow* w, int key, int sc, int action, int mods)
         {
-            if (auto* snakeEngine = static_cast<SNAKE_Engine*>(glfwGetWindowUserPointer(w)))
-                snakeEngine->GetEngineContext().inputManager->OnKey(key, sc, action, mods);
+            if (auto* jinEngine = static_cast<JinEngine*>(glfwGetWindowUserPointer(w)))
+                jinEngine->GetEngineContext().inputManager->OnKey(key, sc, action, mods);
         });
 
     glfwSetMouseButtonCallback(window,
         [](GLFWwindow* w, int button, int action, int mods)
         {
-            if (auto* snakeEngine = static_cast<SNAKE_Engine*>(glfwGetWindowUserPointer(w)))
-                snakeEngine->GetEngineContext().inputManager->OnMouseButton(button, action, mods);
+            if (auto* jinEngine = static_cast<JinEngine*>(glfwGetWindowUserPointer(w)))
+                jinEngine->GetEngineContext().inputManager->OnMouseButton(button, action, mods);
         });
 
     glfwSetWindowPosCallback(window,
         [](GLFWwindow* w, int, int)
         {
-            //if (auto* snakeEngine = (SNAKE_Engine*)glfwGetWindowUserPointer(w))
-            //    snakeEngine->GetEngineContext().inputManager->Reset();
+            //if (auto* jinEngine = (JinEngine*)glfwGetWindowUserPointer(w))
+            //    jinEngine->GetEngineContext().inputManager->Reset();
         });
 
     glfwSetWindowCloseCallback(window, [](GLFWwindow* w) {
-        if (auto* e = static_cast<SNAKE_Engine*>(glfwGetWindowUserPointer(w)))
+        if (auto* e = static_cast<JinEngine*>(glfwGetWindowUserPointer(w)))
             e->RequestQuit();
         });
 
