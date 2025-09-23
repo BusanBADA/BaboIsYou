@@ -1,4 +1,6 @@
 #include "EngineTimer.h"
+
+#include "EngineContext.h"
 #include "glfw3.h"
 
 void EngineTimer::Start()
@@ -8,12 +10,16 @@ void EngineTimer::Start()
     frameCount = 0;
 }
 
-float EngineTimer::Tick()
+float EngineTimer::Tick(const EngineContext& engineContext)
 {
     float now = static_cast<float>(glfwGetTime());
     float dt = now - lastTime;
     lastTime = now;
-
+    if (dt > 0.05f)
+    {
+        engineContext.inputManager->Reset();
+        dt = 0.0f;
+    }
     fpsTimer += dt;
     frameCount++;
     return dt;

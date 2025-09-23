@@ -44,7 +44,7 @@ void JinEngine::Run()
     timer.Start();
     while (shouldRun && !glfwWindowShouldClose(windowManager.GetHandle()))
     {
-        float dt = timer.Tick();
+        float dt = timer.Tick(engineContext);
 
         float fps = 0.0f;
         if (timer.ShouldUpdateFPS(fps))

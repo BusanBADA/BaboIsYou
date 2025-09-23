@@ -1,10 +1,11 @@
 #pragma once
+#include "EngineContext.h"
 
 struct EngineTimer
 {
     void Start();
 
-    [[nodiscard]] float Tick();
+    [[nodiscard]] float Tick(const EngineContext& engineContext);
 
     [[nodiscard]] bool ShouldUpdateFPS(float& outFPS);
 

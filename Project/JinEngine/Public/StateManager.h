@@ -8,6 +8,7 @@ struct EngineContext;
 class StateManager
 {
     friend JinEngine;
+    friend WindowManager;
 public:
     [[nodiscard]] GameState* GetCurrentState() const;
 
