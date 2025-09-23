@@ -125,7 +125,7 @@ void AsyncResourceLoader::Worker()
                     }
                     else
                     {
-                        SNAKE_ERR("Async texture load failed: " << job.filePath);
+                        JIN_ERR("Async texture load failed: " << job.filePath);
                         r.ok = false;
                     }
 
@@ -145,7 +145,7 @@ void AsyncResourceLoader::Worker()
                         src.source = ReadTextFile(f.path);
                         if (src.source.empty())
                         {
-                            SNAKE_ERR("Async shader file read failed: " << f.path);
+                            JIN_ERR("Async shader file read failed: " << f.path);
                             r.ok = false;
                         }
                         r.sources.emplace_back(std::move(src));

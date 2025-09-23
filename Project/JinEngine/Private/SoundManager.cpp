@@ -42,7 +42,7 @@ bool SoundManager::Init()
     ma_result res = ma_engine_init(nullptr, engine);
     if (res != MA_SUCCESS)
     {
-        SNAKE_ERR("miniaudio engine init failed: " << (int)res);
+        JIN_ERR("miniaudio engine init failed: " << (int)res);
         delete engine;
         engine = nullptr;
         return false;
@@ -132,7 +132,7 @@ SoundInstanceID SoundManager::Play(const std::string& tag, float volume, float s
     ma_result res = ma_sound_init_from_file(engine, path.c_str(), 0, nullptr, nullptr, &inst->sound);
     if (res != MA_SUCCESS)
     {
-        SNAKE_ERR("Failed to load sound: " << path);
+        JIN_ERR("Failed to load sound: " << path);
         delete inst;
         return 0;
     }

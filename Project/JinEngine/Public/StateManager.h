@@ -2,12 +2,12 @@
 #include <memory>
 
 class GameState;
-class SNAKE_Engine;
+class JinEngine;
 struct EngineContext;
 
 class StateManager
 {
-    friend SNAKE_Engine;
+    friend JinEngine;
 public:
     [[nodiscard]] GameState* GetCurrentState() const;
 

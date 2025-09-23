@@ -73,13 +73,13 @@ void SpriteAnimator::PlayClip(const std::string& clipName)
 {
     if (!sheet)
     {
-        SNAKE_ERR("Can't play clip: Sprite sheet is nullptr");
+        JIN_ERR("Can't play clip: Sprite sheet is nullptr");
         return;
     }
     const auto* clip = sheet->GetClip(clipName);
     if (!clip || clip->frameIndices.empty())
     {
-        SNAKE_WRN("Can't play clip: There is no clip named \"" <<clipName<< "\".");
+        JIN_WRN("Can't play clip: There is no clip named \"" <<clipName<< "\".");
         return;
     }
     playingClip = clip;

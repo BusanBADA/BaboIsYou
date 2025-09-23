@@ -21,7 +21,7 @@
 #include "WindowManager.h"
 
 struct TextInstance;
-class SNAKE_Engine;
+class JinEngine;
 class StateManager;
 
 using TextureTag = std::string;
@@ -44,7 +44,7 @@ class RenderManager
 {
     friend ObjectManager;
     friend StateManager;
-    friend SNAKE_Engine;
+    friend JinEngine;
 public:
     void RegisterShader(const std::string& tag, const std::vector<std::pair<ShaderStage, FilePath>>& sources);
 

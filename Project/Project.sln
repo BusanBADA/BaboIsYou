@@ -8,7 +8,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Project", "Project\Project.
 		{0EA468BA-E86B-4D2D-BCEB-889452E31ECF} = {0EA468BA-E86B-4D2D-BCEB-889452E31ECF}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SNAKE_Engine", "SNAKE_Engine\SNAKE_Engine.vcxproj", "{0EA468BA-E86B-4D2D-BCEB-889452E31ECF}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JinEngine", "JinEngine\JinEngine.vcxproj", "{0EA468BA-E86B-4D2D-BCEB-889452E31ECF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

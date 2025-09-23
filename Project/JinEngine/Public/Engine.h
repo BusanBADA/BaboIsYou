@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "SNAKE_Engine.h"
+#include "JinEngine.h"
 #include "GameState.h"
 #include "EngineContext.h"
 #include "InputManager.h"

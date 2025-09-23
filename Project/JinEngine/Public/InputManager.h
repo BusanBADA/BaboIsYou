@@ -3,12 +3,12 @@
 #include "vec2.hpp"
 
 class Camera2D;
-class SNAKE_Engine;
+class JinEngine;
 struct GLFWwindow;
 
 class InputManager
 {
-    friend SNAKE_Engine;
+    friend JinEngine;
 
 public:
 

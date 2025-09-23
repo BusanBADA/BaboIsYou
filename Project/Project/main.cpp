@@ -9,7 +9,7 @@
 #endif
 int main(int argc, char* argv[])
 {
-    SNAKE_Engine snakeEngine;
+    JinEngine jinEngine;
     DebugLogger::SetLogLevel(LogLevel::All);
     int width = 1280;
     int height = 720;
@@ -23,26 +23,26 @@ int main(int argc, char* argv[])
         }
         else if (argc != 1)
         {
-            SNAKE_ERR("Usage: ./MyGame [width height]");
+            JIN_ERR("Usage: ./MyGame [width height]");
             return -1;
         }
     }
     catch (const std::exception& e)
     {
-        SNAKE_ERR("Invalid arguments. Width and height must be integers.");
+        JIN_ERR("Invalid arguments. Width and height must be integers.");
         return -1;
     }
 
-    if (!snakeEngine.Init(width, height))
+    if (!jinEngine.Init(width, height))
     {
-        SNAKE_ERR("Engine initialization failed.");
+        JIN_ERR("Engine initialization failed.");
         return -1;
     }
-    snakeEngine.RenderDebugDraws(false);
-    snakeEngine.GetEngineContext().windowManager->RestrictResizing(true);
+    jinEngine.RenderDebugDraws(false);
+    jinEngine.GetEngineContext().windowManager->RestrictResizing(true);
 
 
-    snakeEngine.GetEngineContext().renderManager->RegisterMesh(
+    jinEngine.GetEngineContext().renderManager->RegisterMesh(
         "[Mesh]octagon",
         std::vector<Vertex>{
             {{  0.5f, 0.0f, 0.f }, { 1.0f,       0.5f }}, // 0 (0°)
@@ -61,35 +61,35 @@ int main(int argc, char* argv[])
     }
     );
 
-    snakeEngine.GetEngineContext().renderManager->RegisterShader("s_instancing", { {ShaderStage::Vertex,"Shaders/instancing.vert"},{ShaderStage::Fragment,"Shaders/instancing.frag"} });
-    snakeEngine.GetEngineContext().renderManager->RegisterShader("[Shader]Animation", { {ShaderStage::Vertex,"Shaders/Animation.vert"},{ShaderStage::Fragment,"Shaders/Animation.frag"} });
-    snakeEngine.GetEngineContext().renderManager->RegisterMaterial("[Material]Animation", "[Shader]Animation", { });
+    jinEngine.GetEngineContext().renderManager->RegisterShader("s_instancing", { {ShaderStage::Vertex,"Shaders/instancing.vert"},{ShaderStage::Fragment,"Shaders/instancing.frag"} });
+    jinEngine.GetEngineContext().renderManager->RegisterShader("[Shader]Animation", { {ShaderStage::Vertex,"Shaders/Animation.vert"},{ShaderStage::Fragment,"Shaders/Animation.frag"} });
+    jinEngine.GetEngineContext().renderManager->RegisterMaterial("[Material]Animation", "[Shader]Animation", { });
 
-    //snakeEngine.GetEngineContext().renderManager->RegisterMaterial("m_instancing", "s_instancing", { std::pair<std::string, std::string>("u_Texture","default") });
-    //snakeEngine.GetEngineContext().renderManager->RegisterMaterial("m_instancing1", "s_instancing", { std::pair<std::string, std::string>("u_Texture","default") });
-    //snakeEngine.GetEngineContext().renderManager->RegisterMaterial("m_blueMButton", "s_default1", { std::pair<std::string, std::string>("u_Texture","blueMButton") });
-
-
-    snakeEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]Background", 0);
-    snakeEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]Flag", 9);
-    snakeEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]Player", 10);
-    snakeEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]UI", 11);
-    snakeEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]UIText", 12);
-    snakeEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]FrameBufferTexture", 13);
-    snakeEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]Cursor", 14);
-    snakeEngine.GetEngineContext().renderManager->RegisterFont("[Font]default", "Fonts/NotoSans-VariableFont_wdth,wght.ttf", 50);
+    //jinEngine.GetEngineContext().renderManager->RegisterMaterial("m_instancing", "s_instancing", { std::pair<std::string, std::string>("u_Texture","default") });
+    //jinEngine.GetEngineContext().renderManager->RegisterMaterial("m_instancing1", "s_instancing", { std::pair<std::string, std::string>("u_Texture","default") });
+    //jinEngine.GetEngineContext().renderManager->RegisterMaterial("m_blueMButton", "s_default1", { std::pair<std::string, std::string>("u_Texture","blueMButton") });
 
 
-    snakeEngine.GetEngineContext().windowManager->SetCursorVisible(false);
-    snakeEngine.GetEngineContext().windowManager->SetBackgroundColor({ 0.2,0.2,0.4,1 });
+    jinEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]Background", 0);
+    jinEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]Flag", 9);
+    jinEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]Player", 10);
+    jinEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]UI", 11);
+    jinEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]UIText", 12);
+    jinEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]FrameBufferTexture", 13);
+    jinEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]Cursor", 14);
+    jinEngine.GetEngineContext().renderManager->RegisterFont("[Font]default", "Fonts/NotoSans-VariableFont_wdth,wght.ttf", 50);
 
 
-    snakeEngine.GetEngineContext().renderManager->RegisterTexture("[Texture]Cursor", "Textures/cursor.png");
-    snakeEngine.GetEngineContext().renderManager->RegisterMaterial("[Material]cursor", "[EngineShader]default_texture", { {"u_Texture","[Texture]Cursor"} });
+    jinEngine.GetEngineContext().windowManager->SetCursorVisible(false);
+    jinEngine.GetEngineContext().windowManager->SetBackgroundColor({ 0.2,0.2,0.4,1 });
 
-    snakeEngine.GetEngineContext().stateManager->ChangeState(std::make_unique<MainMenu>());
 
-    snakeEngine.Run();
+    jinEngine.GetEngineContext().renderManager->RegisterTexture("[Texture]Cursor", "Textures/cursor.png");
+    jinEngine.GetEngineContext().renderManager->RegisterMaterial("[Material]cursor", "[EngineShader]default_texture", { {"u_Texture","[Texture]Cursor"} });
+
+    jinEngine.GetEngineContext().stateManager->ChangeState(std::make_unique<MainMenu>());
+
+    jinEngine.Run();
 
     return 0;
 }

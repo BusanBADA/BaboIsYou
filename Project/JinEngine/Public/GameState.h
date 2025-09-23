@@ -2,7 +2,7 @@
 #include "CameraManager.h"
 #include "EngineContext.h"
 #include "ObjectManager.h"
-#include "SNAKE_Engine.h"
+#include "JinEngine.h"
 class StateManager;
 struct EngineContext;
 

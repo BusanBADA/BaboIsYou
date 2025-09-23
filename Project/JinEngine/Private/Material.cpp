@@ -33,17 +33,17 @@ void Material::EnableInstancing(bool enable, Mesh* mesh)
 {
     if (!mesh)
     {
-        SNAKE_WRN("Enable Instancing skipped: Mesh is nullptr");
+        JIN_WRN("Enable Instancing skipped: Mesh is nullptr");
         return;
     }
     if (!shader)
     {
-        SNAKE_WRN("Enable Instancing skipped: Shader is nullptr");
+        JIN_WRN("Enable Instancing skipped: Shader is nullptr");
         return;
     }
     if (!shader->SupportsInstancing())
     {
-        SNAKE_WRN("Enable Instancing skipped: Tried enable instancing, but shader does not support 'i_Model'.");
+        JIN_WRN("Enable Instancing skipped: Tried enable instancing, but shader does not support 'i_Model'.");
         return;
     }
 
