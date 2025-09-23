@@ -1,8 +1,8 @@
-[![Latest release](https://img.shields.io/github/v/release/Nero-TheThrill/SNAKE_ENGINE)](https://github.com/Nero-TheThrill/SNAKE_ENGINE/releases)
+[![Latest release](https://img.shields.io/github/v/release/Nero-TheThrill/JinEngine)](https://github.com/Nero-TheThrill/JinEngine/releases)
 [![Changelog](https://img.shields.io/badge/Changelog-keep%20a%20changelog-blue)](./CHANGELOG.md)
 
 
-# SNAKE_ENGINE
+# JinEngine
 
 A lightweight C++ game engine (sample framework) that bundles 2D rendering, input, sound, text, collision, and state management in one place. Built on OpenGL 4.6, it supports batched rendering and instancing, and handles text via runtime glyph baking (FreeType). It provides a dependency/tag–based resource system so you can pull in only the modules your project needs.
 
@@ -32,7 +32,7 @@ A lightweight C++ game engine (sample framework) that bundles 2D rendering, inpu
 ## Engine Architecture Overview
 
 ```
-SNAKE_Engine
+JinEngine
  ├─ WindowManager : GLFW/GLAD init, event callbacks, swap/clear
  ├─ InputManager  : Key/mouse state, scroll, world-coordinate conversion
  ├─ SoundManager  : miniaudio system, sound loading/playback/control
@@ -208,24 +208,24 @@ You are free to use, modify, and distribute this engine in both personal and com
 
 ## Building as a Library
 
-If you want to build **SNAKE_ENGINE** as a separate library and link it to your project:
+If you want to build **JinEngine** as a separate library and link it to your project:
 
 1. **Build the Engine**  
    - Use Visual Studio to compile the engine as a static library (`.lib`) with the **EngineOnly** configuration.  
    - The build will produce:
-     - `SNAKE_Engine.lib`
+     - `JinEngine.lib`
      - `Headers/` folder (contains engine-facing headers)
      - `Thirdparty/` folder (external dependencies: GLFW, GLM, stb_image, FreeType, miniaudio)
 
 
 2. **Setup in Your Project (Visual Studio example)**  
    - Go to **Project Properties → C/C++ → General → Additional Include Directories**
-     - Add `$(SnakeEngineRoot)/public`
-     - Add `$(SnakeEngineRoot)/thirdparty/include`
+     - Add `$(JinEngineRoot)/public`
+     - Add `$(JinEngineRoot)/thirdparty/include`
    - Go to **Project Properties → Linker → General → Additional Library Directories**
-     - Add the path to your built `snake_engine.lib`
+     - Add the path to your built `JinEngine.lib`
    - Go to **Project Properties → Linker → Input → Additional Dependencies**
-     - Add `snake_engine.lib`
+     - Add `JinEngine.lib`
 
 4. **Notes**  
    - When distributing, provide the license notices for all included third-party libraries.
