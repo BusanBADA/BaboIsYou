@@ -34,7 +34,7 @@ void RenderManager::CreateSceneTarget(int w, int h)
     const GLenum buf = GL_COLOR_ATTACHMENT0;
     glNamedFramebufferDrawBuffers(sceneFBO, 1, &buf);
 
-    RegisterTexture("[EngineTexture]RenderTexture", std::make_unique<Texture>(sceneColor,rtWidth,rtHeight,4));
+    ForceRegisterTexture("[EngineTexture]RenderTexture", sceneColor, rtWidth, rtHeight, 4);
 
     GLenum status = glCheckNamedFramebufferStatus(sceneFBO, GL_FRAMEBUFFER);
     if (status != GL_FRAMEBUFFER_COMPLETE)
@@ -388,6 +388,27 @@ void RenderManager::Free()
     shaderMap.clear();
     spritesheetMap.clear();
     renderMap = {};
+}
+
+void RenderManager::ForceRegisterTexture(const std::string& tag, unsigned int id_, int width_, int height_, int channels_)
+{
+    if (textureMap.find(tag) != textureMap.end())
+    {
+        textureMap[tag].get()->ForceUpdateTexture(id_, width_, height_, channels_);;
+        return;
+    }
+    textureMap[tag] = std::make_unique<Texture>(id_, width_, height_, channels_);
+}
+
+void RenderManager::ForceRegisterTexture(const std::string& tag, const unsigned char* data, int width_, int height_,
+	int channels_, const TextureSettings& settings)
+{
+    if (textureMap.find(tag) != textureMap.end())
+    {
+        textureMap[tag].get()->ForceUpdateTexture(data, width_, height_, channels_,settings);
+        return;
+    }
+    textureMap[tag] = std::make_unique<Texture>(data, width_, height_, channels_, settings);
 }
 
 

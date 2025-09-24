@@ -173,3 +173,26 @@ void Texture::GenerateTexture(const unsigned char* data, const TextureSettings& 
     }
     glPixelStorei(GL_UNPACK_ALIGNMENT, prev);
 }
+
+void Texture::ForceUpdateTexture(unsigned int id_, int width_, int height_, int channels_)
+{
+
+    id = id_;
+    width = width_;
+    height = height_;
+    channels = channels_;
+}
+
+void Texture::ForceUpdateTexture(const unsigned char* data, int width_, int height_, int channels_,
+	const TextureSettings& settings)
+{
+    if (id != 0)
+    {
+        glDeleteTextures(1, &id);
+    }
+    width = width_;
+    height = height_;
+    channels = channels_;
+    GenerateTexture(data, settings);
+
+}

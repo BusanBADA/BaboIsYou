@@ -77,7 +77,7 @@ void Tutorial::Load(const EngineContext& engineContext)
 
     rm->RegisterShader("[Shader]WaterDrop", { { ShaderStage::Compute,"Shaders/WaterDrop.comp" } });
     rm->RegisterMaterial("[Material]ComputeWaterDrop", std::make_unique<ComputeMaterial>(engineContext.renderManager->GetShaderByTag("[Shader]WaterDrop")));
-    rm->RegisterTexture("[PostProcessedTexture]WaterDrop", std::make_unique<Texture>(nullptr, 1280, 720, 4));
+    rm->RegisterTexture("[PostProcessedTexture]WaterDrop", std::make_unique<Texture>(nullptr, engineContext.windowManager->GetWidth(), engineContext.windowManager->GetHeight(), 4));
    
 }
 
@@ -273,7 +273,7 @@ void Tutorial::Init(const EngineContext& engineContext)
     computeMat = static_cast<ComputeMaterial*>(engineContext.renderManager->GetMaterialByTag("[Material]ComputeWaterDrop"));
     computeMat->SetImage("u_Src", engineContext.renderManager->GetTextureByTag("[EngineTexture]RenderTexture"), ImageAccess::ReadOnly, ImageFormat::RGBA16F, 0);
     computeMat->SetImage("u_Dst", engineContext.renderManager->GetTextureByTag("[PostProcessedTexture]WaterDrop"), ImageAccess::WriteOnly, ImageFormat::RGBA8, 0);
-    computeMat->SetUniform("u_Resolution", glm::vec2(1280, 720));
+    computeMat->SetUniform("u_Resolution", glm::vec2(engineContext.windowManager->GetWidth(), engineContext.windowManager->GetHeight()));
     computeMat->SetUniform("u_Time", timer);
     computeMat->SetUniform("u_RippleCount", 0);
     computeMat->SetUniform("u_TimeDamping", 1.2f);
@@ -300,6 +300,9 @@ void Tutorial::LateInit(const EngineContext& engineContext)
 
 void Tutorial::Update(float dt, const EngineContext& engineContext)
 {
+    fbTexture->GetTransform2D().SetScale({ engineContext.windowManager->GetWidth(), engineContext.windowManager->GetHeight() });
+    engineContext.renderManager->ForceRegisterTexture("[PostProcessedTexture]WaterDrop", nullptr, engineContext.windowManager->GetWidth(), engineContext.windowManager->GetHeight(), 4);
+    computeMat->SetUniform("u_Resolution", glm::vec2(engineContext.windowManager->GetWidth(), engineContext.windowManager->GetHeight()));
     cursor->GetTransform2D().SetPosition(engineContext.inputManager->GetMouseWorldPos(cameraManager.GetActiveCamera()) + glm::vec2(11, -11));
     if (engineContext.inputManager->IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || engineContext.inputManager->IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE) || engineContext.inputManager->IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
     {

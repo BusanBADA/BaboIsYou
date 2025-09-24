@@ -7,7 +7,7 @@ void BackgroundObject::Init(const EngineContext& engineContext)
 {
 	SetMesh(engineContext, "[EngineMesh]default");
 
-	transform2D.SetScale({ engineContext.windowManager->GetWidth(),engineContext.windowManager->GetHeight() });
+	transform2D.SetScale({ 1280, 720});
 	
 	GameObject::Init(engineContext);
 }

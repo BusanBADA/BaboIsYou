@@ -70,6 +70,8 @@ public:
 
 private:
     void GenerateTexture(const unsigned char* data, const TextureSettings& settings);
+    void ForceUpdateTexture(unsigned int id_, int width_, int height_, int channels_);
+    void ForceUpdateTexture(const unsigned char* data, int width_, int height_, int channels_, const TextureSettings& settings = {});
     unsigned int id;
     int width, height, channels;
 };

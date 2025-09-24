@@ -115,17 +115,6 @@ bool WindowManager::Init(int _windowWidth, int _windowHeight, JinEngine& engine)
             e->RequestQuit();
         });
 
-    glfwSetWindowRefreshCallback(window,
-        [](GLFWwindow* w)
-        {
-            if (auto* e = static_cast<JinEngine*>(glfwGetWindowUserPointer(w)))
-            {
-                auto& ctx = e->GetEngineContext();
-                ctx.windowManager->ClearScreen();
-                ctx.stateManager->Draw(ctx);
-                ctx.windowManager->SwapBuffers();
-            }
-        });
     return true;
 }
 

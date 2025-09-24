@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
         return -1;
     }
     jinEngine.RenderDebugDraws(false);
-    jinEngine.GetEngineContext().windowManager->RestrictResizing(true);
+   // jinEngine.GetEngineContext().windowManager->RestrictResizing(true);
 
 
     jinEngine.GetEngineContext().renderManager->RegisterMesh(

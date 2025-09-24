@@ -54,6 +54,10 @@ public:
 
     void RegisterTexture(const std::string& tag, std::unique_ptr<Texture> texture);
 
+    void ForceRegisterTexture(const std::string& tag, unsigned int id_, int width_, int height_, int channels_);
+
+    void ForceRegisterTexture(const std::string& tag, const unsigned char* data, int width_, int height_, int channels_, const TextureSettings& settings = {});
+
     void RegisterMesh(const std::string& tag, const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices = {}, PrimitiveType primitiveType = PrimitiveType::Triangles);
 
     void RegisterMesh(const std::string& tag, std::unique_ptr<Mesh> mesh);
@@ -127,6 +131,8 @@ private:
     void FlushDebugLineDrawCommands(const EngineContext& engineContext);
 
     void Free();
+
+
 
     std::unordered_map<std::string, std::unique_ptr<Shader>> shaderMap;
     std::unordered_map<std::string, std::unique_ptr<Texture>> textureMap;
