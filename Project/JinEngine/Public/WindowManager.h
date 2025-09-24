@@ -10,6 +10,8 @@ class WindowManager
     friend JinEngine;
     friend void framebuffer_size_callback(GLFWwindow*, int, int);
 public:
+    using ResizeCallback = std::function<void(int /*width*/, int /*height*/)>;
+
     WindowManager() :window(nullptr), windowWidth(800), windowHeight(600), backgroundColor(0.4,0.4,0.4,1){}
 
     [[nodiscard]] GLFWwindow* GetHandle() const { return window; }
@@ -33,6 +35,11 @@ public:
     void RestrictResizing(bool shouldRestrict);
 
     void SetCursorVisible(bool visible);
+
+    void AddResizeCallback(const std::string& key, ResizeCallback cb);
+
+    void RemoveResizeCallback(const std::string& key);
+
 private:
     bool Init(int _windowWidth, int _windowHeight, JinEngine& engine);
 
@@ -48,6 +55,8 @@ private:
 
     void Free() const;
 
+    void NotifyResize(int width, int height);
+
     GLFWwindow* window;
     int windowWidth;
     int windowHeight;
@@ -57,4 +66,6 @@ private:
     bool isCursorVisible = false;
     int windowedPosX = 100, windowedPosY = 100;
     int windowedWidth = 800, windowedHeight = 600;
+
+    std::unordered_map<std::string, ResizeCallback> resizeCallbacks;
 };

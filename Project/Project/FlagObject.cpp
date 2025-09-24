@@ -1,8 +1,7 @@
-#include "FlagObject.h"
+﻿#include "FlagObject.h"
 #include "Engine.h"
 void FlagObject::Init(const EngineContext& engineContext)
 {
-	transform2D.SetScale(glm::vec2(100.f));
 	SetMesh(engineContext, "[EngineMesh]default");
 	SetMaterial(engineContext, "[Material]Animation");
 	SpriteSheet* sheet = engineContext.renderManager->GetSpriteSheetByTag("[SpriteSheet]Flag");

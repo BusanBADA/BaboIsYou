@@ -3,7 +3,6 @@
 
 void Player::Init(const EngineContext& engineContext)
 {
-    transform2D.SetPosition(glm::vec2(0, -200));
     transform2D.SetScale(glm::vec2(100.f));
     SetMesh(engineContext, "[EngineMesh]default");
     SetMaterial(engineContext, "[Material]Animation");

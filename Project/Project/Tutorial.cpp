@@ -217,26 +217,31 @@ void Tutorial::Init(const EngineContext& engineContext)
     flag00 = static_cast<FlagObject*>(objectManager.AddObject(std::make_unique<FlagObject>(), "[Object]flag"));
     flag00->SetRenderLayer("[Layer]Flag");
     flag00->GetTransform2D().SetPosition(glm::vec2(-600, -170));
+    flag00->GetTransform2D().SetScale(glm::vec2(100.f));
     flag00->SetGuide("These leaves are rendered using instancing.\nCheck InstancedObject.cpp for more Info.");
 
     flag01 = static_cast<FlagObject*>(objectManager.AddObject(std::make_unique<FlagObject>(), "[Object]flag"));
     flag01->SetRenderLayer("[Layer]Flag");
     flag01->GetTransform2D().SetPosition(glm::vec2(200, -170));
+    flag01->GetTransform2D().SetScale(glm::vec2(100.f));
     flag01->SetGuide("Move Left & Right with A,D key.\nInput can be handled via Inputmanager\nand can be accessed from engineContext");
 
     flag02 = static_cast<FlagObject*>(objectManager.AddObject(std::make_unique<FlagObject>(), "[Object]flag"));
     flag02->SetRenderLayer("[Layer]Flag");
     flag02->GetTransform2D().SetPosition(glm::vec2(800, -170));
+    flag02->GetTransform2D().SetScale(glm::vec2(100.f));
     flag02->SetGuide("Objects are managed via ObjectManager.\n Each State has its own ObjectManager.");
 
     flag03 = static_cast<FlagObject*>(objectManager.AddObject(std::make_unique<FlagObject>(), "[Object]flag"));
     flag03->SetRenderLayer("[Layer]Flag");
     flag03->GetTransform2D().SetPosition(glm::vec2(1400, -170));
+    flag03->GetTransform2D().SetScale(glm::vec2(100.f));
     flag03->SetGuide("Engine supports async loading.\nUse loading state for large files(texture, audio..etc).");
 
     flag04 = static_cast<FlagObject*>(objectManager.AddObject(std::make_unique<FlagObject>(), "[Object]flag"));
     flag04->SetRenderLayer("[Layer]Flag");
     flag04->GetTransform2D().SetPosition(glm::vec2(2000, -170));
+    flag04->GetTransform2D().SetScale(glm::vec2(100.f));
     flag04->SetGuide("Objects are rendered to the \"[EngineTexture]RenderTexture\". \nUse this texture to do postprocessing with compute shader.\nPress \'c\' to enable glitch.\nPress \'v\' to disable glitch.");
 
     player = static_cast<Player*>(objectManager.AddObject(std::make_unique<Player>(), "[Object]player"));
@@ -269,6 +274,7 @@ void Tutorial::Init(const EngineContext& engineContext)
     cursor->SetMesh(engineContext, "[EngineMesh]default");
     cursor->GetTransform2D().SetScale({ 30,30 });
     cursor->SetRenderLayer("[Layer]Cursor");
+    cursor->SetIgnoreCamera(true, cameraManager.GetActiveCamera());
 
     computeMat = static_cast<ComputeMaterial*>(engineContext.renderManager->GetMaterialByTag("[Material]ComputeWaterDrop"));
     computeMat->SetImage("u_Src", engineContext.renderManager->GetTextureByTag("[EngineTexture]RenderTexture"), ImageAccess::ReadOnly, ImageFormat::RGBA16F, 0);
@@ -292,6 +298,67 @@ void Tutorial::Init(const EngineContext& engineContext)
     fbTexture->SetRenderLayer("[Layer]FrameBufferTexture");
     fbTexture->SetIgnoreCamera(true, cameraManager.GetActiveCamera());
     engineContext.soundManager->Play("BGM_Main", 1, 0);
+
+    int w = engineContext.windowManager->GetWidth();
+    int h = engineContext.windowManager->GetHeight();
+    int newH = w * 720.f / 1280.f;
+    engineContext.renderManager->ForceRegisterTexture("[PostProcessedTexture]WaterDrop", nullptr, w, h, 4);
+    computeMat->SetUniform("u_Resolution", glm::vec2(w, h));
+    fbTexture->GetTransform2D().SetScale({ w, h });
+    bgObj00->GetTransform2D().SetScale({ w, newH});
+    bgObj01->GetTransform2D().SetScale({ w, newH});
+    bgObj02->GetTransform2D().SetScale({ w, newH});
+    bgObj03->GetTransform2D().SetScale({ w, newH});
+    bgObj04->GetTransform2D().SetScale({ w, newH});
+    bgObj05->GetTransform2D().SetScale({ w, newH});
+    bgObj06->GetTransform2D().SetScale({ w, newH});
+    bgObj07->GetTransform2D().SetScale({ w, newH});
+    bgObj08->GetTransform2D().SetScale({ w, newH});
+    bgObj00Sub->GetTransform2D().SetScale({ w, w*720.f/1280.f});
+    bgObj01Sub->GetTransform2D().SetScale({ w, newH});
+    bgObj02Sub->GetTransform2D().SetScale({ w, newH});
+    bgObj03Sub->GetTransform2D().SetScale({ w, newH});
+    bgObj04Sub->GetTransform2D().SetScale({ w, newH});
+    bgObj05Sub->GetTransform2D().SetScale({ w, newH});
+    bgObj06Sub->GetTransform2D().SetScale({ w, newH});
+    bgObj07Sub->GetTransform2D().SetScale({ w, newH});
+    bgObj08Sub->GetTransform2D().SetScale({ w, newH});
+    player->GetTransform2D().SetPosition(glm::vec2(0, h * 160.f / 720.f - h / 2.f));
+
+    engineContext.windowManager->AddResizeCallback("[PostFX]WaterDrop", [this, &engineContext](int w, int h)
+        {
+            engineContext.renderManager->ForceRegisterTexture("[PostProcessedTexture]WaterDrop", nullptr, w, h, 4);
+            computeMat->SetUniform("u_Resolution", glm::vec2(w, h));
+            int newH = w * 720.f / 1280.f;
+            fbTexture->GetTransform2D().SetScale({ w, h });
+            bgObj00->GetTransform2D().SetScale({ w, newH });
+            bgObj01->GetTransform2D().SetScale({ w, newH });
+            bgObj02->GetTransform2D().SetScale({ w, newH });
+            bgObj03->GetTransform2D().SetScale({ w, newH });
+            bgObj04->GetTransform2D().SetScale({ w, newH });
+            bgObj05->GetTransform2D().SetScale({ w, newH });
+            bgObj06->GetTransform2D().SetScale({ w, newH });
+            bgObj07->GetTransform2D().SetScale({ w, newH });
+            bgObj08->GetTransform2D().SetScale({ w, newH });
+            bgObj00Sub->GetTransform2D().SetScale({ w, newH });
+            bgObj01Sub->GetTransform2D().SetScale({ w, newH });
+            bgObj02Sub->GetTransform2D().SetScale({ w, newH });
+            bgObj03Sub->GetTransform2D().SetScale({ w, newH });
+            bgObj04Sub->GetTransform2D().SetScale({ w, newH });
+            bgObj05Sub->GetTransform2D().SetScale({ w, newH });
+            bgObj06Sub->GetTransform2D().SetScale({ w, newH });
+            bgObj07Sub->GetTransform2D().SetScale({ w, newH });
+            bgObj08Sub->GetTransform2D().SetScale({ w, newH });
+            bgObj00Sub->SetBasePos({ w ,0 });
+            bgObj01Sub->SetBasePos({ w ,0 });
+            bgObj02Sub->SetBasePos({ w ,0 });
+            bgObj03Sub->SetBasePos({ w ,0 });
+            bgObj04Sub->SetBasePos({ w ,0 });
+            bgObj05Sub->SetBasePos({ w ,0 });
+            bgObj06Sub->SetBasePos({ w ,0 });
+            bgObj07Sub->SetBasePos({ w ,0 });
+            bgObj08Sub->SetBasePos({ w ,0 });
+        });
 }
 
 void Tutorial::LateInit(const EngineContext& engineContext)
@@ -300,10 +367,7 @@ void Tutorial::LateInit(const EngineContext& engineContext)
 
 void Tutorial::Update(float dt, const EngineContext& engineContext)
 {
-    fbTexture->GetTransform2D().SetScale({ engineContext.windowManager->GetWidth(), engineContext.windowManager->GetHeight() });
-    engineContext.renderManager->ForceRegisterTexture("[PostProcessedTexture]WaterDrop", nullptr, engineContext.windowManager->GetWidth(), engineContext.windowManager->GetHeight(), 4);
-    computeMat->SetUniform("u_Resolution", glm::vec2(engineContext.windowManager->GetWidth(), engineContext.windowManager->GetHeight()));
-    cursor->GetTransform2D().SetPosition(engineContext.inputManager->GetMouseWorldPos(cameraManager.GetActiveCamera()) + glm::vec2(11, -11));
+    cursor->GetTransform2D().SetPosition(glm::vec2(engineContext.inputManager->GetMousePos().x-engineContext.windowManager->GetWidth()/2.f, engineContext.windowManager->GetHeight() / 2.f -engineContext.inputManager->GetMousePos().y) + glm::vec2(11, -11));
     if (engineContext.inputManager->IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || engineContext.inputManager->IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE) || engineContext.inputManager->IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
     {
         cursor->SetColor({ 0.7f, 0.7f, 0.7f, 1.0f});
@@ -330,6 +394,14 @@ void Tutorial::Update(float dt, const EngineContext& engineContext)
     {
         cameraManager.GetActiveCamera()->AddPosition({ 500 * dt,0 });
     }
+    if (engineContext.inputManager->IsKeyDown(KEY_DOWN))
+    {
+        cameraManager.GetActiveCamera()->SetZoom({ cameraManager.GetActiveCamera()->GetZoom() -5 * dt });
+    }
+    if (engineContext.inputManager->IsKeyDown(KEY_UP))
+    {
+        cameraManager.GetActiveCamera()->SetZoom({ cameraManager.GetActiveCamera()->GetZoom() + 5 * dt });
+    }
     if (engineContext.inputManager->IsKeyDown(KEY_ESCAPE))
     {
         engineContext.engine->RequestQuit();
@@ -345,6 +417,14 @@ void Tutorial::Update(float dt, const EngineContext& engineContext)
     if (engineContext.inputManager->IsKeyReleased(KEY_P))
     {
         engineContext.engine->RenderDebugDraws(false);
+    }
+    if (engineContext.inputManager->IsKeyReleased(KEY_F))
+    {
+        engineContext.windowManager->SetFullScreen(true);
+    }
+    if (engineContext.inputManager->IsKeyReleased(KEY_G))
+    {
+        engineContext.windowManager->SetFullScreen(false);
     }
     if (engineContext.inputManager->IsKeyReleased(KEY_C))
     {
@@ -398,7 +478,7 @@ void Tutorial::PostProcessing(const EngineContext& engineContext)
     engineContext.renderManager->GetMaterialByTag("[Material]default")->SetTexture("u_Texture", engineContext.renderManager->GetTextureByTag("[EngineTexture]RenderTexture"));
 
     computeMat->SetUniform("u_Time", timer);
-    engineContext.renderManager->DispatchCompute(computeMat);
+
     auto now = timer;
     g_ripples.erase(
         std::remove_if(g_ripples.begin(), g_ripples.end(),
@@ -424,6 +504,10 @@ void Tutorial::PostProcessing(const EngineContext& engineContext)
     {
         engineContext.renderManager->GetMaterialByTag("[Material]default")->SetTexture("u_Texture", engineContext.renderManager->GetTextureByTag("[PostProcessedTexture]WaterDrop"));
     }
+
+    engineContext.renderManager->DispatchCompute(computeMat);
+
+ 
     if (enableGlitch)
     {
         fbTexture->SetMaterial(engineContext, "[Material]Glitch");
@@ -441,6 +525,7 @@ void Tutorial::PostProcessing(const EngineContext& engineContext)
 
 void Tutorial::Free(const EngineContext& engineContext)
 {
+    engineContext.windowManager->RemoveResizeCallback("[PostFX]WaterDrop");
     JIN_LOG("[Tutorial] free called");
 }
 

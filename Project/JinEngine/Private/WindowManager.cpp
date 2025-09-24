@@ -16,6 +16,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
             state->GetCameraManager().SetScreenSizeForAll(width, height);
         }
         jinEngine->GetEngineContext().renderManager->OnResize(width, height);
+        jinEngine->GetEngineContext().windowManager->NotifyResize(width, height);
+
         JIN_LOG("changed: " << jinEngine->GetEngineContext().windowManager->GetWidth() << " " << jinEngine->GetEngineContext().windowManager->GetHeight());
     }
 }
@@ -187,4 +189,23 @@ void WindowManager::ClearScreen() const
 void WindowManager::PollEvents() const
 {
     glfwPollEvents();
+}
+
+void WindowManager::AddResizeCallback(const std::string& key, ResizeCallback cb)
+{
+    resizeCallbacks[key] = std::move(cb);
+}
+
+void WindowManager::RemoveResizeCallback(const std::string& key)
+{
+    resizeCallbacks.erase(key);
+}
+
+void WindowManager::NotifyResize(int width, int height)
+{
+    for (auto& [_, callback] : resizeCallbacks)
+    {
+        if (callback)
+            callback(width, height);
+    }
 }
