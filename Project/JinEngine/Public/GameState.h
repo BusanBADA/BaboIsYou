@@ -63,7 +63,7 @@ private:
         Init(engineContext);
         objectManager.InitAll(engineContext);
         LateInit(engineContext);
-        objectManager.AddAllPendingObjects(engineContext);
+   
     }
 
     virtual void SystemUpdate(float dt, const EngineContext& engineContext)

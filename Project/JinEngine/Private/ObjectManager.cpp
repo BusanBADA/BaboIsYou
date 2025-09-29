@@ -17,11 +17,7 @@ Object* ObjectManager::AddObject(std::unique_ptr<Object> obj, const std::string&
 
 void ObjectManager::InitAll(const EngineContext& engineContext)
 {
-    for (const auto& obj : objects)
-        obj->Init(engineContext);
-
-    for (const auto& obj : objects)
-        obj->LateInit(engineContext);
+    AddAllPendingObjects(engineContext);
 }
 
 void ObjectManager::UpdateAll(float dt, const EngineContext& engineContext)
@@ -48,20 +44,27 @@ void ObjectManager::UpdateAll(float dt, const EngineContext& engineContext)
 
 void ObjectManager::AddAllPendingObjects(const EngineContext& engineContext)
 {
-    std::vector<std::unique_ptr<Object>> tmp;
-    std::swap(tmp, pendingObjects);
+    std::vector<std::unique_ptr<Object>> allPendingObjects;
 
-    for (auto& obj : tmp)
-        obj->Init(engineContext);
-
-    for (auto& obj : tmp)
+    while (!pendingObjects.empty())
+    {
+        std::vector<std::unique_ptr<Object>> tmparr;
+        std::swap(tmparr, pendingObjects);
+        for (auto& obj : tmparr)
+            obj->Init(engineContext);
+        for (auto& obj : tmparr)
+        {
+            allPendingObjects.push_back(std::move(obj));
+        }
+        tmparr.clear();
+    }
+    for (auto& obj : allPendingObjects)
     {
         obj->LateInit(engineContext);
         Object* rawPointer = obj.get();
         objectMap[obj->GetTag()] = rawPointer;
         rawPtrObjects.push_back(rawPointer);
         objects.push_back(std::move(obj));
- 
     }
 }
 
