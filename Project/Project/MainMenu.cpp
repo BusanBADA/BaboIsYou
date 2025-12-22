@@ -1,17 +1,19 @@
 ﻿#include "MainMenu.h"
 #include <iostream>
+
+#include "CustomLoadingState.h"
 #include "Debug.h"
 #include "LoadingState.h"
 #include "Tutorial.h"
 
 void MainMenu::Load(const EngineContext& engineContext)
 {
-    SNAKE_LOG("[MainMenu] load called");
+    JIN_LOG("[MainMenu] load called");
 }
 
 void MainMenu::Init(const EngineContext& engineContext)
 {
-    SNAKE_LOG("[MainMenu] init called");
+    JIN_LOG("[MainMenu] init called");
     mainText = static_cast<TextObject*>( objectManager.AddObject(std::make_unique<TextObject>(engineContext.renderManager->GetFontByTag("[Font]default"), "MainMenu", TextAlignH::Center, TextAlignV::Middle)));
     cursor = static_cast<GameObject*>(objectManager.AddObject(std::make_unique<GameObject>()));
     cursor->SetMaterial(engineContext, "[Material]cursor");
@@ -46,7 +48,7 @@ void MainMenu::Update(float dt, const EngineContext& engineContext)
                 return std::make_unique<Tutorial>();
             };
 
-        auto loading = std::make_unique<LoadingState>(nextFactory);
+        auto loading = std::make_unique<CustomLoadingState>(nextFactory);
 
         TutorialState::AsyncLoad(engineContext, loading.get());
 
@@ -68,10 +70,10 @@ void MainMenu::Draw(const EngineContext& engineContext)
 
 void MainMenu::Free(const EngineContext& engineContext)
 {
-    SNAKE_LOG("[MainMenu] free called");
+    JIN_LOG("[MainMenu] free called");
 }
 
 void MainMenu::Unload(const EngineContext& engineContext)
 {
-    SNAKE_LOG("[MainMenu] unload called");
+    JIN_LOG("[MainMenu] unload called");
 }

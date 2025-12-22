@@ -1,4 +1,4 @@
-#include "BackgroundObject.h"
+﻿#include "BackgroundObject.h"
 
 #include "EngineContext.h"
 #include "GameState.h"
@@ -6,8 +6,6 @@
 void BackgroundObject::Init(const EngineContext& engineContext)
 {
 	SetMesh(engineContext, "[EngineMesh]default");
-
-	transform2D.SetScale({ engineContext.windowManager->GetWidth(),engineContext.windowManager->GetHeight() });
 	
 	GameObject::Init(engineContext);
 }

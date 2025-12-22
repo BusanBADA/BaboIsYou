@@ -3,7 +3,6 @@
 
 void Player::Init(const EngineContext& engineContext)
 {
-    transform2D.SetPosition(glm::vec2(0, -200));
     transform2D.SetScale(glm::vec2(100.f));
     SetMesh(engineContext, "[EngineMesh]default");
     SetMaterial(engineContext, "[Material]Animation");
@@ -102,12 +101,12 @@ void Player::Draw(const EngineContext& engineContext)
 
 void Player::Free(const EngineContext& engineContext)
 {
-    SNAKE_LOG("Player Free Called");
+    JIN_LOG("Player Free Called");
 }
 
 void Player::LateFree(const EngineContext& engineContext)
 {
-    SNAKE_LOG("Player LateFree Called");
+    JIN_LOG("Player LateFree Called");
 }
 
 void Player::OnCollision(Object* other)

@@ -112,7 +112,7 @@
       </AdditionalModuleDependencies>
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>$(SolutionDir)SNAKE_Engine\public</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)JinEngine\public</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -131,7 +131,7 @@
       </AdditionalModuleDependencies>
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>$(SolutionDir)SNAKE_Engine\public</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)JinEngine\public</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <SupportJustMyCode>false</SupportJustMyCode>
@@ -156,7 +156,7 @@
       </AdditionalModuleDependencies>
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>$(SolutionDir)SNAKE_Engine\public</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)JinEngine\public</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -175,13 +175,13 @@
       </AdditionalModuleDependencies>
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>$(SolutionDir)SNAKE_Engine\public;$(SolutionDir)SNAKE_Engine\ThirdParty\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)JinEngine\public;$(SolutionDir)JinEngine\ThirdParty\Include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SNAKE_Engine.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);JinEngine.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutputPath);</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -195,7 +195,7 @@
       </AdditionalModuleDependencies>
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>$(SolutionDir)SNAKE_Engine\public;$(SolutionDir)SNAKE_Engine\ThirdParty\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)JinEngine\public;$(SolutionDir)JinEngine\ThirdParty\Include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <SupportJustMyCode>false</SupportJustMyCode>
@@ -205,7 +205,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>%(AdditionalDependencies);SNAKE_Engine.lib</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies);JinEngine.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutputPath);</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -221,18 +221,19 @@
       </AdditionalModuleDependencies>
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>$(SolutionDir)SNAKE_Engine\public;$(SolutionDir)SNAKE_Engine\ThirdParty\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)JinEngine\public;$(SolutionDir)JinEngine\ThirdParty\Include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SNAKE_Engine.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);JinEngine.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutputPath);</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BackgroundObject.cpp" />
+    <ClCompile Include="CustomLoadingState.cpp" />
     <ClCompile Include="FlagObject.cpp" />
     <ClCompile Include="InstancedObject.cpp" />
     <ClCompile Include="main.cpp" />
@@ -241,12 +242,13 @@
     <ClCompile Include="Tutorial.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SNAKE_Engine\SNAKE_Engine.vcxproj">
+    <ProjectReference Include="..\JinEngine\JinEngine.vcxproj">
       <Project>{0ea468ba-e86b-4d2d-bceb-889452e31ecf}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BackgroundObject.h" />
+    <ClInclude Include="CustomLoadingState.h" />
     <ClInclude Include="FlagObject.h" />
     <ClInclude Include="InstancedObject.h" />
     <ClInclude Include="MainMenu.h" />
