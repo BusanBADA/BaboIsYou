@@ -34,10 +34,9 @@ public:
 
     [[nodiscard]] float GetProgress01() const { return loader.GetProgress(); }
 
-private:
     void UploadToGPU(const LoadResult& r, const EngineContext& engineContext);
 
-private:
+protected:
     AsyncResourceLoader loader;
     std::function<std::unique_ptr<GameState>()> nextFactory;
 

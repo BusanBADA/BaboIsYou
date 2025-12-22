@@ -1,5 +1,7 @@
 ﻿#include "MainMenu.h"
 #include <iostream>
+
+#include "CustomLoadingState.h"
 #include "Debug.h"
 #include "LoadingState.h"
 #include "Tutorial.h"
@@ -46,7 +48,7 @@ void MainMenu::Update(float dt, const EngineContext& engineContext)
                 return std::make_unique<Tutorial>();
             };
 
-        auto loading = std::make_unique<LoadingState>(nextFactory);
+        auto loading = std::make_unique<CustomLoadingState>(nextFactory);
 
         TutorialState::AsyncLoad(engineContext, loading.get());
 

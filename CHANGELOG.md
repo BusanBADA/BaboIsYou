@@ -2,16 +2,19 @@
 All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
-## [1.1.3] - 2025-09-17
+## [1.1.3] - 2025-12-22
 
 ### Added
+- Added custom loading state example.
+- Added checker function that checks non-looping animation clip finished.
+- User can add callback when resizing window for resizing texture.
 
 ### Changed
 - Changed Engine name from SNAKE_Engine to JinEngine
+- Now update loop is paused while dragging or resizing window
 
 ### Fixed
- 
-
+- If AddObject called in Init function, it will also init in the same frame.
 
 ## [1.1.2] - 2025-09-17
 
@@ -60,4 +63,4 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 [1.1.0]: https://github.com/Nero-TheThrill/SNAKE_Engine/compare/v_1.0.0...v_1.1.0
 [1.1.1]: https://github.com/Nero-TheThrill/SNAKE_Engine/compare/v_1.1.0...v_1.1.1
 [1.1.2]: https://github.com/Nero-TheThrill/SNAKE_Engine/compare/v_1.1.1...v_1.1.2
-[1.1.2]: https://github.com/Nero-TheThrill/SNAKE_Engine/compare/v_1.1.2...v_1.1.3
+[1.1.3]: https://github.com/Nero-TheThrill/SNAKE_Engine/compare/v_1.1.2...v_1.1.3
