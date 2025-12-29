@@ -20,6 +20,10 @@ public:
 
     [[nodiscard]] int GetHeight() const { return windowHeight; }
 
+    int NewGetWidth() const;
+
+    int NewGetHeight() const;
+
     void Resize(int width, int height);
 
     void SetTitle(const std::string& title) const;

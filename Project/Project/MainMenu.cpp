@@ -5,6 +5,7 @@
 #include "Debug.h"
 #include "LoadingState.h"
 #include "Tutorial.h"
+#include "Level.h"
 
 void MainMenu::Load(const EngineContext& engineContext)
 {
@@ -45,7 +46,7 @@ void MainMenu::Update(float dt, const EngineContext& engineContext)
     {
         auto nextFactory = []() -> std::unique_ptr<GameState>
             {
-                return std::make_unique<Tutorial>();
+                return std::make_unique<Level>();
             };
 
         auto loading = std::make_unique<CustomLoadingState>(nextFactory);
@@ -55,7 +56,6 @@ void MainMenu::Update(float dt, const EngineContext& engineContext)
         engineContext.stateManager->ChangeState(std::move(loading));
     }
     objectManager.UpdateAll(dt, engineContext);
-
 }
 
 void MainMenu::LateUpdate(float dt, const EngineContext& engineContext)

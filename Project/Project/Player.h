@@ -13,6 +13,8 @@ public:
     void LateFree(const EngineContext& engineContext) override;
     void OnCollision(Object* other) override;
     bool CheckIdle();
+    enum PlayerMoveType { LEFT, RIGHT, UP };
+    void PlayerMove(PlayerMoveType moveType, const EngineContext& engineContext);
 private:
     bool checkIdle = true;
     bool checkIdle_prevFrame = false;

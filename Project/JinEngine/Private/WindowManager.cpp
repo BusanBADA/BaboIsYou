@@ -120,6 +120,20 @@ bool WindowManager::Init(int _windowWidth, int _windowHeight, JinEngine& engine)
     return true;
 }
 
+int WindowManager::NewGetWidth() const
+{
+    int w, h;
+    glfwGetMonitorPhysicalSize(glfwGetWindowMonitor(window), &w, &h);
+    return w;
+}
+
+int WindowManager::NewGetHeight() const
+{
+    int w, h;
+    glfwGetMonitorPhysicalSize(glfwGetWindowMonitor(window), &w, &h);
+    return h;
+}
+
 void WindowManager::Resize(int width, int height)
 {
     if (window)

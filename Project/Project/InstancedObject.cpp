@@ -10,8 +10,8 @@ static inline float TriWave(float theta)
 
 void LeafPosition(float t, const LeafParams& p, float& outX, float& outY)
 {
-    // ¹Ù´Ú µµ´Þ ½Ã°£
-    float tStop = (p.y0 + 230.0f) / p.vY; // y(t) = y0 - vY * t ±âÁØ
+    // ï¿½Ù´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
+    float tStop = (p.y0 + 230.0f) / p.vY; // y(t) = y0 - vY * t ï¿½ï¿½ï¿½ï¿½
     float tt = std::min(t, tStop);
 
     float amp = p.A0 * std::exp(-p.beta * tt);
@@ -22,9 +22,9 @@ void LeafPosition(float t, const LeafParams& p, float& outX, float& outY)
 
     if (t > tStop)
     {
-        // ¸ØÃß´Â ±¸°£: y = -200¿¡¼­ Á¤Áö
+        // ï¿½ï¿½ï¿½ß´ï¿½ ï¿½ï¿½ï¿½ï¿½: y = -200ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         outY = -230.0f;
-        // outX´Â outX(tStop) À¯Áö
+        // outXï¿½ï¿½ outX(tStop) ï¿½ï¿½ï¿½ï¿½
     }
 }
 

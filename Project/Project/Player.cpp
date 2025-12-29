@@ -155,3 +155,33 @@ bool Player::CheckIdle()
 {
     return checkIdle;
 }
+
+void Player::PlayerMove(PlayerMoveType moveType, const EngineContext& engineContext)
+{
+    float tilesize = 30;
+    float speed = 1;
+    glm::vec2 direction = glm::vec2(0,0);
+    if (spriteAnimator)
+    {
+        switch (moveType)
+        {
+        case PlayerMoveType::LEFT :
+            direction.x = -1;
+            SetFlipUV_X(true);
+            break;
+        case PlayerMoveType::RIGHT :
+            direction.x = 1;
+            SetFlipUV_X(false);
+            break;
+        case PlayerMoveType::UP :
+            direction.y = 1;
+            break;
+        }
+        checkIdle = false;
+        checkIdle_prevFrame = false;
+        transform2D.AddPosition(direction * tilesize * speed);
+        static_cast<AABBCollider*>(collider.get())->SetSize({ 90,70 });
+        collider->SetOffset({ glm::vec2(0,10.f) });
+        spriteAnimator->PlayClip("[Clip]Running");
+    }
+}
