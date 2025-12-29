@@ -6,6 +6,8 @@
 #include "LoadingState.h"
 #include "Tutorial.h"
 
+#include "Button.h"
+
 void MainMenu::Load(const EngineContext& engineContext)
 {
     JIN_LOG("[MainMenu] load called");
@@ -14,6 +16,29 @@ void MainMenu::Load(const EngineContext& engineContext)
 void MainMenu::Init(const EngineContext& engineContext)
 {
     JIN_LOG("[MainMenu] init called");
+	startButton = static_cast<Button*>(objectManager.AddObject(std::make_unique<Button>(engineContext.renderManager->GetFontByTag("[Font]default"), "Start")));
+    startButton->GetTransform2D().SetPosition({ -30,-50 });
+    startButton->GetTransform2D().SetScale({ 0.35,0.35 });
+    startButton->SetOnClick([engineContext]()
+        {
+            auto nextFactory = []() -> std::unique_ptr<GameState>
+                {
+                    return std::make_unique<Tutorial>();
+                };
+
+            auto loading = std::make_unique<CustomLoadingState>(nextFactory);
+
+            TutorialState::AsyncLoad(engineContext, loading.get());
+
+            engineContext.stateManager->ChangeState(std::move(loading));
+        });
+	exitButton = static_cast<Button*>(objectManager.AddObject(std::make_unique<Button>(engineContext.renderManager->GetFontByTag("[Font]default"), "Exit")));
+    exitButton->GetTransform2D().SetPosition({ 30,-50 });
+    exitButton->GetTransform2D().SetScale({ 0.35,0.35 });
+    exitButton->SetOnClick([engineContext]()
+        {
+            engineContext.engine->RequestQuit();
+        });
     mainText = static_cast<TextObject*>( objectManager.AddObject(std::make_unique<TextObject>(engineContext.renderManager->GetFontByTag("[Font]default"), "MainMenu", TextAlignH::Center, TextAlignV::Middle)));
     cursor = static_cast<GameObject*>(objectManager.AddObject(std::make_unique<GameObject>()));
     cursor->SetMaterial(engineContext, "[Material]cursor");
@@ -21,9 +46,9 @@ void MainMenu::Init(const EngineContext& engineContext)
     cursor->GetTransform2D().SetScale({30,30});
     cursor->SetRenderLayer("[Layer]Cursor");
 
-    TextObject* tmpText = static_cast<TextObject*>(objectManager.AddObject(std::make_unique<TextObject>(engineContext.renderManager->GetFontByTag("[Font]default"), "Press N to continue", TextAlignH::Center, TextAlignV::Middle)));
-    tmpText->GetTransform2D().SetPosition({ 0,-50 });
-    tmpText->GetTransform2D().SetScale({ 0.35,0.35 });
+    //TextObject* tmpText = static_cast<TextObject*>(objectManager.AddObject(std::make_unique<TextObject>(engineContext.renderManager->GetFontByTag("[Font]default"), "Press N to continue", TextAlignH::Center, TextAlignV::Middle)));
+    //tmpText->GetTransform2D().SetPosition({ 0,-50 });
+    //tmpText->GetTransform2D().SetScale({ 0.35,0.35 });
 }
 
 void MainMenu::LateInit(const EngineContext& engineContext)
