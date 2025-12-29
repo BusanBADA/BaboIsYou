@@ -25,8 +25,5 @@ public:
 private:
     TextObject* mainText = nullptr;
     GameObject* cursor = nullptr;
-
-	class Button* startButton = nullptr;
-	class Button* exitButton = nullptr;
 };
 

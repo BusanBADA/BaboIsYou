@@ -62,5 +62,14 @@
     <ClInclude Include="CustomLoadingState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Core\Constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Fixed64.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Grid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
