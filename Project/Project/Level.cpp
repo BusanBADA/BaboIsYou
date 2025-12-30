@@ -6,8 +6,8 @@ namespace LevelState
     void AsyncLoad(const EngineContext& engineContext, LoadingState* loading)
     {
         TextureSettings ts = { TextureMinFilter::Nearest,TextureMagFilter::Nearest,TextureWrap::ClampToBorder,TextureWrap::ClampToBorder };
-        loading->QueueTexture(engineContext, "[Texture]MainCharacter", "Textures/MainCharacter/player.png", ts);
-        loading->QueueTexture(engineContext, "[Texture]MainCharacter1", "Textures/MainCharacter/player1.png", ts);
+
+        // BG
         loading->QueueTexture(engineContext, "[Texture]Flag", "Textures/flag.png");
         loading->QueueTexture(engineContext, "[Texture]Background00", "Textures/Background/_09_background.png");
         loading->QueueTexture(engineContext, "[Texture]Background01", "Textures/Background/_08_distant_clouds.png");
@@ -19,6 +19,10 @@ namespace LevelState
         loading->QueueTexture(engineContext, "[Texture]Background07", "Textures/Background/_02_trees and bushes.png");
         loading->QueueTexture(engineContext, "[Texture]Background08", "Textures/Background/_01_ground.png");
 
+        // Tiles
+        TileState::AsyncLoad(engineContext, loading);
+
+        // Shader
         loading->QueueShader(engineContext, "[Shader]ColorOnly", { {ShaderStage::Vertex, "Shaders/ColorOnly.vert" },{ShaderStage::Fragment,"Shaders/ColorOnly.frag"} });
         loading->QueueShader(engineContext, "[Shader]Instancing", { {ShaderStage::Vertex, "Shaders/Instancing.vert" },{ShaderStage::Fragment,"Shaders/Instancing.frag"} });
 
@@ -39,7 +43,6 @@ namespace LevelState
 
         loading->QueueSound("BGM_Main", "Sounds/test.mp3", true);
 
-
     }
 }
 
@@ -48,8 +51,6 @@ void Level::Load(const EngineContext& engineContext)
     JIN_LOG("[Level] load called");
     RenderManager* rm = engineContext.renderManager;
 
-    rm->RegisterSpriteSheet("[SpriteSheet]MainCharacter", "[Texture]MainCharacter", 32, 32);
-    rm->RegisterSpriteSheet("[SpriteSheet]MainCharacter1", "[Texture]MainCharacter1", 32, 32);
     rm->RegisterSpriteSheet("[SpriteSheet]Flag", "[Texture]Flag", 60, 60);
 
     rm->RegisterMaterial("[Material]default", "[EngineShader]default_texture", { {"u_Texture","[EngineTexture]RenderTexture"} });
@@ -58,6 +59,7 @@ void Level::Load(const EngineContext& engineContext)
 
     rm->RegisterMaterial("[Material]Instancing", "[Shader]Instancing", { {"u_Texture","[Texture]Leaf"} });
 
+    // BG
     rm->RegisterMaterial("[Material]Background00", "[EngineShader]default_texture", { {"u_Texture","[Texture]Background00"} });
     rm->RegisterMaterial("[Material]Background01", "[EngineShader]default_texture", { {"u_Texture","[Texture]Background01"} });
     rm->RegisterMaterial("[Material]Background02", "[EngineShader]default_texture", { {"u_Texture","[Texture]Background02"} });
@@ -67,6 +69,9 @@ void Level::Load(const EngineContext& engineContext)
     rm->RegisterMaterial("[Material]Background06", "[EngineShader]default_texture", { {"u_Texture","[Texture]Background06"} });
     rm->RegisterMaterial("[Material]Background07", "[EngineShader]default_texture", { {"u_Texture","[Texture]Background07"} });
     rm->RegisterMaterial("[Material]Background08", "[EngineShader]default_texture", { {"u_Texture","[Texture]Background08"} });
+
+    // Tiles
+    tileManager.Load(engineContext);
 }
 
 void Level::Init(const EngineContext& engineContext)
@@ -76,7 +81,6 @@ void Level::Init(const EngineContext& engineContext)
     bgObj00->SetMaterial(engineContext, "[Material]Background00");
     bgObj00->SetRenderLayer("[Layer]Background");
     bgObj00->SetFactor(1.0f);
-
 
     bgObj01 = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg01"));
     bgObj01->SetMaterial(engineContext, "[Material]Background01");
@@ -224,18 +228,7 @@ void Level::Init(const EngineContext& engineContext)
     flag04->GetTransform2D().SetScale(glm::vec2(100.f));
     flag04->SetGuide("Objects are rendered to the \"[EngineTexture]RenderTexture\". \nUse this texture to do postprocessing with compute shader.\nPress \'c\' to enable glitch.\nPress \'v\' to disable glitch.");
 
-    //Player Obj
-    player = static_cast<Player*>(objectManager.AddObject(std::make_unique<Player>(), "[Object]player"));
-    player->SetRenderLayer("[Layer]Player");
-
-    //Floor Obj
-    frObj00 = static_cast<TileObject*>(objectManager.AddObject(std::make_unique<TileObject>(), "[Object]frObj00"));
-    frObj00->SetMaterial(engineContext, "[Material]Background08");
-    frObj00->SetRenderLayer("[Layer]Tile");
-    frObj00->SetColor(glm::vec4(0, 0, 1, 1));
-    frObj00->SetMesh(engineContext, "[EngineMesh]default");
-
-    //Obj Depth
+    //BG Depth
     bgObj00->GetTransform2D().SetDepth(0);
     bgObj01->GetTransform2D().SetDepth(10);
     bgObj02->GetTransform2D().SetDepth(20);
@@ -255,10 +248,6 @@ void Level::Init(const EngineContext& engineContext)
     bgObj07Sub->GetTransform2D().SetDepth(70);
     bgObj08Sub->GetTransform2D().SetDepth(80);
 
-    player->GetTransform2D().SetDepth(00.0f);
-
-    frObj00->GetTransform2D().SetDepth(00.0f);
-
     //Cursor
     cursor = static_cast<GameObject*>(objectManager.AddObject(std::make_unique<GameObject>(), "[Object]cursor"));
     cursor->SetMaterial(engineContext, "[Material]cursor");
@@ -266,15 +255,6 @@ void Level::Init(const EngineContext& engineContext)
     cursor->GetTransform2D().SetScale({ 30,30 });
     cursor->SetRenderLayer("[Layer]Cursor");
     cursor->SetIgnoreCamera(true, cameraManager.GetActiveCamera());
-
-    //Floor Collider
-    float colHeight = engineContext.windowManager->GetHeight() / 4.5;
-    auto frCol = std::make_unique<AABBCollider>(frObj00, glm::vec2(1.0, 1.0));
-    frCol->SetUseTransformScale(false);
-    frCol->SetSize({ engineContext.windowManager->GetWidth(), colHeight });
-    frCol->SetOffset({ glm::vec2(0,(-engineContext.windowManager->GetHeight() / 2) + (colHeight / 2)) });
-    frObj00->SetCollider(std::move(frCol));
-    frObj00->SetCollision(engineContext.stateManager->GetCurrentState()->GetObjectManager(), "[CollisionTag]player", { "[CollisionTag]flag" });
 
     //BGM
     engineContext.soundManager->Play("BGM_Main", 1, 0);
@@ -284,7 +264,7 @@ void Level::Init(const EngineContext& engineContext)
     int h = engineContext.windowManager->GetHeight();
     int newH = w * 720.f / 1280.f;
 
-    //Scale
+    //BG Scale
     bgObj00->GetTransform2D().SetScale({ w, newH });
     bgObj01->GetTransform2D().SetScale({ w, newH });
     bgObj02->GetTransform2D().SetScale({ w, newH });
@@ -303,14 +283,15 @@ void Level::Init(const EngineContext& engineContext)
     bgObj06Sub->GetTransform2D().SetScale({ w, newH });
     bgObj07Sub->GetTransform2D().SetScale({ w, newH });
     bgObj08Sub->GetTransform2D().SetScale({ w, newH });
-    frObj00->GetTransform2D().SetScale({ w, newH });
 
-    //Set Pos
-    player->GetTransform2D().SetPosition(glm::vec2(0, h * 160.f / 720.f - h / 2.f));
+    // Tiles
+    tileManager.Init(engineContext);
 }
 
 void Level::LateInit(const EngineContext& engineContext)
 {
+    // Tiles
+    tileManager.LateInit(engineContext);
 }
 
 void Level::Update(float dt, const EngineContext& engineContext)
@@ -368,35 +349,34 @@ void Level::Update(float dt, const EngineContext& engineContext)
     {
         engineContext.windowManager->SetFullScreen(false);
     }
-    if (engineContext.inputManager->IsKeyPressed(KEY_1))
-    {
-        player->PlayerMove(Player::PlayerMoveType::LEFT, engineContext);
-    }
-    if (engineContext.inputManager->IsKeyPressed(KEY_2))
-    {
-        player->PlayerMove(Player::PlayerMoveType::RIGHT, engineContext);
-    }
-    if (engineContext.inputManager->IsKeyPressed(KEY_3))
-    {
-        player->PlayerMove(Player::PlayerMoveType::UP, engineContext);
-    }
-    objectManager.UpdateAll(dt, engineContext);
 
+    // Tiles
+    tileManager.Update(dt, engineContext);
+
+    objectManager.UpdateAll(dt, engineContext);
 }
 
 void Level::LateUpdate(float dt, const EngineContext& engineContext)
 {
+    // Tiles
+    tileManager.LateUpdate(dt, engineContext);
 }
 
 void Level::Draw(const EngineContext& engineContext)
 {
     cursor->SetVisibility(false);
+
+    // Tiles
+    tileManager.Draw(engineContext);
+
     objectManager.DrawAll(engineContext);
 }
 
 void Level::Free(const EngineContext& engineContext)
 {
-    engineContext.windowManager->RemoveResizeCallback("[PostFX]WaterDrop");
+    // Tiles
+    tileManager.Free(engineContext);
+
     JIN_LOG("[Level] free called");
 }
 
@@ -406,6 +386,9 @@ void Level::Unload(const EngineContext& engineContext)
     {
         engineContext.renderManager->UnregisterTexture("test" + std::to_string(i), engineContext);
     }
+
+    // Tiles
+    tileManager.Unload(engineContext);
 
     JIN_LOG("[Level] unload called");
 }
