@@ -2,7 +2,7 @@
 #include "Core/LevelSerializer.h"
 #include "Engine.h"
 #include "MainMenu.h"
-
+#include "WordObject.h"
 namespace LevelState
 {
     void AsyncLoad(const EngineContext& engineContext, LoadingState* loading)
@@ -51,19 +51,19 @@ void Level::Load(const EngineContext& engineContext)
     rm->RegisterMaterial("[Material]ColorOnly", "[Shader]ColorOnly", {});
     rm->RegisterMaterial("[Material]Instancing", "[Shader]Instancing", { {"u_Texture","[Texture]Leaf"} });
 
+    wordManager = static_cast<WordManager*>(objectManager.AddObject(std::make_unique<WordManager>(), "[Object]wordManager"));
+    wordManager->ReadFile(engineContext, 1);
     // Tiles
     tileManager.Load(engineContext);
 }
 
 void Level::Init(const EngineContext& engineContext)
 {
-
-    cursor = static_cast<GameObject*>(objectManager.AddObject(std::make_unique<GameObject>(), "[Object]cursor"));
+    cursor = static_cast<GameObject*>(objectManager.AddObject(std::make_unique<GameObject>()));
     cursor->SetMaterial(engineContext, "[Material]cursor");
     cursor->SetMesh(engineContext, "[EngineMesh]default");
-    cursor->GetTransform2D().SetScale({ 30, 30 });
+    cursor->GetTransform2D().SetScale({ 30,30 });
     cursor->SetRenderLayer("[Layer]Cursor");
-    cursor->SetIgnoreCamera(true, cameraManager.GetActiveCamera());
 
     engineContext.soundManager->Play("BGM_Main", 1, 0);
 
@@ -93,7 +93,15 @@ void Level::SyncToLogicGrid()
 
 void Level::Update(float dt, const EngineContext& ec)
 {
-  
+    cursor->GetTransform2D().SetPosition(ec.inputManager->GetMouseWorldPos(cameraManager.GetActiveCamera()) + glm::vec2(11, -11));
+    if (ec.inputManager->IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || ec.inputManager->IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE) || ec.inputManager->IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
+    {
+        cursor->SetColor({ 0.7f, 0.7f, 0.7f, 1.0f });
+    }
+    if (ec.inputManager->IsMouseButtonReleased(MOUSE_BUTTON_LEFT) || ec.inputManager->IsMouseButtonReleased(MOUSE_BUTTON_MIDDLE) || ec.inputManager->IsMouseButtonReleased(MOUSE_BUTTON_RIGHT))
+    {
+        cursor->SetColor({ 1.0f, 1.0f,1.0f,1.0f });
+    }
     if (ec.inputManager->IsKeyDown(KEY_LEFT)) cameraManager.GetActiveCamera()->AddPosition({ -500 * dt, 0 });
     if (ec.inputManager->IsKeyDown(KEY_RIGHT)) cameraManager.GetActiveCamera()->AddPosition({ 500 * dt, 0 });
     if (ec.inputManager->IsKeyDown(KEY_DOWN)) cameraManager.GetActiveCamera()->SetZoom(cameraManager.GetActiveCamera()->GetZoom() - 5 * dt);

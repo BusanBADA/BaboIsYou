@@ -37,7 +37,8 @@ private:
     BABO::Logic::RuleManager m_ruleManager;
     std::string m_levelPath = "level1.babo";
 
-    GameObject* cursor;
+    GameObject* cursor = nullptr;
+	class WordManager* wordManager;
     float timer = 0;
 };
 
