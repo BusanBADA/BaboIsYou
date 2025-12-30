@@ -71,5 +71,11 @@
     <ClInclude Include="Core\Grid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Core\LevelSerializer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Physics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

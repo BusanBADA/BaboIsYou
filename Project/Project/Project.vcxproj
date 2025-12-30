@@ -249,6 +249,8 @@
   <ItemGroup>
     <ClInclude Include="BackgroundObject.h" />
     <ClInclude Include="Core\Grid.h" />
+    <ClInclude Include="Core\LevelSerializer.h" />
+    <ClInclude Include="Core\Physics.h" />
     <ClInclude Include="CustomLoadingState.h" />
     <ClInclude Include="FlagObject.h" />
     <ClInclude Include="InstancedObject.h" />
