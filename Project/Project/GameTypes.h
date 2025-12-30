@@ -28,7 +28,7 @@ enum class VerbType
 	MOVE = 2,
 };
 
-enum class ObjectType
+enum class ObjectiveType
 {
 	RIGHT = 0,
 	UP = 1,
