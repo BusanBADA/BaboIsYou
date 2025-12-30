@@ -232,9 +232,7 @@ void Level::Init(const EngineContext& engineContext)
     frObj00 = static_cast<TileObject*>(objectManager.AddObject(std::make_unique<TileObject>(), "[Object]frObj00"));
     frObj00->SetMaterial(engineContext, "[Material]Background08");
     frObj00->SetRenderLayer("[Layer]Tile");
-    frObj00->SetFactor(0.0);
     frObj00->SetColor(glm::vec4(0, 0, 1, 1));
-    frObj00->GetTransform2D().SetScale(glm::vec2(100.f));
     frObj00->SetMesh(engineContext, "[EngineMesh]default");
 
     //Obj Depth
@@ -270,7 +268,7 @@ void Level::Init(const EngineContext& engineContext)
     cursor->SetIgnoreCamera(true, cameraManager.GetActiveCamera());
 
     //Floor Collider
-    float colHeight = 250.f;
+    float colHeight = engineContext.windowManager->GetHeight() / 4.5;
     auto frCol = std::make_unique<AABBCollider>(frObj00, glm::vec2(1.0, 1.0));
     frCol->SetUseTransformScale(false);
     frCol->SetSize({ engineContext.windowManager->GetWidth(), colHeight });
@@ -306,6 +304,8 @@ void Level::Init(const EngineContext& engineContext)
     bgObj07Sub->GetTransform2D().SetScale({ w, newH });
     bgObj08Sub->GetTransform2D().SetScale({ w, newH });
     frObj00->GetTransform2D().SetScale({ w, newH });
+
+    //Set Pos
     player->GetTransform2D().SetPosition(glm::vec2(0, h * 160.f / 720.f - h / 2.f));
 }
 
@@ -315,10 +315,6 @@ void Level::LateInit(const EngineContext& engineContext)
 
 void Level::Update(float dt, const EngineContext& engineContext)
 {
-    //Floor Collider
-    auto* col = static_cast<AABBCollider*>(frObj00->GetCollider());
-    col->SetSize({ engineContext.windowManager->GetWidth(), 90 });
-
     //Cursor
     cursor->GetTransform2D().SetPosition(glm::vec2(engineContext.inputManager->GetMousePos().x - engineContext.windowManager->GetWidth() / 2.f, engineContext.windowManager->GetHeight() / 2.f - engineContext.inputManager->GetMousePos().y) + glm::vec2(11, -11));
     if (engineContext.inputManager->IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || engineContext.inputManager->IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE) || engineContext.inputManager->IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
