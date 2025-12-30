@@ -244,6 +244,7 @@
     <ClCompile Include="TileManager.cpp" />
     <ClCompile Include="TileObject.cpp" />
     <ClCompile Include="Tutorial.cpp" />
+    <ClCompile Include="WordObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\JinEngine\JinEngine.vcxproj">
@@ -255,6 +256,7 @@
     <ClInclude Include="Button.h" />
     <ClInclude Include="CustomLoadingState.h" />
     <ClInclude Include="FlagObject.h" />
+    <ClInclude Include="GameTypes.h" />
     <ClInclude Include="InstancedObject.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="MainMenu.h" />
@@ -262,6 +264,7 @@
     <ClInclude Include="TileManager.h" />
     <ClInclude Include="TileObject.h" />
     <ClInclude Include="Tutorial.h" />
+    <ClInclude Include="WordObject.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

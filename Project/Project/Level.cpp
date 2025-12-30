@@ -132,7 +132,7 @@ void Level::Update(float dt, const EngineContext& ec)
 
 void Level::Draw(const EngineContext& ec)
 {
-    if (cursor) cursor->SetVisibility(false);
+    if (cursor) cursor->SetVisibility(true);
 
     //Grid
     if (ec.engine->ShouldRenderDebugDraws()) {
