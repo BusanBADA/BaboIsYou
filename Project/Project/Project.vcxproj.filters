@@ -39,6 +39,12 @@
     <ClCompile Include="CustomLoadingState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TileObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Level.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainMenu.h">
@@ -62,19 +68,10 @@
     <ClInclude Include="CustomLoadingState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Constants.h">
+    <ClInclude Include="TileObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Fixed64.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Grid.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\LevelSerializer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Physics.h">
+    <ClInclude Include="Level.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

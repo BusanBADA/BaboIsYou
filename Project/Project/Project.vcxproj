@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -182,7 +182,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);JinEngine.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(OutputPath);JinEngine.lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutputPath);</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='EngineOnly|x64'">
@@ -206,7 +206,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalDependencies>%(AdditionalDependencies);JinEngine.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(OutputPath);JinEngine.lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutputPath);</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -227,8 +227,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);JinEngine.lib;JinEngine.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(OutputPath);JinEngine.lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);JinEngine.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutputPath);</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -236,9 +236,11 @@
     <ClCompile Include="CustomLoadingState.cpp" />
     <ClCompile Include="FlagObject.cpp" />
     <ClCompile Include="InstancedObject.cpp" />
+    <ClCompile Include="Level.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="TileObject.cpp" />
     <ClCompile Include="Tutorial.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -248,16 +250,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BackgroundObject.h" />
-    <ClInclude Include="Core\Grid.h" />
-    <ClInclude Include="Core\LevelSerializer.h" />
-    <ClInclude Include="Core\Physics.h" />
     <ClInclude Include="CustomLoadingState.h" />
     <ClInclude Include="FlagObject.h" />
     <ClInclude Include="InstancedObject.h" />
-    <ClInclude Include="Core\Constants.h" />
-    <ClInclude Include="Core\Fixed64.h" />
+    <ClInclude Include="Level.h" />
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="TileObject.h" />
     <ClInclude Include="Tutorial.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

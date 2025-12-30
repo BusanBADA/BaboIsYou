@@ -71,6 +71,7 @@ int main(int argc, char* argv[])
 
 
     jinEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]Background", 0);
+    jinEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]Tile", 8);
     jinEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]Flag", 9);
     jinEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]Player", 10);
     jinEngine.GetEngineContext().renderManager->RegisterRenderLayer("[Layer]UI", 11);

@@ -5,6 +5,9 @@
 #include "Debug.h"
 #include "LoadingState.h"
 #include "Tutorial.h"
+#include "Level.h"
+
+#include "Button.h"
 
 void MainMenu::Load(const EngineContext& engineContext)
 {
@@ -21,9 +24,33 @@ void MainMenu::Init(const EngineContext& engineContext)
     cursor->GetTransform2D().SetScale({30,30});
     cursor->SetRenderLayer("[Layer]Cursor");
 
-    TextObject* tmpText = static_cast<TextObject*>(objectManager.AddObject(std::make_unique<TextObject>(engineContext.renderManager->GetFontByTag("[Font]default"), "Press N to continue", TextAlignH::Center, TextAlignV::Middle)));
-    tmpText->GetTransform2D().SetPosition({ 0,-50 });
-    tmpText->GetTransform2D().SetScale({ 0.35,0.35 });
+    startButton = static_cast<Button*>(objectManager.AddObject(std::make_unique<Button>(engineContext.renderManager->GetFontByTag("[Font]default"), "Start")));
+    startButton->GetTransform2D().SetPosition({ -30,-50 });
+    startButton->GetTransform2D().SetScale({ 0.35,0.35 });
+    startButton->SetOnClick([engineContext]()
+        {
+            auto nextFactory = []() -> std::unique_ptr<GameState>
+                {
+                    return std::make_unique<Level>();
+                };
+
+            auto loading = std::make_unique<CustomLoadingState>(nextFactory);
+
+            TutorialState::AsyncLoad(engineContext, loading.get());
+
+            engineContext.stateManager->ChangeState(std::move(loading));
+        });
+    exitButton = static_cast<Button*>(objectManager.AddObject(std::make_unique<Button>(engineContext.renderManager->GetFontByTag("[Font]default"), "Exit")));
+    exitButton->GetTransform2D().SetPosition({ 30,-50 });
+    exitButton->GetTransform2D().SetScale({ 0.35,0.35 });
+    exitButton->SetOnClick([engineContext]()
+        {
+            engineContext.engine->RequestQuit();
+        });
+
+    //TextObject* tmpText = static_cast<TextObject*>(objectManager.AddObject(std::make_unique<TextObject>(engineContext.renderManager->GetFontByTag("[Font]default"), "Press N to continue", TextAlignH::Center, TextAlignV::Middle)));
+    //tmpText->GetTransform2D().SetPosition({ 0,-50 });
+    //tmpText->GetTransform2D().SetScale({ 0.35,0.35 });
 }
 
 void MainMenu::LateInit(const EngineContext& engineContext)
@@ -45,7 +72,7 @@ void MainMenu::Update(float dt, const EngineContext& engineContext)
     {
         auto nextFactory = []() -> std::unique_ptr<GameState>
             {
-                return std::make_unique<Tutorial>();
+                return std::make_unique<Level>();
             };
 
         auto loading = std::make_unique<CustomLoadingState>(nextFactory);
@@ -55,7 +82,6 @@ void MainMenu::Update(float dt, const EngineContext& engineContext)
         engineContext.stateManager->ChangeState(std::move(loading));
     }
     objectManager.UpdateAll(dt, engineContext);
-
 }
 
 void MainMenu::LateUpdate(float dt, const EngineContext& engineContext)
