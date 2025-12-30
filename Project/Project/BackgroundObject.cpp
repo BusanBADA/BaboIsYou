@@ -17,7 +17,7 @@ void BackgroundObject::LateInit(const EngineContext& engineContext)
 
 void BackgroundObject::Update(float dt, const EngineContext& engineContext)
 {
-	Camera2D* cam = engineContext.stateManager->GetCurrentState()->GetActiveCamera();
+	/*Camera2D* cam = engineContext.stateManager->GetCurrentState()->GetActiveCamera();
 
 	if (next->GetWorldPosition().x < GetWorldPosition().x  && GetWorldPosition().x + GetWorldScale().x/2.f < cam->GetPosition().x + cam->GetScreenWidth()/2.f)
 	{
@@ -38,7 +38,7 @@ void BackgroundObject::Update(float dt, const EngineContext& engineContext)
 		next->SetBasePos({ GetWorldPosition().x - GetWorldScale().x - cam->GetPosition().x * factor, GetWorldPosition().y });
 
 	}
-	transform2D.SetPosition(basePosition + cam->GetPosition() * factor);
+	transform2D.SetPosition(basePosition + cam->GetPosition() * factor);*/
 
 
 	GameObject::Update(dt, engineContext);
@@ -66,7 +66,7 @@ void BackgroundObject::OnCollision(Object* other)
 
 void BackgroundObject::SetFactor(float ftr)
 {
-	factor = ftr;
+	//factor = ftr;
 }
 
 void BackgroundObject::SetBasePos(glm::vec2 pos)
@@ -76,5 +76,5 @@ void BackgroundObject::SetBasePos(glm::vec2 pos)
 
 void BackgroundObject::SetNextBackground(BackgroundObject* obj)
 {
-	next = obj;
+	//next = obj;
 }

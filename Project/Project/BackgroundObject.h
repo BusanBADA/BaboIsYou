@@ -22,7 +22,7 @@ public:
 	void SetNextBackground(BackgroundObject* obj);
 private:
 	glm::vec2 basePosition;
-	float factor = 0.0f;
-	BackgroundObject* next;
+	//float factor = 0.0f;
+	//BackgroundObject* next;
 };
 

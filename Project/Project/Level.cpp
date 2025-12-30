@@ -9,6 +9,9 @@ namespace LevelState
     {
         TextureSettings ts = { TextureMinFilter::Nearest, TextureMagFilter::Nearest, TextureWrap::ClampToBorder, TextureWrap::ClampToBorder };
 
+        //BG
+        loading->QueueTexture(engineContext, "[Texture]Bg00", "Textures/BG/BG.png");
+
         //Tiles
         TileState::AsyncLoad(engineContext, loading);
       
@@ -53,6 +56,10 @@ void Level::Load(const EngineContext& engineContext)
 
     wordManager = static_cast<WordManager*>(objectManager.AddObject(std::make_unique<WordManager>(), "[Object]wordManager"));
     wordManager->ReadFile(engineContext, 1);
+
+    // BG
+    rm->RegisterMaterial("[Material]Bg00", "[EngineShader]default_texture", { {"u_Texture","[Texture]Bg00"} });
+
     // Tiles
     tileManager.Load(engineContext);
 }
@@ -65,7 +72,17 @@ void Level::Init(const EngineContext& engineContext)
     cursor->GetTransform2D().SetScale({ 30,30 });
     cursor->SetRenderLayer("[Layer]Cursor");
 
+    bgObj00 = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]Bg00"));
+    bgObj00->SetMaterial(engineContext, "[Material]Bg00");
+    bgObj00->SetRenderLayer("[Layer]Background");
+
     engineContext.soundManager->Play("BGM_Main", 1, 0);
+
+    int w = engineContext.windowManager->GetWidth();
+    int h = engineContext.windowManager->GetHeight();
+
+    bgObj00->GetTransform2D().SetScale({ w, h });
+    bgObj00->GetTransform2D().AddPosition({ w / 4, 0 });
 
     // Tiles
     tileManager.Init(engineContext);
@@ -148,17 +165,13 @@ void Level::Draw(const EngineContext& ec)
         // virtical line
         for (int i = 0; i <= w; ++i) {
             float x = offsetX + i * cellSize;
-            ec.renderManager->DrawLine(
-                { x, offsetY },
-                { x, offsetY + h * cellSize },
-                { 1, 1, 1, 0.1f }
-            );
+            ec.renderManager->DrawLine( { x, offsetY }, { x, offsetY + h * cellSize }, { 0, 0, 1, 0.3f } );
         }
 
         // horizontal line
         for (int j = 0; j <= h; ++j) {
             float y = offsetY + j * cellSize;
-            ec.renderManager->DrawLine( { offsetX, y }, { offsetX + w * cellSize, y }, { 1, 1, 1, 0.1f } );
+            ec.renderManager->DrawLine( { offsetX, y }, { offsetX + w * cellSize, y }, { 0, 0, 1, 0.3f } );
         }
 
         // cell line
