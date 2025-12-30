@@ -116,6 +116,7 @@ public:
 
     void DrawDebugLine(const glm::vec2& from, const glm::vec2& to, Camera2D* camera = nullptr, const glm::vec4& color = { 1,1,1,1 }, float lineWidth = 1.0f);
 
+    void DrawLine(const glm::vec2& from, const glm::vec2& to, const glm::vec4& color, float width = 1.0f);
     [[nodiscard]] RenderLayerManager& GetRenderLayerManager();
     void BeginFrame(const EngineContext& engineContext);
     void EndFrame(const EngineContext& engineContext);
