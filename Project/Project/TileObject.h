@@ -1,4 +1,6 @@
+#pragma once
 #include "GameObject.h"
+#include "GameState.h"
 
 class TileObject : public GameObject
 {
@@ -28,6 +30,5 @@ private:
 	bool isDefeat;
 	bool isWin;
 	glm::vec2 basePosition;
-	TileObject* next;
 };
 

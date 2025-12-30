@@ -1,6 +1,7 @@
 #pragma once
 #include "GameState.h"
 #include "LoadingState.h"
+#include "TileObject.h"
 
 namespace TileState
 {
@@ -28,5 +29,6 @@ public:
 
 private:
 
+    std::vector<TileObject*> tileObjects;
 };
 

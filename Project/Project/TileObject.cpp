@@ -1,6 +1,4 @@
 #include "TileObject.h"
-#include "EngineContext.h"
-#include "GameState.h"
 
 void TileObject::Init(const EngineContext& engineContext)
 {

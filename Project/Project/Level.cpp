@@ -9,20 +9,8 @@ namespace LevelState
     {
         TextureSettings ts = { TextureMinFilter::Nearest, TextureMagFilter::Nearest, TextureWrap::ClampToBorder, TextureWrap::ClampToBorder };
 
-     
-        loading->QueueTexture(engineContext, "[Texture]MainCharacter", "Textures/MainCharacter/player.png", ts);
-        loading->QueueTexture(engineContext, "[Texture]MainCharacter1", "Textures/MainCharacter/player1.png", ts);
-        loading->QueueTexture(engineContext, "[Texture]Flag", "Textures/flag.png");
-        loading->QueueTexture(engineContext, "[Texture]Background00", "Textures/Background/_09_background.png");
-        loading->QueueTexture(engineContext, "[Texture]Background01", "Textures/Background/_08_distant_clouds.png");
-        loading->QueueTexture(engineContext, "[Texture]Background02", "Textures/Background/_07_clouds.png");
-        loading->QueueTexture(engineContext, "[Texture]Background03", "Textures/Background/_06_hill2.png");
-        loading->QueueTexture(engineContext, "[Texture]Background04", "Textures/Background/_05_hill1.png");
-        loading->QueueTexture(engineContext, "[Texture]Background05", "Textures/Background/_04_bushes.png");
-        loading->QueueTexture(engineContext, "[Texture]Background06", "Textures/Background/_03_distant_trees.png");
-        loading->QueueTexture(engineContext, "[Texture]Background07", "Textures/Background/_02_trees and bushes.png");
-        loading->QueueTexture(engineContext, "[Texture]Background08", "Textures/Background/_01_ground.png");
-
+        //Tiles
+        TileState::AsyncLoad(engineContext, loading);
       
         loading->QueueShader(engineContext, "[Shader]ColorOnly", { {ShaderStage::Vertex, "Shaders/ColorOnly.vert" },{ShaderStage::Fragment,"Shaders/ColorOnly.frag"} });
         loading->QueueShader(engineContext, "[Shader]Instancing", { {ShaderStage::Vertex, "Shaders/Instancing.vert" },{ShaderStage::Fragment,"Shaders/Instancing.frag"} });
@@ -37,7 +25,7 @@ void Level::Load(const EngineContext& engineContext)
 {
     m_gridSystem.Resize(42, 24);
  
-    auto spawner = [&](uint32_t id, int type, int64_t x, int64_t y, std::string tag) {
+    /*auto spawner = [&](uint32_t id, int type, int64_t x, int64_t y, std::string tag) {
         float fx = BABO::Math::Fix64(x, BABO::Math::Fix64::RawTag{}).ToFloat();
         float fy = BABO::Math::Fix64(y, BABO::Math::Fix64::RawTag{}).ToFloat();
 
@@ -50,65 +38,25 @@ void Level::Load(const EngineContext& engineContext)
             t->GetTransform2D().SetPosition({ fx, fy });
             objectManager.AddObject(std::move(t), tag);
         }
-        };
+    };
 
     if (!BABO::IO::LevelSerializer::Load(m_levelPath, m_gridSystem, spawner)) {
         CreateDefaultLevel(m_levelPath);
         BABO::IO::LevelSerializer::Load(m_levelPath, m_gridSystem, spawner);
-    }
+    }*/
 
     RenderManager* rm = engineContext.renderManager;
-    rm->RegisterSpriteSheet("[SpriteSheet]MainCharacter", "[Texture]MainCharacter", 32, 32);
-    rm->RegisterSpriteSheet("[SpriteSheet]MainCharacter1", "[Texture]MainCharacter1", 32, 32);
-    rm->RegisterSpriteSheet("[SpriteSheet]Flag", "[Texture]Flag", 60, 60);
 
     rm->RegisterMaterial("[Material]default", "[EngineShader]default_texture", { {"u_Texture","[EngineTexture]RenderTexture"} });
     rm->RegisterMaterial("[Material]ColorOnly", "[Shader]ColorOnly", {});
     rm->RegisterMaterial("[Material]Instancing", "[Shader]Instancing", { {"u_Texture","[Texture]Leaf"} });
 
-    for (int i = 0; i <= 8; ++i) {
-        std::string name = "[Material]Background0" + std::to_string(i);
-        std::string tex = "[Texture]Background0" + std::to_string(i);
-        rm->RegisterMaterial(name, "[EngineShader]default_texture", { {"u_Texture", tex} });
-    }
+    // Tiles
+    tileManager.Load(engineContext);
 }
 
 void Level::Init(const EngineContext& engineContext)
 {
-
-    auto setupBG = [&](BackgroundObject*& bg, BackgroundObject*& sub, int idx, float factor) {
-        std::string mat = "[Material]Background0" + std::to_string(idx);
-        bg = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg"));
-        bg->SetMaterial(engineContext, mat);
-        bg->SetRenderLayer("[Layer]Background");
-        bg->SetFactor(factor);
-
-        sub = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]bg"));
-        sub->SetMaterial(engineContext, mat);
-        sub->SetRenderLayer("[Layer]Background");
-        sub->SetBasePos({ (float)engineContext.windowManager->GetWidth() ,0 });
-        sub->SetFactor(factor);
-        bg->SetNextBackground(sub);
-        sub->SetNextBackground(bg);
-        };
-
-    setupBG(bgObj00, bgObj00Sub, 0, 1.0f);
-    setupBG(bgObj01, bgObj01Sub, 1, 0.9f);
-    setupBG(bgObj02, bgObj02Sub, 2, 0.8f);
-    setupBG(bgObj03, bgObj03Sub, 3, 0.7f);
-    setupBG(bgObj04, bgObj04Sub, 4, 0.5f);
-    setupBG(bgObj05, bgObj05Sub, 5, 0.4f);
-    setupBG(bgObj06, bgObj06Sub, 6, 0.3f);
-    setupBG(bgObj07, bgObj07Sub, 7, 0.2f);
-    setupBG(bgObj08, bgObj08Sub, 8, 0.0f);
-
-
-    flag00 = static_cast<FlagObject*>(objectManager.AddObject(std::make_unique<FlagObject>(), "[Object]flag"));
-    flag00->SetRenderLayer("[Layer]Flag");
-    flag00->GetTransform2D().SetPosition({ -600, -170 });
-    flag00->GetTransform2D().SetScale({ 100, 100 });
-    flag00->SetGuide("Logic Test Level");
-
 
     cursor = static_cast<GameObject*>(objectManager.AddObject(std::make_unique<GameObject>(), "[Object]cursor"));
     cursor->SetMaterial(engineContext, "[Material]cursor");
@@ -118,6 +66,9 @@ void Level::Init(const EngineContext& engineContext)
     cursor->SetIgnoreCamera(true, cameraManager.GetActiveCamera());
 
     engineContext.soundManager->Play("BGM_Main", 1, 0);
+
+    // Tiles
+    tileManager.Init(engineContext);
 }
 
 void Level::SyncToLogicGrid()
@@ -148,7 +99,7 @@ void Level::Update(float dt, const EngineContext& ec)
     if (ec.inputManager->IsKeyDown(KEY_DOWN)) cameraManager.GetActiveCamera()->SetZoom(cameraManager.GetActiveCamera()->GetZoom() - 5 * dt);
     if (ec.inputManager->IsKeyDown(KEY_UP)) cameraManager.GetActiveCamera()->SetZoom(cameraManager.GetActiveCamera()->GetZoom() + 5 * dt);
 
-
+    if (ec.inputManager->IsKeyDown(KEY_ESCAPE)) ec.engine->RequestQuit();
     if (ec.inputManager->IsKeyReleased(KEY_O)) ec.engine->RenderDebugDraws(true);
     if (ec.inputManager->IsKeyReleased(KEY_P)) ec.engine->RenderDebugDraws(false);
     if (ec.inputManager->IsKeyPressed(KEY_S)) SaveCurrentLevel();
@@ -165,6 +116,9 @@ void Level::Update(float dt, const EngineContext& ec)
         ec.inputManager->GetMousePos().x - ec.windowManager->GetWidth() / 2.f,
         ec.windowManager->GetHeight() / 2.f - ec.inputManager->GetMousePos().y) + glm::vec2(11, -11));
 
+    // Tiles
+    tileManager.Update(dt, ec);
+
     objectManager.UpdateAll(dt, ec);
 }
 
@@ -172,7 +126,7 @@ void Level::Draw(const EngineContext& ec)
 {
     if (cursor) cursor->SetVisibility(false);
 
-
+    //Grid
     if (ec.engine->ShouldRenderDebugDraws()) {
         int w = m_gridSystem.GetWidth();
         int h = m_gridSystem.GetHeight();
@@ -190,6 +144,10 @@ void Level::Draw(const EngineContext& ec)
             }
         }
     }
+
+    // Tiles
+    tileManager.Draw(ec);
+
     objectManager.DrawAll(ec);
 }
 
@@ -219,9 +177,25 @@ void Level::CreateDefaultLevel(const std::string& path)
     ents.push_back(p); tags.push_back("Player");
     BABO::IO::LevelSerializer::Save(path, temp, ents, tags);
 }
-void Level::LateInit(const EngineContext& ec) {}
-void Level::LateUpdate(float dt, const EngineContext& ec) {}
-void Level::Free(const EngineContext& ec) { ec.windowManager->RemoveResizeCallback("[PostFX]WaterDrop"); }
+void Level::LateInit(const EngineContext& ec) {
+
+    // Tiles
+    tileManager.LateInit(ec);
+}
+void Level::LateUpdate(float dt, const EngineContext& ec) {
+
+
+    // Tiles
+    tileManager.LateUpdate(dt, ec);
+}
+void Level::Free(const EngineContext& ec) { 
+
+    // Tiles
+    tileManager.Free(ec);
+}
 void Level::Unload(const EngineContext& ec) {
     for (int i = 0; i < 10; i++) ec.renderManager->UnregisterTexture("test" + std::to_string(i), ec);
+
+    // Tiles
+    tileManager.Unload(ec);
 }
