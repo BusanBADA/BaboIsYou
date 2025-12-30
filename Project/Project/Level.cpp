@@ -3,6 +3,10 @@
 #include "Engine.h"
 #include "MainMenu.h"
 #include "WordObject.h"
+#include "TileManager.h"
+
+TileManager* tileManager;
+
 namespace LevelState
 {
     void AsyncLoad(const EngineContext& engineContext, LoadingState* loading)
@@ -61,7 +65,8 @@ void Level::Load(const EngineContext& engineContext)
     rm->RegisterMaterial("[Material]Bg00", "[EngineShader]default_texture", { {"u_Texture","[Texture]Bg00"} });
 
     // Tiles
-    tileManager.Load(engineContext);
+    tileManager = &TileManager::instance();
+    tileManager->Load(engineContext);
 }
 
 void Level::Init(const EngineContext& engineContext)
@@ -85,7 +90,7 @@ void Level::Init(const EngineContext& engineContext)
     bgObj00->GetTransform2D().AddPosition({ w / 4, 0 });
 
     // Tiles
-    tileManager.Init(engineContext);
+    tileManager->Init(engineContext, objectManager);
 }
 
 void Level::SyncToLogicGrid()
@@ -142,7 +147,7 @@ void Level::Update(float dt, const EngineContext& ec)
         ec.windowManager->GetHeight() / 2.f - ec.inputManager->GetMousePos().y) + glm::vec2(11, -11));
 
     // Tiles
-    tileManager.Update(dt, ec);
+    tileManager->Update(dt, ec);
 
     objectManager.UpdateAll(dt, ec);
 }
@@ -193,7 +198,7 @@ void Level::Draw(const EngineContext& ec)
 
 
     // Tiles
-    tileManager.Draw(ec);
+    tileManager->Draw(ec);
 
     objectManager.DrawAll(ec);
 }
@@ -227,22 +232,22 @@ void Level::CreateDefaultLevel(const std::string& path)
 void Level::LateInit(const EngineContext& ec) {
 
     // Tiles
-    tileManager.LateInit(ec);
+    tileManager->LateInit(ec);
 }
 void Level::LateUpdate(float dt, const EngineContext& ec) {
 
 
     // Tiles
-    tileManager.LateUpdate(dt, ec);
+    tileManager->LateUpdate(dt, ec);
 }
 void Level::Free(const EngineContext& ec) { 
 
     // Tiles
-    tileManager.Free(ec);
+    tileManager->Free(ec);
 }
 void Level::Unload(const EngineContext& ec) {
     for (int i = 0; i < 10; i++) ec.renderManager->UnregisterTexture("test" + std::to_string(i), ec);
 
     // Tiles
-    tileManager.Unload(ec);
+    tileManager->Unload(ec);
 }

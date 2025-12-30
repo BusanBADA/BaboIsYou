@@ -3,7 +3,6 @@
 #include "BackgroundObject.h"
 #include "TextObject.h"
 #include "InstancedObject.h"
-#include "TileManager.h"
 
 #include "Core/Grid.h"
 #include "Core/RuleManager.h"
@@ -27,8 +26,6 @@ public:
     void Unload(const EngineContext& engineContext) override;
 
 private:
-    TileManager tileManager;
-
     BackgroundObject* bgObj00;
     void CreateDefaultLevel(const std::string& path);
     void SyncToLogicGrid();

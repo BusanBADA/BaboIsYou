@@ -82,27 +82,15 @@ void TileManager::Load(const EngineContext& engineContext)
     rm->RegisterMaterial("[Material]Tree02", "[EngineShader]default_texture", { {"u_Texture","[Texture]Tree02"} });
 }
 
-void TileManager::Init(const EngineContext& engineContext)
+void TileManager::Init(const EngineContext& engineContext, ObjectManager& om)
 {
+    //Init om
+    objectManager = &om;
 
-    //Player Obj
-    /*player = static_cast<TileObject*>(objectManager.AddObject(std::make_unique<TileObject>(), "[Object]player00"));
-    player->SetRenderLayer("[Layer]Player");*/
-
+    //BABO Obj
+    TileObject* babo = AddTileObject(engineContext, "[Object]babo00", TileObject::TileType::BABO, {});
+    
     //Floor Obj
-    /*frObj00 = static_cast<TileObject*>(objectManager.AddObject(std::make_unique<TileObject>(), "[Object]floor00"));
-    frObj00->SetColor(glm::vec4(0, 0, 1, 1));
-    frObj00->SetMesh(engineContext, "[EngineMesh]default");*/
-
-
-    //Floor Collider
-   /* float colHeight = engineContext.windowManager->GetHeight() / 4.5;
-    auto frCol = std::make_unique<AABBCollider>(frObj00, glm::vec2(1.0, 1.0));
-    frCol->SetUseTransformScale(false);
-    frCol->SetSize({ engineContext.windowManager->GetWidth(), colHeight });
-    frCol->SetOffset({ glm::vec2(0,(-engineContext.windowManager->GetHeight() / 2) + (colHeight / 2)) });
-    frObj00->SetCollider(std::move(frCol));
-    frObj00->SetCollision(engineContext.stateManager->GetCurrentState()->GetObjectManager(), "[CollisionTag]tile", { "[CollisionTag]player" });*/
 
 }
 
@@ -112,18 +100,33 @@ void TileManager::LateInit(const EngineContext& engineContext)
 
 void TileManager::Update(float dt, const EngineContext& engineContext)
 {
-    /*if (engineContext.inputManager->IsKeyPressed(KEY_1))
+    if (engineContext.inputManager->IsKeyPressed(KEY_A))
     {
-        player->PlayerMove(Player::PlayerMoveType::LEFT, engineContext);
+        for (TileObject* objs : tileObjects) {
+            if (objs->GetTileType() == 0)
+            {
+                TileMove(*objs, ObjectiveType::LEFT);
+            }
+        }
     }
-    if (engineContext.inputManager->IsKeyPressed(KEY_2))
+    if (engineContext.inputManager->IsKeyPressed(KEY_D))
     {
-        player->PlayerMove(Player::PlayerMoveType::RIGHT, engineContext);
+        for (TileObject* objs : tileObjects) {
+            if (objs->GetTileType() == 0)
+            {
+                TileMove(*objs, ObjectiveType::RIGHT);
+            }
+        }
     }
-    if (engineContext.inputManager->IsKeyPressed(KEY_3))
+    if (engineContext.inputManager->IsKeyPressed(KEY_W))
     {
-        player->PlayerMove(Player::PlayerMoveType::UP, engineContext);
-    }*/
+        for (TileObject* objs : tileObjects) {
+            if (objs->GetTileType() == 0)
+            {
+                TileMove(*objs, ObjectiveType::UP);
+            }
+        }
+    }
 }
 
 void TileManager::LateUpdate(float dt, const EngineContext& engineContext)
@@ -137,8 +140,59 @@ void TileManager::Draw(const EngineContext& engineContext)
 
 void TileManager::Free(const EngineContext& engineContext)
 {
+    tileObjects.clear();
 }
 
 void TileManager::Unload(const EngineContext& engineContext)
 {
+}
+
+TileObject* TileManager::AddTileObject(const EngineContext& engineContext, const std::string& tag, TileObject::TileType tileType, std::vector<bool> rules)
+{
+    // Create Object
+    TileObject* tileObj = static_cast<TileObject*>(objectManager->AddObject(std::make_unique<TileObject>(), tag));
+    // Set TileType
+    tileObj->SetTileType(tileType);
+    // Set RuleType
+    tileObj->SetTileRules(rules);
+    // Set Default Postion
+    SetTilePosition(engineContext, *tileObj, {0, 0});
+
+    tileObjects.push_back(tileObj);
+    return tileObj;
+}
+
+void TileManager::TileMove(TileObject& tileObj, ObjectiveType moveType)
+{
+    glm::vec2 direction = glm::vec2(0, 0);
+    switch (moveType)
+    {
+    case ObjectiveType::LEFT:
+        direction.x = -1;
+        tileObj.SetFlipUV_X(true);
+        break;
+    case ObjectiveType::RIGHT:
+        direction.x = 1;
+        tileObj.SetFlipUV_X(false);
+        break;
+    case ObjectiveType::UP:
+        direction.y = 1;
+        break;
+    }
+    AddTilePosition(tileObj, direction);
+}
+
+void TileManager::AddTilePosition(TileObject& tileObj, const glm::vec2& pos)
+{
+    tileObj.GetTransform2D().AddPosition(pos * TILE_INTERVAL);
+}
+
+void TileManager::SetTilePosition(const EngineContext& engineContext, TileObject& tileObj, const glm::vec2& cord)
+{
+    int w = engineContext.windowManager->GetWidth();
+    int h = engineContext.windowManager->GetHeight();
+    glm::vec2 resPos = { 0, 0 };
+    glm::vec2 originPos = { 0 + TILE_INTERVAL / 2, h / 2 - TILE_INTERVAL };
+    resPos = originPos + cord * TILE_INTERVAL;
+    tileObj.GetTransform2D().SetPosition(resPos);
 }
