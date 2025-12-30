@@ -135,23 +135,49 @@ void Level::Draw(const EngineContext& ec)
     if (cursor) cursor->SetVisibility(true);
 
     //Grid
-    if (ec.engine->ShouldRenderDebugDraws()) {
+    if (ec.engine->ShouldRenderDebugDraws())
+    {
         int w = m_gridSystem.GetWidth();
         int h = m_gridSystem.GetHeight();
 
-        for (int i = 0; i <= w; ++i) ec.renderManager->DrawLine({ i * 30, 0 }, { i * 30, h * 30 }, { 1, 1, 1, 0.1f });
-        for (int j = 0; j <= h; ++j) ec.renderManager->DrawLine({ 0, j * 30 }, { w * 30, j * 30 }, { 1, 1, 1, 0.1f });
+        float cellSize = 30.0f;
 
+        float offsetX = 0;
+        float offsetY = -(h * cellSize) * 0.5f;
+
+        // virtical line
+        for (int i = 0; i <= w; ++i) {
+            float x = offsetX + i * cellSize;
+            ec.renderManager->DrawLine(
+                { x, offsetY },
+                { x, offsetY + h * cellSize },
+                { 1, 1, 1, 0.1f }
+            );
+        }
+
+        // horizontal line
+        for (int j = 0; j <= h; ++j) {
+            float y = offsetY + j * cellSize;
+            ec.renderManager->DrawLine( { offsetX, y }, { offsetX + w * cellSize, y }, { 1, 1, 1, 0.1f } );
+        }
+
+        // cell line
         for (int y = 0; y < h; ++y) {
             for (int x = 0; x < w; ++x) {
                 auto* cell = m_gridSystem.GetCell(x, y);
-                if (cell && cell->isStaticWall) { 
-                    ec.renderManager->DrawLine({ x * 30, y * 30 }, { (x + 1) * 30, (y + 1) * 30 }, { 1, 0, 0, 0.5f }, 2.0f);
-                    ec.renderManager->DrawLine({ (x + 1) * 30, y * 30 }, { x * 30, (y + 1) * 30 }, { 1, 0, 0, 0.5f }, 2.0f);
+                if (cell && cell->isStaticWall) {
+                    float x0 = offsetX + x * cellSize;
+                    float y0 = offsetY + y * cellSize;
+                    float x1 = offsetX + (x + 1) * cellSize;
+                    float y1 = offsetY + (y + 1) * cellSize;
+
+                    ec.renderManager->DrawLine( { x0, y0 }, { x1, y1 }, { 1, 0, 0, 0.5f }, 2.0f );
+                    ec.renderManager->DrawLine( { x1, y0 }, { x0, y1 }, { 1, 0, 0, 0.5f }, 2.0f );
                 }
             }
         }
     }
+
 
     // Tiles
     tileManager.Draw(ec);
