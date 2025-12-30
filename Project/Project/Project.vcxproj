@@ -233,6 +233,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BackgroundObject.cpp" />
+    <ClCompile Include="Button.cpp" />
     <ClCompile Include="CustomLoadingState.cpp" />
     <ClCompile Include="FlagObject.cpp" />
     <ClCompile Include="InstancedObject.cpp" />
@@ -250,6 +251,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BackgroundObject.h" />
+    <ClInclude Include="Button.h" />
+    <ClInclude Include="Core\Constants.h" />
+    <ClInclude Include="Core\Fix64.h" />
+    <ClInclude Include="Core\Grid.h" />
+    <ClInclude Include="Core\LevelSerializer.h" />
+    <ClInclude Include="Core\Physics.h" />
+    <ClInclude Include="Core\RuleManager.h" />
     <ClInclude Include="CustomLoadingState.h" />
     <ClInclude Include="FlagObject.h" />
     <ClInclude Include="InstancedObject.h" />
