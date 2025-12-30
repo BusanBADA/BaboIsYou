@@ -1,6 +1,6 @@
 #include "Level.h"
 #include "MainMenu.h"
-
+#include "WordObject.h"
 namespace LevelState
 {
     void AsyncLoad(const EngineContext& engineContext, LoadingState* loading)
@@ -67,6 +67,9 @@ void Level::Load(const EngineContext& engineContext)
     rm->RegisterMaterial("[Material]Background06", "[EngineShader]default_texture", { {"u_Texture","[Texture]Background06"} });
     rm->RegisterMaterial("[Material]Background07", "[EngineShader]default_texture", { {"u_Texture","[Texture]Background07"} });
     rm->RegisterMaterial("[Material]Background08", "[EngineShader]default_texture", { {"u_Texture","[Texture]Background08"} });
+
+    wordManager = static_cast<WordManager*>(objectManager.AddObject(std::make_unique<WordManager>(), "[Object]wordManager"));
+	wordManager->ReadFile(engineContext, 1);
 }
 
 void Level::Init(const EngineContext& engineContext)

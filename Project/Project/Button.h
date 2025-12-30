@@ -24,11 +24,13 @@ public:
 
 	void SetBackgroundColor(const  glm::vec4& normal, const  glm::vec4& hover);
 protected:
-private:
-	std::function<void()> onClick;
 	GameObject* background;
 	glm::vec2 padding = glm::vec2(10.0f, 6.0f);
-	glm::vec4 normalColor = glm::vec4(0.2f, 0.2f, 0.2f,1.f);
+	glm::vec4 normalColor = glm::vec4(0.2f, 0.2f, 0.2f, 1.f);
 	glm::vec4 hoverColor = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
+private:
+	std::function<void()> onClick;
+	
+	
 	bool hovered = false;
 };

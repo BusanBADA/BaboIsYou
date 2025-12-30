@@ -21,14 +21,17 @@ void Button::Init(const EngineContext& engineContext)
 	}
 	
 
-	std::unique_ptr<Object> bgObj = std::make_unique<GameObject>();
+	std::unique_ptr<Object> bgObj = std::make_unique<GameObject>(); 
+	SetIgnoreCamera(true, engineContext.stateManager->GetCurrentState()->GetActiveCamera());
 	
 	background = static_cast<GameObject*>(bgObj.get());
 	background->SetMesh(engineContext, "[EngineMesh]default");
 	background->SetMaterial(engineContext, "[Material]Button");
 	background->SetRenderLayer("[Layer]UI");
 	background->GetTransform2D().SetDepth(GetTransform2D().GetDepth() + 0.1f);
+	background->SetIgnoreCamera(true, engineContext.stateManager->GetCurrentState()->GetActiveCamera());
 	engineContext.stateManager->GetCurrentState()->GetObjectManager().AddObject(std::move(bgObj));
+
 }
 
 void Button::LateInit(const EngineContext& engineContext)

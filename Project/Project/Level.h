@@ -38,6 +38,7 @@ private:
     FlagObject* flag00, * flag01, * flag02, * flag03, * flag04;
     TileObject* frObj00;
     GameObject* cursor;
+	class WordManager* wordManager;
     float timer = 0;
 };
 
