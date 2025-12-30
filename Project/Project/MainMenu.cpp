@@ -36,7 +36,7 @@ void MainMenu::Init(const EngineContext& engineContext)
 
             auto loading = std::make_unique<CustomLoadingState>(nextFactory);
 
-            TutorialState::AsyncLoad(engineContext, loading.get());
+            LevelState::AsyncLoad(engineContext, loading.get());
 
             engineContext.stateManager->ChangeState(std::move(loading));
         });

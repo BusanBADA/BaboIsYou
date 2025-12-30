@@ -97,7 +97,7 @@ glm::vec2 AABBCollider::GetSize() const
 
 void AABBCollider::SetSize(const glm::vec2& size)
 {
-    baseHalfSize = size/glm::vec2(2);
+   // baseHalfSize = size/glm::vec2(2); some errors ouccr
 
     if (!useTransformScale)
         scaledHalfSize = size / glm::vec2(2);

@@ -111,6 +111,7 @@ void Player::LateFree(const EngineContext& engineContext)
 
 void Player::OnCollision(Object* other)
 {
+    JIN_LOG(other->GetTag());
     //if (other->GetTag() == "enemyBullet")
     //{
     //    other->Kill();

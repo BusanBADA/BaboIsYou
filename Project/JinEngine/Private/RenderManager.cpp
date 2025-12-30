@@ -324,6 +324,16 @@ void RenderManager::DrawDebugLine(const glm::vec2& from, const glm::vec2& to, Ca
 {
     debugLineMap[{camera, lineWidth}].push_back({ from, to, color, lineWidth });
 }
+void RenderManager::DrawLine(const glm::vec2& from, const glm::vec2& to, const glm::vec4& color, float width)
+{
+    if (!renderCamera) return;
+    LineInstance li;
+    li.from = from;
+    li.to = to;
+    li.color = color;
+    li.lineWidth = width; 
+    debugLineMap[{renderCamera, width}].push_back(li);
+}
 void RenderManager::FlushDebugLineDrawCommands(const EngineContext& engineContext)
 {
     debugLineShader->Use();
