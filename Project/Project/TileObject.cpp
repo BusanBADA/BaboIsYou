@@ -78,6 +78,9 @@ void TileObject::Init(const EngineContext& engineContext)
 		break;
 	}
 
+	GetTransform2D().SetDepth(0.0f);
+	GetTransform2D().SetScale({ TILE_INTERVAL, TILE_INTERVAL });
+
 	// Collider
 	auto collider = std::make_unique<AABBCollider>(this, glm::vec2(1.0, 1.0));
 	collider->SetUseTransformScale(true);

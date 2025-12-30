@@ -192,7 +192,7 @@ void TileManager::SetTilePosition(const EngineContext& engineContext, TileObject
     int w = engineContext.windowManager->GetWidth();
     int h = engineContext.windowManager->GetHeight();
     glm::vec2 resPos = { 0, 0 };
-    glm::vec2 originPos = { 0 + TILE_INTERVAL / 2, h / 2 - TILE_INTERVAL };
+    glm::vec2 originPos = { 0 + TILE_INTERVAL / 2, h / 2 - TILE_INTERVAL / 2 };
     resPos = originPos + cord * TILE_INTERVAL;
     tileObj.GetTransform2D().SetPosition(resPos);
 }
