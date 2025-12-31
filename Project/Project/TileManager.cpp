@@ -214,7 +214,8 @@ bool TileManager::AddTilePosition(TileObject& tileObj, const glm::vec2& pos)
     else // if Something have
     {
         //examine pushable
-        if(CheckPushable) 
+        /*if (CheckPushable)
+            PushTiles();*/
     }
     return false;
 }

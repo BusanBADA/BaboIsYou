@@ -34,7 +34,7 @@ public:
 	void SetBasePos(glm::vec2 pos);
 private:
 	TileType tileType;
-	const std::vector<std::string> tileColTags = { "[CollisionTag]Babo", "[CollisionTag]Floor",
+	const std::vector<std::string> tileColTags = { "[CollisionTag]Blank", "[CollisionTag]Babo", "[CollisionTag]Floor",
 	"[CollisionTag]Box", "[CollisionTag]DeadZone", "[CollisionTag]Wall", "[CollisionTag]Star" };
 	//Tile Rules
 	std::vector<bool> rules;
