@@ -30,6 +30,7 @@ void TileObject::Init(const EngineContext& engineContext)
 			isFixed = true;
 			isDefeat = false;
 			isWin = false;*/
+			SetMaterial(engineContext, "[Material]Floor01");
 
 			break;
 		case TileType::BOX:
@@ -41,6 +42,7 @@ void TileObject::Init(const EngineContext& engineContext)
 			isFixed = false;
 			isDefeat = false;
 			isWin = false;*/
+			SetMaterial(engineContext, "[Material]Box00");
 
 			break;
 		case TileType::DEADZONE:
@@ -52,6 +54,7 @@ void TileObject::Init(const EngineContext& engineContext)
 			isFixed = true;
 			isDefeat = true;
 			isWin = false;*/
+			SetMaterial(engineContext, "[Material]Danger00");
 
 			break;
 		case TileType::WALL:
@@ -63,6 +66,7 @@ void TileObject::Init(const EngineContext& engineContext)
 			isFixed = true;
 			isDefeat = false;
 			isWin = false;*/
+			SetMaterial(engineContext, "[Material]Stone00");
 
 			break;
 		case TileType::STAR:
@@ -74,6 +78,7 @@ void TileObject::Init(const EngineContext& engineContext)
 			isFixed = true;
 			isDefeat = false;
 			isWin = true;*/
+			SetMaterial(engineContext, "[Material]Star00");
 
 		break;
 	}
@@ -84,8 +89,6 @@ void TileObject::Init(const EngineContext& engineContext)
 	// Collider
 	auto collider = std::make_unique<AABBCollider>(this, glm::vec2(1.0, 1.0));
 	collider->SetUseTransformScale(true);
-	/*collider->SetSize({ 30, 30 });
-	collider->SetOffset({ glm::vec2(0, 0) });*/
 	SetCollider(std::move(collider));
 	SetCollision(engineContext.stateManager->GetCurrentState()->GetObjectManager(), tileColTags[tileType], tileColTags );
 

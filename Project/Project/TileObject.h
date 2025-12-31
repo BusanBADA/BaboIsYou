@@ -5,7 +5,7 @@
 class TileObject : public GameObject
 {
 public:
-	enum TileType { BABO, FLOOR, BOX, DEADZONE, WALL, STAR };
+	enum TileType { BLANK, BABO, FLOOR, BOX, DEADZONE, WALL, STAR };
 	enum RuleType { IS_YOU, IS_PUSH, IS_STOP, IS_FIXED, IS_DEFEAT, IS_WIN };
 
 	void Init(const EngineContext& engineContext) override;
@@ -27,6 +27,10 @@ public:
 	std::vector<bool> GetTileRules() { return rules; }
 	bool GetTileRule(RuleType ruletype) { return rules[ruletype]; }
 
+	void SetCellPos(const glm::vec2& pos) { cellPosition = pos; }
+
+	const glm::vec2& GetCellPos() { return cellPosition; }
+
 	void SetBasePos(glm::vec2 pos);
 private:
 	TileType tileType;
@@ -34,6 +38,7 @@ private:
 	"[CollisionTag]Box", "[CollisionTag]DeadZone", "[CollisionTag]Wall", "[CollisionTag]Star" };
 	//Tile Rules
 	std::vector<bool> rules;
+	glm::vec2 cellPosition;
 	glm::vec2 basePosition;
 };
 

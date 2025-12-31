@@ -25,6 +25,8 @@ void TileState::AsyncLoad(const EngineContext& engineContext, LoadingState* load
     // Object Tiles
     loading->QueueTexture(engineContext, "[Texture]Babo00", "Textures/Object/Babo_1.png"); // player = babo
     loading->QueueTexture(engineContext, "[Texture]Babo01", "Textures/Object/Babo_2.png");
+    loading->QueueTexture(engineContext, "[Texture]Danger00", "Textures/Object/Danger.png"); // player = babo
+    loading->QueueTexture(engineContext, "[Texture]Star00", "Textures/Object/Star.png");
     loading->QueueTexture(engineContext, "[Texture]Box00", "Textures/Object/Crate.png"); // box
     loading->QueueTexture(engineContext, "[Texture]Stone00", "Textures/Object/Stone.png"); // wall
 
@@ -67,6 +69,8 @@ void TileManager::Load(const EngineContext& engineContext)
     // Object Tiles
     rm->RegisterMaterial("[Material]Babo00", "[EngineShader]default_texture", { {"u_Texture","[Texture]Babo00"} });
     rm->RegisterMaterial("[Material]Babo01", "[EngineShader]default_texture", { {"u_Texture","[Texture]Babo01"} });
+    rm->RegisterMaterial("[Material]Danger00", "[EngineShader]default_texture", { {"u_Texture","[Texture]Danger00"} });
+    rm->RegisterMaterial("[Material]Star00", "[EngineShader]default_texture", { {"u_Texture","[Texture]Star00"} });
     rm->RegisterMaterial("[Material]Box00", "[EngineShader]default_texture", { {"u_Texture","[Texture]Box00"} });
     rm->RegisterMaterial("[Material]Stone00", "[EngineShader]default_texture", { {"u_Texture","[Texture]Stone00"} });
 
@@ -87,10 +91,18 @@ void TileManager::Init(const EngineContext& engineContext, ObjectManager& om)
     //Init om
     objectManager = &om;
 
-    //BABO Obj
-    TileObject* babo = AddTileObject(engineContext, "[Object]babo00", TileObject::TileType::BABO, {});
-    
-    //Floor Obj
+    //Init tilemap
+
+    //Tiles Load Part in lv File
+    //...
+
+    //*TEST OBJs*
+    AddTileObject(engineContext, "[Object]babo00", TileObject::TileType::BABO, {});
+    AddTileObject(engineContext, "[Object]floor00", TileObject::TileType::FLOOR, {}, {1,0});
+    AddTileObject(engineContext, "[Object]box00", TileObject::TileType::BOX, {}, {2,0});
+    AddTileObject(engineContext, "[Object]deadzone00", TileObject::TileType::DEADZONE, {}, {3,0});
+    AddTileObject(engineContext, "[Object]wall00", TileObject::TileType::WALL, {}, {4,0});
+    AddTileObject(engineContext, "[Object]star00", TileObject::TileType::STAR, {}, {5,0});
 
 }
 
@@ -131,6 +143,7 @@ void TileManager::Update(float dt, const EngineContext& engineContext)
 
 void TileManager::LateUpdate(float dt, const EngineContext& engineContext)
 {
+    GravityFunc();
 }
 
 void TileManager::Draw(const EngineContext& engineContext)
@@ -147,7 +160,7 @@ void TileManager::Unload(const EngineContext& engineContext)
 {
 }
 
-TileObject* TileManager::AddTileObject(const EngineContext& engineContext, const std::string& tag, TileObject::TileType tileType, std::vector<bool> rules)
+TileObject* TileManager::AddTileObject(const EngineContext& engineContext, const std::string& tag, TileObject::TileType tileType, std::vector<bool> rules, const glm::vec2& defPos)
 {
     // Create Object
     TileObject* tileObj = static_cast<TileObject*>(objectManager->AddObject(std::make_unique<TileObject>(), tag));
@@ -156,7 +169,7 @@ TileObject* TileManager::AddTileObject(const EngineContext& engineContext, const
     // Set RuleType
     tileObj->SetTileRules(rules);
     // Set Default Postion
-    SetTilePosition(engineContext, *tileObj, {0, 0});
+    SetTilePosition(engineContext, *tileObj, defPos);
 
     tileObjects.push_back(tileObj);
     return tileObj;
@@ -182,17 +195,78 @@ void TileManager::TileMove(TileObject& tileObj, ObjectiveType moveType)
     AddTilePosition(tileObj, direction);
 }
 
-void TileManager::AddTilePosition(TileObject& tileObj, const glm::vec2& pos)
+bool TileManager::AddTilePosition(TileObject& tileObj, const glm::vec2& pos)
 {
-    tileObj.GetTransform2D().AddPosition(pos * TILE_INTERVAL);
+    glm::vec2 cord = tileObj.GetCellPos();
+
+    //exam
+    if (CheckBlankPosition(cord + pos)) // if BLANK
+    {
+        //replace
+        SetTileTypeInTilemap(cord, TileObject::BLANK);
+        cord += pos;
+        tileObj.SetCellPos(cord);
+        SetTileTypeInTilemap(cord, tileObj.GetTileType());
+        tileObj.GetTransform2D().AddPosition(pos * TILE_INTERVAL);
+
+        return true;
+    }
+    else // if Something have
+    {
+        //examine pushable
+        if(CheckPushable) 
+    }
+    return false;
 }
 
 void TileManager::SetTilePosition(const EngineContext& engineContext, TileObject& tileObj, const glm::vec2& cord)
 {
+    tileObj.SetCellPos(cord);
+    SetTileTypeInTilemap(cord, tileObj.GetTileType());
     int w = engineContext.windowManager->GetWidth();
     int h = engineContext.windowManager->GetHeight();
     glm::vec2 resPos = { 0, 0 };
     glm::vec2 originPos = { 0 + TILE_INTERVAL / 2, h / 2 - TILE_INTERVAL / 2 };
     resPos = originPos + cord * TILE_INTERVAL;
     tileObj.GetTransform2D().SetPosition(resPos);
+}
+
+bool TileManager::CheckBlankPosition(const glm::vec2& cord)
+{
+    return (GetTileTypeInTilemap(cord) == TileObject::TileType::BLANK);
+}
+
+bool TileManager::CheckPushable(TileObject& tileObj, const glm::vec2& dir)
+{
+    //...
+    return false;
+}
+
+void TileManager::PushTiles(TileObject& tileObj, const glm::vec2& dir)
+{
+    //...
+}
+
+void TileManager::GravityFunc()
+{
+    //...
+    //  If not fixed, Fall until a tile is encountered below.
+}
+ 
+void TileManager::SetTileTypeInTilemap(const glm::vec2& cord, TileObject::TileType type)
+{
+    if (MAX_TILEMAP_SIZE.x <= cord.x || MAX_TILEMAP_SIZE.y <= cord.y) {
+        JIN_ERR("Coordinate out of bounds.");
+        return;
+    }
+    tilemap[cord.y * MAX_TILEMAP_SIZE.x + cord.x] = (int)type;
+}
+
+TileObject::TileType TileManager::GetTileTypeInTilemap(const glm::vec2& cord)
+{
+    if (MAX_TILEMAP_SIZE.x <= cord.x || MAX_TILEMAP_SIZE.y <= cord.y) {
+        JIN_ERR("Coordinate out of bounds.");
+        return TileObject::TileType(0);
+    }
+    return TileObject::TileType(tilemap[cord.y * MAX_TILEMAP_SIZE.x + cord.x]);
 }
