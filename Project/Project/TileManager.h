@@ -48,7 +48,7 @@ public:
 
     bool CheckBlankPosition(const glm::vec2& cord, ObjectiveType moveType);
 
-    bool CheckStarPosition(const glm::vec2& cord, ObjectiveType moveType);
+    bool CheckWinPosition(const glm::vec2& cord, ObjectiveType moveType);
 
     bool CheckPushable(TileObject& tileObj, const glm::vec2& dir);
 
@@ -64,6 +64,8 @@ public:
     }
 
     std::vector<TileObject*> GetTileObjects() { return tileObjects; }
+
+    TileObject* GetTileObjectByCellCord(const glm::vec2& cord);
 
     void SetTileTypeInTilemap(const glm::vec2& cord, TileObject::TileType type);
 

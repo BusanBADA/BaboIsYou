@@ -283,7 +283,7 @@ bool TileManager::CheckBlankPosition(const glm::vec2& cord, ObjectiveType moveTy
     return (CheckValidPosition(tempCord) && GetTileTypeInTilemap(tempCord) == TileObject::TileType::BLANK);
 }
 
-bool TileManager::CheckStarPosition(const glm::vec2& cord, ObjectiveType moveType)
+bool TileManager::CheckWinPosition(const glm::vec2& cord, ObjectiveType moveType)
 {
     glm::vec2 tempCord = cord;
     switch (moveType)
@@ -301,7 +301,8 @@ bool TileManager::CheckStarPosition(const glm::vec2& cord, ObjectiveType moveTyp
         tempCord.y += 1;
         break;
     }
-    return (CheckValidPosition(tempCord) && GetTileTypeInTilemap(tempCord) == TileObject::TileType::STAR);
+    TileObject* to = GetTileObjectByCellCord(tempCord);
+    return (CheckValidPosition(tempCord) && to->GetTileRule(TileObject::RuleType::IS_WIN));
 }
 
 bool TileManager::CheckPushable(TileObject& tileObj, const glm::vec2& dir)
@@ -330,7 +331,7 @@ void TileManager::GravityFunc()
             {
                 TileMove(*obj, ObjectiveType::DOWN);
             }
-            if (CheckStarPosition(obj->GetCellPos(), ObjectiveType::DOWN))
+            if (CheckWinPosition(obj->GetCellPos(), ObjectiveType::DOWN))
             {
                 isWin = true;
                 return;
@@ -339,6 +340,19 @@ void TileManager::GravityFunc()
     }
 }
  
+TileObject* TileManager::GetTileObjectByCellCord(const glm::vec2& cord)
+{
+    TileObject* to = nullptr;
+    for (TileObject* o : tileObjects)
+    {
+        if (o->GetCellPos() == cord)
+        {
+            to = o;
+        }
+    }
+    return to;
+}
+
 void TileManager::SetTileTypeInTilemap(const glm::vec2& cord, TileObject::TileType type)
 {
     if (!CheckValidPosition(cord)) {
