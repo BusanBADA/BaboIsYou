@@ -30,7 +30,8 @@ namespace LevelState
 
 void Level::Load(const EngineContext& engineContext)
 {
-    m_gridSystem.Resize(42, 24);
+    m_gridSystem = &BABO::World::GridSystem::instance();
+    m_gridSystem->Resize(42, 24);
  
     /*auto spawner = [&](uint32_t id, int type, int64_t x, int64_t y, std::string tag) {
         float fx = BABO::Math::Fix64(x, BABO::Math::Fix64::RawTag{}).ToFloat();
@@ -141,8 +142,8 @@ void Level::Draw(const EngineContext& ec)
     //Grid
     if (ec.engine->ShouldRenderDebugDraws())
     {
-        int w = m_gridSystem.GetWidth();
-        int h = m_gridSystem.GetHeight();
+        int w = m_gridSystem->GetWidth();
+        int h = m_gridSystem->GetHeight();
 
         float cellSize = 30.0f;
 
@@ -164,7 +165,7 @@ void Level::Draw(const EngineContext& ec)
         // cell line
         for (int y = 0; y < h; ++y) {
             for (int x = 0; x < w; ++x) {
-                auto* cell = m_gridSystem.GetCell(x, y);
+                auto* cell = m_gridSystem->GetCell(x, y);
                 if (cell && cell->isStaticWall) {
                     float x0 = offsetX + x * cellSize;
                     float y0 = offsetY + y * cellSize;

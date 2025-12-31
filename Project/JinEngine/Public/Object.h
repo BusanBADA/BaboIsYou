@@ -95,7 +95,8 @@ public:
     void SetFlipUV_X(bool shouldFlip) { flipUV_X = shouldFlip; }
     void SetFlipUV_Y(bool shouldFlip) { flipUV_Y = shouldFlip; }
     [[nodiscard]] glm::vec2 GetUVFlipVector() const;
-
+    uint32_t GetID() const { return id; }
+    void SetID(uint32_t _id) { id = _id; }
 protected:
     Object(ObjectType objectType) : type(objectType) {}
     ObjectType type;
@@ -126,4 +127,5 @@ protected:
 
     bool flipUV_X = false;
     bool flipUV_Y = false;
+    uint32_t id = 0;
 };

@@ -15,65 +15,53 @@ namespace BABO::IO {
 
     class LevelSerializer {
     public:
-
-        static void Save(const std::string& file, const World::GridSystem& grid, const std::vector<EntityData>& entities, const std::vector<std::string>& tags) {
+        static void Save(const std::string& file, const World::GridSystem& grid,
+            const std::vector<EntityData>& entities, const std::vector<std::string>& tags) {
             std::ofstream ofs(file);
             if (!ofs.is_open()) return;
 
-
             ofs << "BABO " << 30 << " " << grid.GetWidth() << " " << grid.GetHeight() << "\n";
-
 
             for (int y = 0; y < grid.GetHeight(); ++y) {
                 for (int x = 0; x < grid.GetWidth(); ++x) {
-                    ofs << (grid.GetCell(x, y)->isStaticWall ? 1 : 0) << " ";
+                    ofs << (grid.GetCell(x, y)->isStaticWall ? 5 : 0) << " ";
                 }
                 ofs << "\n";
             }
 
-
             ofs << entities.size() << "\n";
             for (size_t i = 0; i < entities.size(); ++i) {
-                ofs << entities[i].id << " "
-                    << entities[i].type << " "
-                    << entities[i].x << " "
-                    << entities[i].y << " "
-                    << tags[i] << "\n";
+                ofs << entities[i].id << " " << entities[i].type << " "
+                    << entities[i].x << " " << entities[i].y << " " << tags[i] << "\n";
             }
         }
 
-
         static bool Load(const std::string& file, World::GridSystem& grid,
-            std::function<void(uint32_t, int, int64_t, int64_t, std::string)> spawner)
+            std::function<void(int tileType, int x, int y)> tileSpawner,
+            std::function<void(uint32_t, int, int64_t, int64_t, std::string)> entitySpawner)
         {
             std::ifstream in(file);
             if (!in.is_open()) return false;
 
-            std::string headerTag; int ts, w, h;
-            in >> headerTag >> ts >> w >> h;
-
-            if (headerTag != "BABO" || ts != 30) return false;
-
+            std::string header; int ts, w, h;
+            in >> header >> ts >> w >> h;
             grid.Resize(w, h);
-            grid.Reset();
 
             for (int y = 0; y < h; ++y) {
                 for (int x = 0; x < w; ++x) {
-                    int val; in >> val;
-                    if (val) grid.GetCell(x, y)->isStaticWall = true;
+                    int typeNum;
+                    in >> typeNum;
+                    if (typeNum > 0) {
+                        tileSpawner(typeNum, x, y); 
+                    }
                 }
             }
 
-            int count;
-            in >> count;
+            int count; in >> count;
             for (int i = 0; i < count; ++i) {
-                uint32_t id; int type; int64_t x, y;
-                std::string entTag;
-
-                in >> id >> type >> x >> y >> entTag;
-
-
-                spawner(id, type, x, y, entTag);
+                uint32_t id; int type; int64_t rx, ry; std::string tag;
+                in >> id >> type >> rx >> ry >> tag;
+                entitySpawner(id, type, rx, ry, tag);
             }
             return true;
         }

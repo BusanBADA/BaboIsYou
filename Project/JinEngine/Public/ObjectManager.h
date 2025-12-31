@@ -32,7 +32,13 @@ public:
     [[nodiscard]] CollisionGroupRegistry& GetCollisionGroupRegistry() { return collisionGroupRegistry; }
 
     [[nodiscard]] std::vector<Object*> GetAllRawPtrObjects() { return rawPtrObjects; }
+    void Clear() {
 
+        for (auto& obj : objects) {
+            if (obj) obj->Kill();
+        }
+
+    }
 private:
     void AddAllPendingObjects(const EngineContext& engineContext);
     void EraseDeadObjects(const EngineContext& engineContext);

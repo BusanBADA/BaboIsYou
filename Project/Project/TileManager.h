@@ -78,6 +78,8 @@ public:
 
 
     void CreateDefaultLevel(const std::string& path);
+    void LoadLevel(const EngineContext& engineContext, const std::string& path, BABO::World::GridSystem& grid);
+    std::string GetTagByTileType(TileObject::TileType type);
 private:
     ObjectManager* objectManager = nullptr;
 

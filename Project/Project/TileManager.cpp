@@ -93,24 +93,22 @@ void TileManager::Init(const EngineContext& engineContext, ObjectManager& om)
 {
     //Init om
     objectManager = &om;
-
+    BABO::World::GridSystem* m_grid = &BABO::World::GridSystem::instance();
     //Init tilemap
-
-    //Tiles Load Part in lv File
-    //...
-
-    //*TEST OBJs*
-    AddTileObject(engineContext, "[Object]babo00", TileObject::TileType::BABO, {});
-    AddTileObject(engineContext, "[Object]floor00", TileObject::TileType::FLOOR, {}, { 0,1 });
-    AddTileObject(engineContext, "[Object]floor01", TileObject::TileType::FLOOR, {}, {1,1});
-    AddTileObject(engineContext, "[Object]floor02", TileObject::TileType::FLOOR, {}, { 2,1 });
-    AddTileObject(engineContext, "[Object]floor03", TileObject::TileType::FLOOR, {}, { 3,1 });
-    AddTileObject(engineContext, "[Object]floor04", TileObject::TileType::FLOOR, {}, { 4,1 });
-    AddTileObject(engineContext, "[Object]floor05", TileObject::TileType::FLOOR, {}, { 5,1 });
-    AddTileObject(engineContext, "[Object]box00", TileObject::TileType::BOX, {}, {2,1});
-    AddTileObject(engineContext, "[Object]deadzone00", TileObject::TileType::DEADZONE, {}, {3,1});
-    AddTileObject(engineContext, "[Object]wall00", TileObject::TileType::WALL, {}, {4,1});
-    AddTileObject(engineContext, "[Object]star00", TileObject::TileType::STAR, {}, {5,0});
+	LoadLevel(engineContext, "level01.babo", *m_grid);
+  
+    ////*TEST OBJs*
+    //AddTileObject(engineContext, "[Object]babo00", TileObject::TileType::BABO, {});
+    //AddTileObject(engineContext, "[Object]floor00", TileObject::TileType::FLOOR, {}, { 0,1 });
+    //AddTileObject(engineContext, "[Object]floor01", TileObject::TileType::FLOOR, {}, {1,1});
+    //AddTileObject(engineContext, "[Object]floor02", TileObject::TileType::FLOOR, {}, { 2,1 });
+    //AddTileObject(engineContext, "[Object]floor03", TileObject::TileType::FLOOR, {}, { 3,1 });
+    //AddTileObject(engineContext, "[Object]floor04", TileObject::TileType::FLOOR, {}, { 4,1 });
+    //AddTileObject(engineContext, "[Object]floor05", TileObject::TileType::FLOOR, {}, { 5,1 });
+    //AddTileObject(engineContext, "[Object]box00", TileObject::TileType::BOX, {}, {2,1});
+    //AddTileObject(engineContext, "[Object]deadzone00", TileObject::TileType::DEADZONE, {}, {3,1});
+    //AddTileObject(engineContext, "[Object]wall00", TileObject::TileType::WALL, {}, {4,1});
+    //AddTileObject(engineContext, "[Object]star00", TileObject::TileType::STAR, {}, {5,0});
 }
 
 void TileManager::LateInit(const EngineContext& engineContext)
@@ -324,37 +322,28 @@ TileObject::TileType TileManager::GetTileTypeInTilemap(const glm::vec2& cord)
 
 
 
-void TileManager::SyncToLogicGrid(BABO::World::GridSystem& grid, ObjectManager& objectManager) {
-  
+void TileManager::SyncToLogicGrid(BABO::World::GridSystem& grid, ObjectManager& om) {
     grid.Reset();
 
-
-    for (auto* obj : objectManager.GetAllRawPtrObjects()) {
-
+    for (auto* obj : om.GetAllRawPtrObjects()) {
         if (!obj || !obj->IsAlive()) continue;
 
-
         glm::vec2 pos = obj->GetTransform2D().GetPosition();
-
-        BABO::World::GridPoint gp = grid.WorldToGrid(BABO::Math::Fix64(pos.x), BABO::Math::Fix64(pos.y));
-
-
-        BABO::World::Cell* cell = grid.GetCell(gp.x, gp.y);
+        auto gp = grid.WorldToGrid(BABO::Math::Fix64(pos.x), BABO::Math::Fix64(pos.y));
+        auto* cell = grid.GetCell(gp.x, gp.y);
 
         if (cell) {
-
+            cell->entities.push_back(obj->GetID());
             const std::string& tag = obj->GetTag();
 
-  
             if (WordDictionary::IsSubject(tag))      cell->wordType = WordType::Subject;
             else if (WordDictionary::IsVerb(tag))    cell->wordType = WordType::Verb;
             else if (WordDictionary::IsObject(tag))  cell->wordType = WordType::Object;
 
-            if (tag == "Wall") {
+
+            if (tag == "Wall" || tag == "Stone00") {
                 cell->isStaticWall = true;
             }
-
-
         }
     }
 }
@@ -382,8 +371,8 @@ void TileManager::SaveCurrentLevel(const std::string& path, BABO::World::GridSys
 }
 
 void TileManager::CreateDefaultLevel(const std::string& path) {
-    BABO::World::GridSystem defaultGrid;
-    defaultGrid.Resize(42, 24); //
+ 
+    BABO::World::GridSystem::instance().Resize(42, 24); //
 
     std::vector<BABO::IO::EntityData> entities;
     std::vector<std::string> tags;
@@ -396,6 +385,53 @@ void TileManager::CreateDefaultLevel(const std::string& path) {
     entities.push_back(baboData);
     tags.push_back("Babo");
 
-    BABO::IO::LevelSerializer::Save(path, defaultGrid, entities, tags);
+    BABO::IO::LevelSerializer::Save(path, BABO::World::GridSystem::instance(), entities, tags);
 }
 
+void TileManager::LoadLevel(const EngineContext& engineContext, const std::string& path, BABO::World::GridSystem& grid) {
+    objectManager->Clear();
+    tileObjects.clear();
+
+    bool success = BABO::IO::LevelSerializer::Load(path, grid,
+        [&](int type, int x, int y) {
+            TileObject::TileType tType = static_cast<TileObject::TileType>(type);
+            std::string tag = GetTagByTileType(tType);
+            AddTileObject(engineContext, tag, tType, {}, glm::vec2(x, y));
+        },
+        [&](uint32_t id, int type, int64_t rx, int64_t ry, std::string tag) {
+            BABO::Math::Fix64 fixX = BABO::Math::Fix64::FromRaw(rx);
+            BABO::Math::Fix64 fixY = BABO::Math::Fix64::FromRaw(ry);
+
+            float fx = fixX.ToFloat();
+            float fy = fixY.ToFloat();
+
+            if (tag == "[Object]wordManager") {
+                auto wm = std::make_unique<WordManager>();
+                wm->Init(engineContext);
+                objectManager->AddObject(std::move(wm), tag);
+            }
+            else {
+                auto go = std::make_unique<GameObject>();
+                go->SetID(id); 
+                go->SetTag(tag);
+                go->GetTransform2D().SetPosition({ fx, fy });
+                objectManager->AddObject(std::move(go), tag);
+            }
+        }
+    );
+
+    if (success) {
+        SyncToLogicGrid(grid, *objectManager);
+    }
+}
+
+std::string TileManager::GetTagByTileType(TileObject::TileType type) {
+    switch (type) {
+    case TileObject::BABO: return "Babo";
+    case TileObject::WALL: return "Wall";
+    case TileObject::STAR: return "Star";
+    case TileObject::BOX:  return "Box";
+    case TileObject::FLOOR: return "Floor";
+    default: return "Unknown";
+    }
+}

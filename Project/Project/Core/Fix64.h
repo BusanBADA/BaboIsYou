@@ -57,11 +57,19 @@ namespace BABO::Math {
             return Fix64((double)value / ONE_RAW / ((double)o.value / ONE_RAW));
         }
         int32_t ToInt() const { return static_cast<int32_t>(value) / ONE_RAW; }
-        float ToFloat() const { return static_cast<float>(value) / ONE_RAW; }
+        float ToFloat() const {
+            return static_cast<float>(value) / (1LL << 32);
+        }
         int64_t Raw() const { return value; }
         static Fix64 Zero() { return Fix64(0, RawTag{}); }
         static Fix64 One() { return Fix64(ONE_RAW, RawTag{}); }
         static Fix64 Abs(Fix64 v) { return v.value < 0 ? Fix64(-v.value, RawTag{}) : v; }
+        static Fix64 FromRaw(int64_t rawValue) {
+            Fix64 res;
+            res.value = rawValue;
+            return res;
+        }
+
     };
 
     struct Vector2Fix {

@@ -27,10 +27,10 @@ public:
 
 private:
     BackgroundObject* bgObj00;
-    void CreateDefaultLevel(const std::string& path);
-    void SyncToLogicGrid();
-    void SaveCurrentLevel(); 
-    BABO::World::GridSystem m_gridSystem;
+    //void CreateDefaultLevel(const std::string& path);
+    //void SyncToLogicGrid();
+    //void SaveCurrentLevel(); 
+    BABO::World::GridSystem* m_gridSystem;
     BABO::Logic::RuleManager m_ruleManager;
     std::string m_levelPath = "level1.babo";
 

@@ -28,6 +28,7 @@ namespace BABO::World {
     class GridSystem {
         int32_t m_width = 0, m_height = 0;
         std::vector<Cell> m_cells;
+        GridSystem() = default;
     public:
         void Resize(int w, int h) { m_width = w; m_height = h; m_cells.clear(); m_cells.resize(w * h); }
 
@@ -42,5 +43,11 @@ namespace BABO::World {
         void Reset() { for (auto& c : m_cells) c.Reset(); }
         int GetWidth() const { return m_width; }
         int GetHeight() const { return m_height; }
+        static GridSystem& instance() {
+            static GridSystem instance;
+            return instance;
+        }
+        GridSystem(const GridSystem&) = delete;
+        GridSystem& operator=(const GridSystem&) = delete;
     };
 }
