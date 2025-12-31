@@ -48,7 +48,7 @@ public:
 
     bool CheckBlankPosition(const glm::vec2& cord, ObjectiveType moveType);
 
-    bool CheckIsFixedPosition(const glm::vec2& cord, ObjectiveType moveType);
+    bool CheckStarPosition(const glm::vec2& cord, ObjectiveType moveType);
 
     bool CheckPushable(TileObject& tileObj, const glm::vec2& dir);
 
