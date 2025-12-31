@@ -1,4 +1,7 @@
 #include "TileManager.h"
+#include "GameTypes.h"
+#include "Core/LevelSerializer.h"
+
 
 void TileState::AsyncLoad(const EngineContext& engineContext, LoadingState* loading)
 {
@@ -142,3 +145,81 @@ void TileManager::Free(const EngineContext& engineContext)
 void TileManager::Unload(const EngineContext& engineContext)
 {
 }
+
+
+
+void TileManager::SyncToLogicGrid(BABO::World::GridSystem& grid, ObjectManager& objectManager) {
+  
+    grid.Reset();
+
+
+    for (auto* obj : objectManager.GetAllRawPtrObjects()) {
+
+        if (!obj || !obj->IsAlive()) continue;
+
+
+        glm::vec2 pos = obj->GetTransform2D().GetPosition();
+
+        BABO::World::GridPoint gp = grid.WorldToGrid(BABO::Math::Fix64(pos.x), BABO::Math::Fix64(pos.y));
+
+
+        BABO::World::Cell* cell = grid.GetCell(gp.x, gp.y);
+
+        if (cell) {
+
+            const std::string& tag = obj->GetTag();
+
+  
+            if (WordDictionary::IsSubject(tag))      cell->wordType = WordType::Subject;
+            else if (WordDictionary::IsVerb(tag))    cell->wordType = WordType::Verb;
+            else if (WordDictionary::IsObject(tag))  cell->wordType = WordType::Object;
+
+            if (tag == "Wall") {
+                cell->isStaticWall = true;
+            }
+
+
+        }
+    }
+}
+void TileManager::SaveCurrentLevel(const std::string& path, BABO::World::GridSystem& grid, ObjectManager& objectManager) {
+    std::vector<BABO::IO::EntityData> entities;
+    std::vector<std::string> tags;
+
+    for (auto* obj : objectManager.GetAllRawPtrObjects()) {
+        if (!obj || !obj->IsAlive()) continue;
+
+        BABO::IO::EntityData data;
+        // Babo 태그면 type 0, 나머지는 1로 설정 (기존 저장 규칙)
+        data.type = (obj->GetTag() == "Babo") ? 0 : 1;
+
+        // Fix64 Raw 데이터로 좌표 저장
+        glm::vec2 pos = obj->GetTransform2D().GetPosition();
+        data.x = BABO::Math::Fix64(pos.x).Raw();
+        data.y = BABO::Math::Fix64(pos.y).Raw();
+
+        entities.push_back(data);
+        tags.push_back(obj->GetTag());
+    }
+
+    BABO::IO::LevelSerializer::Save(path, grid, entities, tags);
+}
+
+void TileManager::CreateDefaultLevel(const std::string& path) {
+    BABO::World::GridSystem defaultGrid;
+    defaultGrid.Resize(42, 24); //
+
+    std::vector<BABO::IO::EntityData> entities;
+    std::vector<std::string> tags;
+
+    BABO::IO::EntityData baboData;
+    baboData.type = 0;
+    baboData.x = BABO::Math::Fix64(60.0f).Raw();
+    baboData.y = BABO::Math::Fix64(60.0f).Raw();
+
+    entities.push_back(baboData);
+    tags.push_back("Babo");
+
+    BABO::IO::LevelSerializer::Save(path, defaultGrid, entities, tags);
+}
+

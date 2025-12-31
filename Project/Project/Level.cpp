@@ -71,25 +71,7 @@ void Level::Init(const EngineContext& engineContext)
     tileManager.Init(engineContext);
 }
 
-void Level::SyncToLogicGrid()
-{
-    m_gridSystem.Reset();
-    for (auto* obj : objectManager.GetAllRawPtrObjects()) {
-        if (!obj || !obj->IsAlive()) continue;
-        auto gp = m_gridSystem.WorldToGrid(BABO::Math::Fix64(obj->GetTransform2D().GetPosition().x),
-            BABO::Math::Fix64(obj->GetTransform2D().GetPosition().y));
-        if (auto* cell = m_gridSystem.GetCell(gp.x, gp.y)) {
-            std::string tag = obj->GetTag();
 
-            if (tag == "Player" || tag == "Word_PLAYER") cell->word = BABO::Logic::WordType::PLAYER;
-            else if (tag == "Word_IS")   cell->word = BABO::Logic::WordType::IS;
-            else if (tag == "Word_YOU")  cell->word = BABO::Logic::WordType::YOU;
-            else if (tag == "Word_WALL") cell->word = BABO::Logic::WordType::WALL;
-            else if (tag == "Word_STOP") cell->word = BABO::Logic::WordType::STOP;
-            cell->entities.push_back(0);
-        }
-    }
-}
 
 void Level::Update(float dt, const EngineContext& ec)
 {
@@ -110,15 +92,15 @@ void Level::Update(float dt, const EngineContext& ec)
     if (ec.inputManager->IsKeyDown(KEY_ESCAPE)) ec.engine->RequestQuit();
     if (ec.inputManager->IsKeyReleased(KEY_O)) ec.engine->RenderDebugDraws(true);
     if (ec.inputManager->IsKeyReleased(KEY_P)) ec.engine->RenderDebugDraws(false);
-    if (ec.inputManager->IsKeyPressed(KEY_S)) SaveCurrentLevel();
+   //if (ec.inputManager->IsKeyPressed(KEY_S)) SaveCurrentLevel();
     if (ec.inputManager->IsKeyPressed(KEY_L)) ec.stateManager->ChangeState(std::make_unique<Level>());
 
  
-    if (ec.inputManager->IsKeyPressed(KEY_SPACE)) {
-        SyncToLogicGrid();
-        m_ruleManager.Parse(m_gridSystem);
-        JIN_LOG("Active Rules Found: " << m_ruleManager.activeRules.size());
-    }
+    //if (ec.inputManager->IsKeyPressed(KEY_SPACE)) {
+    //   // SyncToLogicGrid();
+    //    m_ruleManager.Parse(m_gridSystem);
+    //    JIN_LOG("Active Rules Found: " << m_ruleManager.activeRules.size());
+    //}
 
     cursor->GetTransform2D().SetPosition(glm::vec2(
         ec.inputManager->GetMousePos().x - ec.windowManager->GetWidth() / 2.f,
@@ -158,33 +140,51 @@ void Level::Draw(const EngineContext& ec)
 
     objectManager.DrawAll(ec);
 }
-
-void Level::SaveCurrentLevel()
-{
-    std::vector<BABO::IO::EntityData> entities;
-    std::vector<std::string> tags;
-    for (auto* obj : objectManager.GetAllRawPtrObjects()) {
-        if (!obj || !obj->IsAlive()) continue;
-        BABO::IO::EntityData d;
-        d.type = (obj->GetTag() == "Player") ? 0 : 1;
-        d.x = BABO::Math::Fix64(obj->GetTransform2D().GetPosition().x).Raw();
-        d.y = BABO::Math::Fix64(obj->GetTransform2D().GetPosition().y).Raw();
-        entities.push_back(d);
-        tags.push_back(obj->GetTag());
-    }
-    BABO::IO::LevelSerializer::Save(m_levelPath, m_gridSystem, entities, tags);
-}
-
-void Level::CreateDefaultLevel(const std::string& path)
-{
-    BABO::World::GridSystem temp; temp.Resize(42, 24);
-    std::vector<BABO::IO::EntityData> ents;
-    std::vector<std::string> tags;
-    BABO::IO::EntityData p; p.id = 1; p.type = 0;
-    p.x = BABO::Math::Fix64(60.0f).Raw(); p.y = BABO::Math::Fix64(60.0f).Raw();
-    ents.push_back(p); tags.push_back("Player");
-    BABO::IO::LevelSerializer::Save(path, temp, ents, tags);
-}
+//void Level::SyncToLogicGrid()
+//{
+//    m_gridSystem.Reset();
+//    for (auto* obj : objectManager.GetAllRawPtrObjects()) {
+//        if (!obj || !obj->IsAlive()) continue;
+//        auto gp = m_gridSystem.WorldToGrid(BABO::Math::Fix64(obj->GetTransform2D().GetPosition().x),
+//            BABO::Math::Fix64(obj->GetTransform2D().GetPosition().y));
+//        if (auto* cell = m_gridSystem.GetCell(gp.x, gp.y)) {
+//            std::string tag = obj->GetTag();
+//
+//            if (tag == "Player" || tag == "Word_PLAYER") cell->word = BABO::Logic::WordType::PLAYER;
+//            else if (tag == "Word_IS")   cell->word = BABO::Logic::WordType::IS;
+//            else if (tag == "Word_YOU")  cell->word = BABO::Logic::WordType::YOU;
+//            else if (tag == "Word_WALL") cell->word = BABO::Logic::WordType::WALL;
+//            else if (tag == "Word_STOP") cell->word = BABO::Logic::WordType::STOP;
+//            cell->entities.push_back(0);
+//        }
+//    }
+//}
+//void Level::SaveCurrentLevel()
+//{
+//    std::vector<BABO::IO::EntityData> entities;
+//    std::vector<std::string> tags;
+//    for (auto* obj : objectManager.GetAllRawPtrObjects()) {
+//        if (!obj || !obj->IsAlive()) continue;
+//        BABO::IO::EntityData d;
+//        d.type = (obj->GetTag() == "Player") ? 0 : 1;
+//        d.x = BABO::Math::Fix64(obj->GetTransform2D().GetPosition().x).Raw();
+//        d.y = BABO::Math::Fix64(obj->GetTransform2D().GetPosition().y).Raw();
+//        entities.push_back(d);
+//        tags.push_back(obj->GetTag());
+//    }
+//    BABO::IO::LevelSerializer::Save(m_levelPath, m_gridSystem, entities, tags);
+//}
+//
+//void Level::CreateDefaultLevel(const std::string& path)
+//{
+//    BABO::World::GridSystem temp; temp.Resize(42, 24);
+//    std::vector<BABO::IO::EntityData> ents;
+//    std::vector<std::string> tags;
+//    BABO::IO::EntityData p; p.id = 1; p.type = 0;
+//    p.x = BABO::Math::Fix64(60.0f).Raw(); p.y = BABO::Math::Fix64(60.0f).Raw();
+//    ents.push_back(p); tags.push_back("Player");
+//    BABO::IO::LevelSerializer::Save(path, temp, ents, tags);
+//}
 void Level::LateInit(const EngineContext& ec) {
 
     // Tiles

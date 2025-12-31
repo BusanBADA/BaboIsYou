@@ -2,7 +2,9 @@
 #include "GameState.h"
 #include "LoadingState.h"
 #include "TileObject.h"
-
+#include "Core/Grid.h"
+#include "Core/RuleManager.h"
+#include "Core/Fix64.h"
 namespace TileState
 {
     void AsyncLoad(const EngineContext& engineContext, LoadingState* loading);
@@ -27,6 +29,14 @@ public:
 
     void Unload(const EngineContext& engineContext);
 
+
+    void SyncToLogicGrid(BABO::World::GridSystem& grid, ObjectManager& objectManager);
+
+
+    void SaveCurrentLevel(const std::string& path, BABO::World::GridSystem& grid, ObjectManager& objectManager);
+
+
+    void CreateDefaultLevel(const std::string& path);
 private:
 
     std::vector<TileObject*> tileObjects;

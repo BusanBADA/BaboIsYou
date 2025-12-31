@@ -19,9 +19,9 @@ enum class SubjectType
 	WALL = 1,
 	FLAG = 2,
 };
-static const std::unordered_map<std::string, SubjectType> SubjectMap =
-{
+static const std::unordered_map<std::string, SubjectType> SubjectMap = {
 	{"Babo", SubjectType::BABO},
+	{"Player", SubjectType::BABO}, 
 	{"Wall", SubjectType::WALL},
 	{"Flag", SubjectType::FLAG},
 };

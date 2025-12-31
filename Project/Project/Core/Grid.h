@@ -1,16 +1,9 @@
 #pragma once
 #include <vector>
-#include "Fix64.h"
+#include <cstdint>
 #include "Constants.h"
-namespace BABO::Logic {
-   
-    enum class WordType {
-        None = 0,
-        PLAYER, WALL, ROCK,
-        IS,                 
-        YOU, PUSH, STOP     
-    };
-}
+#include "GameTypes.h" 
+#include "Fix64.h"
 namespace BABO::World {
     using namespace BABO::Math;
     using namespace BABO::Core;
@@ -22,8 +15,14 @@ namespace BABO::World {
 
     struct Cell {
         std::vector<uint32_t> entities;
-        BABO::Logic::WordType word = BABO::Logic::WordType::None; 
+        WordType wordType = (WordType)-1;
         bool isStaticWall = false;
+
+        void Reset() {
+            entities.clear();
+            wordType = (WordType)-1;
+            isStaticWall = false;
+        }
     };
 
     class GridSystem {
@@ -31,14 +30,17 @@ namespace BABO::World {
         std::vector<Cell> m_cells;
     public:
         void Resize(int w, int h) { m_width = w; m_height = h; m_cells.clear(); m_cells.resize(w * h); }
-        GridPoint WorldToGrid(Fix64 x, Fix64 y) const {
-            return { (int32_t)(x / TILE_SIZE_F).ToInt(), (int32_t)(y / TILE_SIZE_F).ToInt() };
+
+        BABO::World::GridPoint WorldToGrid(BABO::Math::Fix64 x, BABO::Math::Fix64 y) const {
+            return { (int32_t)(x / 30.0f).ToInt(), (int32_t)(y / 30.0f).ToInt() };
         }
         bool IsInBounds(int x, int y) const { return x >= 0 && x < m_width && y >= 0 && y < m_height; }
         Cell* GetCell(int x, int y) { return IsInBounds(x, y) ? &m_cells[x + y * m_width] : nullptr; }
-        const Cell* GetCell(int x, int y) const { return IsInBounds(x, y) ? &m_cells[x + y * m_width] : nullptr; }
+        const Cell* GetCell(int x, int y) const {
+            return IsInBounds(x, y) ? &m_cells[x + y * m_width] : nullptr;
+        }
+        void Reset() { for (auto& c : m_cells) c.Reset(); }
         int GetWidth() const { return m_width; }
         int GetHeight() const { return m_height; }
-        void Reset() { for (auto& c : m_cells) { c.entities.clear(); c.isStaticWall = false; c.word = BABO::Logic::WordType::None; } }
     };
 }
