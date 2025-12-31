@@ -1,3 +1,9 @@
+Babo
+Move
+Up
+Babo
+Move
+Right
 Star
 Is
 Win
