@@ -36,11 +36,15 @@ public:
 
     void TileMove(TileObject& tileObj, ObjectiveType moveType);
 
-    bool AddTilePosition(TileObject& tileObj, const glm::vec2& pos);
+    void AddTilePosition(TileObject& tileObj, const glm::vec2& pos);
 
     void SetTilePosition(const EngineContext& engineContext, TileObject& tileObj, const glm::vec2& cord);
 
+    bool CheckValidPosition(const glm::vec2& cord);
+
     bool CheckBlankPosition(const glm::vec2& cord);
+
+    bool CheckBlankPosition(const glm::vec2& cord, ObjectiveType moveType);
 
     bool CheckPushable(TileObject& tileObj, const glm::vec2& dir);
 

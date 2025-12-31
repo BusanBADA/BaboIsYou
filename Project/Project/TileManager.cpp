@@ -103,7 +103,6 @@ void TileManager::Init(const EngineContext& engineContext, ObjectManager& om)
     AddTileObject(engineContext, "[Object]deadzone00", TileObject::TileType::DEADZONE, {}, {3,0});
     AddTileObject(engineContext, "[Object]wall00", TileObject::TileType::WALL, {}, {4,0});
     AddTileObject(engineContext, "[Object]star00", TileObject::TileType::STAR, {}, {5,0});
-
 }
 
 void TileManager::LateInit(const EngineContext& engineContext)
@@ -115,7 +114,7 @@ void TileManager::Update(float dt, const EngineContext& engineContext)
     if (engineContext.inputManager->IsKeyPressed(KEY_A))
     {
         for (TileObject* objs : tileObjects) {
-            if (objs->GetTileType() == 0)
+            if (objs->GetTileType() == TileObject::TileType::BABO)
             {
                 TileMove(*objs, ObjectiveType::LEFT);
             }
@@ -124,7 +123,7 @@ void TileManager::Update(float dt, const EngineContext& engineContext)
     if (engineContext.inputManager->IsKeyPressed(KEY_D))
     {
         for (TileObject* objs : tileObjects) {
-            if (objs->GetTileType() == 0)
+            if (objs->GetTileType() == TileObject::TileType::BABO)
             {
                 TileMove(*objs, ObjectiveType::RIGHT);
             }
@@ -133,7 +132,7 @@ void TileManager::Update(float dt, const EngineContext& engineContext)
     if (engineContext.inputManager->IsKeyPressed(KEY_W))
     {
         for (TileObject* objs : tileObjects) {
-            if (objs->GetTileType() == 0)
+            if (objs->GetTileType() == TileObject::TileType::BABO)
             {
                 TileMove(*objs, ObjectiveType::UP);
             }
@@ -177,39 +176,39 @@ TileObject* TileManager::AddTileObject(const EngineContext& engineContext, const
 
 void TileManager::TileMove(TileObject& tileObj, ObjectiveType moveType)
 {
-    glm::vec2 direction = glm::vec2(0, 0);
+    glm::vec2 dir = glm::vec2(0, 0);
+    glm::vec2 cPos = tileObj.GetCellPos();
+    glm::vec2 cDir = glm::vec2(0, 0);
+
     switch (moveType)
     {
     case ObjectiveType::LEFT:
-        direction.x = -1;
+        dir.x = -1;
+        cDir.x = -1;
         tileObj.SetFlipUV_X(true);
         break;
     case ObjectiveType::RIGHT:
-        direction.x = 1;
+        dir.x = 1;
+        cDir.x = 1;
         tileObj.SetFlipUV_X(false);
         break;
+    case ObjectiveType::DOWN:
+        dir.y = -1;
+        cDir.y = 1;
+        break;
     case ObjectiveType::UP:
-        direction.y = 1;
+        dir.y = 1;
+        cDir.y = -1;
         break;
     }
-    AddTilePosition(tileObj, direction);
-}
-
-bool TileManager::AddTilePosition(TileObject& tileObj, const glm::vec2& pos)
-{
-    glm::vec2 cord = tileObj.GetCellPos();
-
-    //exam
-    if (CheckBlankPosition(cord + pos)) // if BLANK
+    if (CheckBlankPosition(cPos + cDir)) // if BLANK
     {
         //replace
-        SetTileTypeInTilemap(cord, TileObject::BLANK);
-        cord += pos;
-        tileObj.SetCellPos(cord);
-        SetTileTypeInTilemap(cord, tileObj.GetTileType());
-        tileObj.GetTransform2D().AddPosition(pos * TILE_INTERVAL);
-
-        return true;
+        SetTileTypeInTilemap(cPos, TileObject::BLANK);
+        cPos += cDir;
+        tileObj.SetCellPos(cPos);
+        SetTileTypeInTilemap(cPos, tileObj.GetTileType());
+        AddTilePosition(tileObj, dir);
     }
     else // if Something have
     {
@@ -217,7 +216,11 @@ bool TileManager::AddTilePosition(TileObject& tileObj, const glm::vec2& pos)
         /*if (CheckPushable)
             PushTiles();*/
     }
-    return false;
+}
+
+void TileManager::AddTilePosition(TileObject& tileObj, const glm::vec2& pos)
+{
+    tileObj.GetTransform2D().AddPosition(pos * TILE_INTERVAL);
 }
 
 void TileManager::SetTilePosition(const EngineContext& engineContext, TileObject& tileObj, const glm::vec2& cord)
@@ -232,9 +235,35 @@ void TileManager::SetTilePosition(const EngineContext& engineContext, TileObject
     tileObj.GetTransform2D().SetPosition(resPos);
 }
 
+bool TileManager::CheckValidPosition(const glm::vec2& cord)
+{
+    return !(MAX_TILEMAP_SIZE.x <= cord.x || MAX_TILEMAP_SIZE.y <= cord.y || 0 > cord.x || 0 > cord.y);
+}
+
 bool TileManager::CheckBlankPosition(const glm::vec2& cord)
 {
-    return (GetTileTypeInTilemap(cord) == TileObject::TileType::BLANK);
+    return (CheckValidPosition(cord) && GetTileTypeInTilemap(cord) == TileObject::TileType::BLANK);
+}
+
+bool TileManager::CheckBlankPosition(const glm::vec2& cord, ObjectiveType moveType)
+{
+    glm::vec2 tempCord = cord;
+    switch (moveType)
+    {
+    case ObjectiveType::LEFT:
+        tempCord.x -= 1;
+        break;
+    case ObjectiveType::RIGHT:
+        tempCord.x += 1;
+        break;
+    case ObjectiveType::DOWN:
+        tempCord.y += 1;
+        break;
+    case ObjectiveType::UP:
+        tempCord.y -= 1;
+        break;
+    }
+    return (CheckValidPosition(tempCord) && GetTileTypeInTilemap(tempCord) == TileObject::TileType::BLANK);
 }
 
 bool TileManager::CheckPushable(TileObject& tileObj, const glm::vec2& dir)
@@ -252,12 +281,25 @@ void TileManager::GravityFunc()
 {
     //...
     //  If not fixed, Fall until a tile is encountered below.
+
+    glm::vec2 belowDir = { 0, 1 };
+
+    for (TileObject* obj : tileObjects)
+    {
+        if (!obj->GetTileRule(TileObject::RuleType::IS_FIXED))
+        {
+            while (CheckBlankPosition(obj->GetCellPos(), ObjectiveType::DOWN))
+            {
+                TileMove(*obj, ObjectiveType::DOWN);
+            }
+        }
+    }
 }
  
 void TileManager::SetTileTypeInTilemap(const glm::vec2& cord, TileObject::TileType type)
 {
-    if (MAX_TILEMAP_SIZE.x <= cord.x || MAX_TILEMAP_SIZE.y <= cord.y) {
-        JIN_ERR("Coordinate out of bounds.");
+    if (!CheckValidPosition(cord)) {
+        JIN_ERR("Coordinate out of bounds. - SetTileTypeInTilemap : " + std::to_string(cord.x) + ", " + std::to_string(cord.y));
         return;
     }
     tilemap[cord.y * MAX_TILEMAP_SIZE.x + cord.x] = (int)type;
@@ -265,8 +307,8 @@ void TileManager::SetTileTypeInTilemap(const glm::vec2& cord, TileObject::TileTy
 
 TileObject::TileType TileManager::GetTileTypeInTilemap(const glm::vec2& cord)
 {
-    if (MAX_TILEMAP_SIZE.x <= cord.x || MAX_TILEMAP_SIZE.y <= cord.y) {
-        JIN_ERR("Coordinate out of bounds.");
+    if (!CheckValidPosition(cord)) {
+        JIN_ERR("Coordinate out of bounds. - GetTileTypeInTilemap : " + std::to_string(cord.x) + ", " + std::to_string(cord.y));
         return TileObject::TileType(0);
     }
     return TileObject::TileType(tilemap[cord.y * MAX_TILEMAP_SIZE.x + cord.x]);

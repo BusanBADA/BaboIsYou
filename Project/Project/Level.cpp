@@ -124,10 +124,10 @@ void Level::Update(float dt, const EngineContext& ec)
     {
         cursor->SetColor({ 1.0f, 1.0f,1.0f,1.0f });
     }
-    if (ec.inputManager->IsKeyDown(KEY_LEFT)) cameraManager.GetActiveCamera()->AddPosition({ -500 * dt, 0 });
-    if (ec.inputManager->IsKeyDown(KEY_RIGHT)) cameraManager.GetActiveCamera()->AddPosition({ 500 * dt, 0 });
-    if (ec.inputManager->IsKeyDown(KEY_DOWN)) cameraManager.GetActiveCamera()->SetZoom(cameraManager.GetActiveCamera()->GetZoom() - 5 * dt);
-    if (ec.inputManager->IsKeyDown(KEY_UP)) cameraManager.GetActiveCamera()->SetZoom(cameraManager.GetActiveCamera()->GetZoom() + 5 * dt);
+    //if (ec.inputManager->IsKeyDown(KEY_LEFT)) cameraManager.GetActiveCamera()->AddPosition({ -500 * dt, 0 });
+    //if (ec.inputManager->IsKeyDown(KEY_RIGHT)) cameraManager.GetActiveCamera()->AddPosition({ 500 * dt, 0 });
+    //if (ec.inputManager->IsKeyDown(KEY_DOWN)) cameraManager.GetActiveCamera()->SetZoom(cameraManager.GetActiveCamera()->GetZoom() - 5 * dt);
+    //if (ec.inputManager->IsKeyDown(KEY_UP)) cameraManager.GetActiveCamera()->SetZoom(cameraManager.GetActiveCamera()->GetZoom() + 5 * dt);
 
     if (ec.inputManager->IsKeyDown(KEY_ESCAPE)) ec.engine->RequestQuit();
     if (ec.inputManager->IsKeyReleased(KEY_O)) ec.engine->RenderDebugDraws(true);
