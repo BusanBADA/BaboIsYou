@@ -140,6 +140,7 @@ void Level::Update(float dt, const EngineContext& ec)
         SyncToLogicGrid();
         m_ruleManager.Parse(m_gridSystem);
         JIN_LOG("Active Rules Found: " << m_ruleManager.activeRules.size());
+        wordManager->CheckCompletedSentences(ec);
     }
 
     cursor->GetTransform2D().SetPosition(glm::vec2(
