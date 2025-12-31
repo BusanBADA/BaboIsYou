@@ -250,7 +250,7 @@ void TileManager::SetTilePosition(const EngineContext& engineContext, TileObject
     int w = engineContext.windowManager->GetWidth();
     int h = engineContext.windowManager->GetHeight();
     glm::vec2 resPos = { 0, 0 };
-    glm::vec2 originPos = { 0 + TILE_INTERVAL / 2, - h / 2 + TILE_INTERVAL / 2 };
+    glm::vec2 originPos = { 0 + TILE_INTERVAL / 2, -h / 2 + TILE_INTERVAL / 2 };
     resPos = originPos + cord * TILE_INTERVAL;
     tileObj.GetTransform2D().SetPosition(resPos);
 }
@@ -286,10 +286,25 @@ bool TileManager::CheckBlankPosition(const glm::vec2& cord, ObjectiveType moveTy
     return (CheckValidPosition(tempCord) && GetTileTypeInTilemap(tempCord) == TileObject::TileType::BLANK);
 }
 
-bool TileManager::CheckIsFixedPosition(const glm::vec2& cord, ObjectiveType moveType)
+bool TileManager::CheckStarPosition(const glm::vec2& cord, ObjectiveType moveType)
 {
-
-    return false;
+    glm::vec2 tempCord = cord;
+    switch (moveType)
+    {
+    case ObjectiveType::LEFT:
+        tempCord.x -= 1;
+        break;
+    case ObjectiveType::RIGHT:
+        tempCord.x += 1;
+        break;
+    case ObjectiveType::DOWN:
+        tempCord.y -= 1;
+        break;
+    case ObjectiveType::UP:
+        tempCord.y += 1;
+        break;
+    }
+    return (CheckValidPosition(tempCord) && GetTileTypeInTilemap(tempCord) == TileObject::TileType::STAR);
 }
 
 bool TileManager::CheckPushable(TileObject& tileObj, const glm::vec2& dir)
@@ -317,6 +332,11 @@ void TileManager::GravityFunc()
             while (CheckBlankPosition(obj->GetCellPos(), ObjectiveType::DOWN))
             {
                 TileMove(*obj, ObjectiveType::DOWN);
+            }
+            if (CheckStarPosition(obj->GetCellPos(), ObjectiveType::DOWN))
+            {
+                isWin = true;
+                return;
             }
         }
     }
