@@ -28,6 +28,8 @@ void TileState::AsyncLoad(const EngineContext& engineContext, LoadingState* load
     // Object Tiles
     loading->QueueTexture(engineContext, "[Texture]Babo00", "Textures/Object/Babo_1.png"); // player = babo
     loading->QueueTexture(engineContext, "[Texture]Babo01", "Textures/Object/Babo_2.png");
+    loading->QueueTexture(engineContext, "[Texture]Danger00", "Textures/Object/Danger.png"); // player = babo
+    loading->QueueTexture(engineContext, "[Texture]Star00", "Textures/Object/Star.png");
     loading->QueueTexture(engineContext, "[Texture]Box00", "Textures/Object/Crate.png"); // box
     loading->QueueTexture(engineContext, "[Texture]Stone00", "Textures/Object/Stone.png"); // wall
 
@@ -70,6 +72,8 @@ void TileManager::Load(const EngineContext& engineContext)
     // Object Tiles
     rm->RegisterMaterial("[Material]Babo00", "[EngineShader]default_texture", { {"u_Texture","[Texture]Babo00"} });
     rm->RegisterMaterial("[Material]Babo01", "[EngineShader]default_texture", { {"u_Texture","[Texture]Babo01"} });
+    rm->RegisterMaterial("[Material]Danger00", "[EngineShader]default_texture", { {"u_Texture","[Texture]Danger00"} });
+    rm->RegisterMaterial("[Material]Star00", "[EngineShader]default_texture", { {"u_Texture","[Texture]Star00"} });
     rm->RegisterMaterial("[Material]Box00", "[EngineShader]default_texture", { {"u_Texture","[Texture]Box00"} });
     rm->RegisterMaterial("[Material]Stone00", "[EngineShader]default_texture", { {"u_Texture","[Texture]Stone00"} });
 
@@ -85,28 +89,28 @@ void TileManager::Load(const EngineContext& engineContext)
     rm->RegisterMaterial("[Material]Tree02", "[EngineShader]default_texture", { {"u_Texture","[Texture]Tree02"} });
 }
 
-void TileManager::Init(const EngineContext& engineContext)
+void TileManager::Init(const EngineContext& engineContext, ObjectManager& om)
 {
+    //Init om
+    objectManager = &om;
 
-    //Player Obj
-    /*player = static_cast<TileObject*>(objectManager.AddObject(std::make_unique<TileObject>(), "[Object]player00"));
-    player->SetRenderLayer("[Layer]Player");*/
+    //Init tilemap
 
-    //Floor Obj
-    /*frObj00 = static_cast<TileObject*>(objectManager.AddObject(std::make_unique<TileObject>(), "[Object]floor00"));
-    frObj00->SetColor(glm::vec4(0, 0, 1, 1));
-    frObj00->SetMesh(engineContext, "[EngineMesh]default");*/
+    //Tiles Load Part in lv File
+    //...
 
-
-    //Floor Collider
-   /* float colHeight = engineContext.windowManager->GetHeight() / 4.5;
-    auto frCol = std::make_unique<AABBCollider>(frObj00, glm::vec2(1.0, 1.0));
-    frCol->SetUseTransformScale(false);
-    frCol->SetSize({ engineContext.windowManager->GetWidth(), colHeight });
-    frCol->SetOffset({ glm::vec2(0,(-engineContext.windowManager->GetHeight() / 2) + (colHeight / 2)) });
-    frObj00->SetCollider(std::move(frCol));
-    frObj00->SetCollision(engineContext.stateManager->GetCurrentState()->GetObjectManager(), "[CollisionTag]tile", { "[CollisionTag]player" });*/
-
+    //*TEST OBJs*
+    AddTileObject(engineContext, "[Object]babo00", TileObject::TileType::BABO, {});
+    AddTileObject(engineContext, "[Object]floor00", TileObject::TileType::FLOOR, {}, { 0,1 });
+    AddTileObject(engineContext, "[Object]floor01", TileObject::TileType::FLOOR, {}, {1,1});
+    AddTileObject(engineContext, "[Object]floor02", TileObject::TileType::FLOOR, {}, { 2,1 });
+    AddTileObject(engineContext, "[Object]floor03", TileObject::TileType::FLOOR, {}, { 3,1 });
+    AddTileObject(engineContext, "[Object]floor04", TileObject::TileType::FLOOR, {}, { 4,1 });
+    AddTileObject(engineContext, "[Object]floor05", TileObject::TileType::FLOOR, {}, { 5,1 });
+    AddTileObject(engineContext, "[Object]box00", TileObject::TileType::BOX, {}, {2,1});
+    AddTileObject(engineContext, "[Object]deadzone00", TileObject::TileType::DEADZONE, {}, {3,1});
+    AddTileObject(engineContext, "[Object]wall00", TileObject::TileType::WALL, {}, {4,1});
+    AddTileObject(engineContext, "[Object]star00", TileObject::TileType::STAR, {}, {5,0});
 }
 
 void TileManager::LateInit(const EngineContext& engineContext)
@@ -115,22 +119,38 @@ void TileManager::LateInit(const EngineContext& engineContext)
 
 void TileManager::Update(float dt, const EngineContext& engineContext)
 {
-    /*if (engineContext.inputManager->IsKeyPressed(KEY_1))
+    if (engineContext.inputManager->IsKeyPressed(KEY_A))
     {
-        player->PlayerMove(Player::PlayerMoveType::LEFT, engineContext);
+        for (TileObject* objs : tileObjects) {
+            if (objs->GetTileType() == TileObject::TileType::BABO)
+            {
+                TileMove(*objs, ObjectiveType::LEFT);
+            }
+        }
     }
-    if (engineContext.inputManager->IsKeyPressed(KEY_2))
+    if (engineContext.inputManager->IsKeyPressed(KEY_D))
     {
-        player->PlayerMove(Player::PlayerMoveType::RIGHT, engineContext);
+        for (TileObject* objs : tileObjects) {
+            if (objs->GetTileType() == TileObject::TileType::BABO)
+            {
+                TileMove(*objs, ObjectiveType::RIGHT);
+            }
+        }
     }
-    if (engineContext.inputManager->IsKeyPressed(KEY_3))
+    if (engineContext.inputManager->IsKeyPressed(KEY_W))
     {
-        player->PlayerMove(Player::PlayerMoveType::UP, engineContext);
-    }*/
+        for (TileObject* objs : tileObjects) {
+            if (objs->GetTileType() == TileObject::TileType::BABO)
+            {
+                TileMove(*objs, ObjectiveType::UP);
+            }
+        }
+    }
 }
 
 void TileManager::LateUpdate(float dt, const EngineContext& engineContext)
 {
+    GravityFunc();
 }
 
 void TileManager::Draw(const EngineContext& engineContext)
@@ -140,10 +160,166 @@ void TileManager::Draw(const EngineContext& engineContext)
 
 void TileManager::Free(const EngineContext& engineContext)
 {
+    tileObjects.clear();
 }
 
 void TileManager::Unload(const EngineContext& engineContext)
 {
+}
+
+TileObject* TileManager::AddTileObject(const EngineContext& engineContext, const std::string& tag, TileObject::TileType tileType, std::vector<bool> rules, const glm::vec2& defPos)
+{
+    // Create Object
+    TileObject* tileObj = static_cast<TileObject*>(objectManager->AddObject(std::make_unique<TileObject>(), tag));
+    // Set TileType
+    tileObj->SetTileType(tileType);
+    // Set RuleType
+    tileObj->SetTileRules(rules);
+    // Set Default Postion
+    SetTilePosition(engineContext, *tileObj, defPos);
+
+    tileObjects.push_back(tileObj);
+    return tileObj;
+}
+
+void TileManager::TileMove(TileObject& tileObj, ObjectiveType moveType)
+{
+    glm::vec2 dir = glm::vec2(0, 0);
+    glm::vec2 cPos = tileObj.GetCellPos();
+    glm::vec2 cDir = glm::vec2(0, 0);
+
+    switch (moveType)
+    {
+    case ObjectiveType::LEFT:
+        dir.x = -1;
+        cDir.x = -1;
+        tileObj.SetFlipUV_X(true);
+        break;
+    case ObjectiveType::RIGHT:
+        dir.x = 1;
+        cDir.x = 1;
+        tileObj.SetFlipUV_X(false);
+        break;
+    case ObjectiveType::DOWN:
+        dir.y = -1;
+        cDir.y = 1;
+        break;
+    case ObjectiveType::UP:
+        dir.y = 1;
+        cDir.y = -1;
+        break;
+    }
+    if (CheckBlankPosition(cPos + cDir)) // if BLANK
+    {
+        //replace
+        SetTileTypeInTilemap(cPos, TileObject::BLANK);
+        cPos += cDir;
+        tileObj.SetCellPos(cPos);
+        SetTileTypeInTilemap(cPos, tileObj.GetTileType());
+        AddTilePosition(tileObj, dir);
+    }
+    else // if Something have
+    {
+        //examine pushable
+        /*if (CheckPushable)
+            PushTiles();*/
+    }
+}
+
+void TileManager::AddTilePosition(TileObject& tileObj, const glm::vec2& pos)
+{
+    tileObj.GetTransform2D().AddPosition(pos * TILE_INTERVAL);
+}
+
+void TileManager::SetTilePosition(const EngineContext& engineContext, TileObject& tileObj, const glm::vec2& cord)
+{
+    tileObj.SetCellPos(cord);
+    SetTileTypeInTilemap(cord, tileObj.GetTileType());
+    int w = engineContext.windowManager->GetWidth();
+    int h = engineContext.windowManager->GetHeight();
+    glm::vec2 resPos = { 0, 0 };
+    glm::vec2 originPos = { 0 + TILE_INTERVAL / 2, h / 2 - TILE_INTERVAL / 2 };
+    resPos = originPos + cord * TILE_INTERVAL;
+    tileObj.GetTransform2D().SetPosition(resPos);
+}
+
+bool TileManager::CheckValidPosition(const glm::vec2& cord)
+{
+    return !(MAX_TILEMAP_SIZE.x <= cord.x || MAX_TILEMAP_SIZE.y <= cord.y || 0 > cord.x || 0 > cord.y);
+}
+
+bool TileManager::CheckBlankPosition(const glm::vec2& cord)
+{
+    return (CheckValidPosition(cord) && GetTileTypeInTilemap(cord) == TileObject::TileType::BLANK);
+}
+
+bool TileManager::CheckBlankPosition(const glm::vec2& cord, ObjectiveType moveType)
+{
+    glm::vec2 tempCord = cord;
+    switch (moveType)
+    {
+    case ObjectiveType::LEFT:
+        tempCord.x -= 1;
+        break;
+    case ObjectiveType::RIGHT:
+        tempCord.x += 1;
+        break;
+    case ObjectiveType::DOWN:
+        tempCord.y += 1;
+        break;
+    case ObjectiveType::UP:
+        tempCord.y -= 1;
+        break;
+    }
+    return (CheckValidPosition(tempCord) && GetTileTypeInTilemap(tempCord) == TileObject::TileType::BLANK);
+}
+
+bool TileManager::CheckPushable(TileObject& tileObj, const glm::vec2& dir)
+{
+    //...
+    return false;
+}
+
+void TileManager::PushTiles(TileObject& tileObj, const glm::vec2& dir)
+{
+    //...
+}
+
+void TileManager::GravityFunc()
+{
+    //...
+    //  If not fixed, Fall until a tile is encountered below.
+
+    glm::vec2 belowDir = { 0, 1 };
+
+    for (TileObject* obj : tileObjects)
+    {
+        if (!obj->GetTileRule(TileObject::RuleType::IS_FIXED))
+        {
+            while (CheckBlankPosition(obj->GetCellPos(), ObjectiveType::DOWN))
+            {
+                TileMove(*obj, ObjectiveType::DOWN);
+            }
+        }
+    }
+}
+ 
+void TileManager::SetTileTypeInTilemap(const glm::vec2& cord, TileObject::TileType type)
+{
+    if (!CheckValidPosition(cord)) {
+        JIN_ERR("Coordinate out of bounds. - SetTileTypeInTilemap : " + std::to_string(cord.x) + ", " + std::to_string(cord.y));
+        return;
+    }
+    tilemap[cord.y * MAX_TILEMAP_SIZE.x + cord.x] = (int)type;
+}
+
+TileObject::TileType TileManager::GetTileTypeInTilemap(const glm::vec2& cord)
+{
+    if (!CheckValidPosition(cord)) {
+        JIN_ERR("Coordinate out of bounds. - GetTileTypeInTilemap : " + std::to_string(cord.x) + ", " + std::to_string(cord.y));
+        return TileObject::TileType(0);
+    }
+    return TileObject::TileType(tilemap[cord.y * MAX_TILEMAP_SIZE.x + cord.x]);
 }
 
 

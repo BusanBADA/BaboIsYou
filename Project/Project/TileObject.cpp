@@ -1,4 +1,5 @@
 #include "TileObject.h"
+#include "TileManager.h"
 
 void TileObject::Init(const EngineContext& engineContext)
 {
@@ -9,67 +10,85 @@ void TileObject::Init(const EngineContext& engineContext)
 	switch (tileType)
 	{
 		case TileType::BABO :
-			isYou = true;
+			if(rules.empty())
+				rules = { true, true, false, false, false, false };
+			/*isYou = true;
 			isPush = true;
 			isStop = false;
 			isFixed = false;
 			isDefeat = false;
-			isWin = false;
-			SetMaterial(engineContext, "[Material]Background08");
+			isWin = false;*/
+			SetMaterial(engineContext, "[Material]Babo00");
 
 		break;
 		case TileType::FLOOR :
-			isYou = false;
+			if (rules.empty())
+				rules = { false, false, true, true, false, false };
+			/*isYou = false;
 			isPush = false;
 			isStop = true;
 			isFixed = true;
 			isDefeat = false;
-			isWin = false;
+			isWin = false;*/
+			SetMaterial(engineContext, "[Material]Floor01");
 
-		break;
-		case TileType::BOX :
-			isYou = false;
+			break;
+		case TileType::BOX:
+			if (rules.empty())
+				rules = { false, true, false, false, false, false };
+			/*isYou = false;
 			isPush = true;
 			isStop = false;
 			isFixed = false;
 			isDefeat = false;
-			isWin = false;
+			isWin = false;*/
+			SetMaterial(engineContext, "[Material]Box00");
 
-		break;
-		case TileType::DEADZONE :
-			isYou = false;
+			break;
+		case TileType::DEADZONE:
+			if (rules.empty())
+				rules = { false, true, false, true, true, false };
+			/*isYou = false;
 			isPush = true;
 			isStop = false;
 			isFixed = true;
 			isDefeat = true;
-			isWin = false;
+			isWin = false;*/
+			SetMaterial(engineContext, "[Material]Danger00");
 
-		break;
-		case TileType::WALL :
-			isYou = false;
+			break;
+		case TileType::WALL:
+			if (rules.empty())
+				rules = { false, false, true, true, false, false };
+			/*isYou = false;
 			isPush = false;
 			isStop = true;
 			isFixed = true;
 			isDefeat = false;
-			isWin = false;
+			isWin = false;*/
+			SetMaterial(engineContext, "[Material]Stone00");
 
-		break;
-		case TileType::STAR :
-			isYou = false;
+			break;
+		case TileType::STAR:
+			if (rules.empty())
+				rules = { false, false, false, true, false, true };
+			/*isYou = false;
 			isPush = false;
 			isStop = false;
 			isFixed = true;
 			isDefeat = false;
-			isWin = true;
+			isWin = true;*/
+			SetMaterial(engineContext, "[Material]Star00");
 
 		break;
 	}
 
+	GetTransform2D().SetDepth(0.0f);
+	GetTransform2D().SetScale({ TILE_INTERVAL, TILE_INTERVAL });
+
 	// Collider
 	auto collider = std::make_unique<AABBCollider>(this, glm::vec2(1.0, 1.0));
-	collider->SetUseTransformScale(false);
-	collider->SetSize({ 30, 30 });
-	collider->SetOffset({ glm::vec2(0, 0) });
+	collider->SetUseTransformScale(true);
 	SetCollider(std::move(collider));
 	SetCollision(engineContext.stateManager->GetCurrentState()->GetObjectManager(), tileColTags[tileType], tileColTags );
 
@@ -93,6 +112,8 @@ void TileObject::Draw(const EngineContext& engineContext)
 
 void TileObject::Free(const EngineContext& engineContext)
 {
+	std::vector<TileObject*> objs = TileManager::instance().GetTileObjects();
+	objs.erase(std::remove(objs.begin(), objs.end(), this), objs.end());
 	GameObject::Free(engineContext);
 }
 

@@ -14,6 +14,9 @@ public:
 	inline WordState GetWordState() const { return state; }
 	inline void SetWordState(WordState InState) { state = InState; }
 	virtual void Update(float dt, const EngineContext& engineContext) override;
+	std::optional<SubjectType> GetSubjectType() const { return subjectType; }
+	std::optional<VerbType> GetVerbType() const { return verbType; }
+	std::optional<ObjectiveType> GetObjectiveType() const { return objectiveType; }
 private:
 	WordType type;
 	WordState state = WordState::Pool;
@@ -40,6 +43,21 @@ public:
 	void OnButtonClicked(WordObject* InObject);
 	void LayoutPoolWords(const EngineContext& engineContext);
 	void LayoutSentences(const EngineContext& engineContext);
+	void CheckCompletedSentences(const EngineContext& engineContext);
+	void ExecuteSentenceAction(const Sentence& sentence, const EngineContext& engineContext);
+	void ApplyIsRule(SubjectType subject,ObjectiveType object,const EngineContext& engineContext);
+	void ApplyYouRule(SubjectType subject, const EngineContext& engineContext);
+	void ApplyRightRule(SubjectType subject, const EngineContext& engineContext);
+	void ApplyUpRule(SubjectType subject, const EngineContext& engineContext);
+	void ApplyLeftRule(SubjectType subject, const EngineContext& engineContext);
+	void ApplyDownRule(SubjectType subject, const EngineContext& engineContext);
+	void ApplyWinRule(SubjectType subject, const EngineContext& engineContext);
+	void ApplyDefeatRule(SubjectType subject, const EngineContext& engineContext);
+	void ApplyPushRule(SubjectType subject, const EngineContext& engineContext);
+	void ApplyStopRule(SubjectType subject, const EngineContext& engineContext);
+	void ApplyFixedRule(SubjectType subject, const EngineContext& engineContext);
+	void ApplyLoseRule(SubjectType subject, const EngineContext& engineContext);
+	bool MatchesSubject(Object* obj, SubjectType subject);
 	Sentence* FindSentenceForWord(WordObject* word);
 	std::vector<WordObject*> Poolwords;
 	std::vector<Sentence> Sentences;

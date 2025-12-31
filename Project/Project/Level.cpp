@@ -3,11 +3,18 @@
 #include "Engine.h"
 #include "MainMenu.h"
 #include "WordObject.h"
+#include "TileManager.h"
+
+TileManager* tileManager;
+
 namespace LevelState
 {
     void AsyncLoad(const EngineContext& engineContext, LoadingState* loading)
     {
         TextureSettings ts = { TextureMinFilter::Nearest, TextureMagFilter::Nearest, TextureWrap::ClampToBorder, TextureWrap::ClampToBorder };
+
+        //BG
+        loading->QueueTexture(engineContext, "[Texture]Bg00", "Textures/BG/BG.png");
 
         //Tiles
         TileState::AsyncLoad(engineContext, loading);
@@ -53,8 +60,13 @@ void Level::Load(const EngineContext& engineContext)
 
     wordManager = static_cast<WordManager*>(objectManager.AddObject(std::make_unique<WordManager>(), "[Object]wordManager"));
     wordManager->ReadFile(engineContext, 1);
+
+    // BG
+    rm->RegisterMaterial("[Material]Bg00", "[EngineShader]default_texture", { {"u_Texture","[Texture]Bg00"} });
+
     // Tiles
-    tileManager.Load(engineContext);
+    tileManager = &TileManager::instance();
+    tileManager->Load(engineContext);
 }
 
 void Level::Init(const EngineContext& engineContext)
@@ -65,10 +77,20 @@ void Level::Init(const EngineContext& engineContext)
     cursor->GetTransform2D().SetScale({ 30,30 });
     cursor->SetRenderLayer("[Layer]Cursor");
 
+    bgObj00 = static_cast<BackgroundObject*>(objectManager.AddObject(std::make_unique<BackgroundObject>(), "[Object]Bg00"));
+    bgObj00->SetMaterial(engineContext, "[Material]Bg00");
+    bgObj00->SetRenderLayer("[Layer]Background");
+
     engineContext.soundManager->Play("BGM_Main", 1, 0);
 
+    int w = engineContext.windowManager->GetWidth();
+    int h = engineContext.windowManager->GetHeight();
+
+    bgObj00->GetTransform2D().SetScale({ w, h });
+    bgObj00->GetTransform2D().AddPosition({ w / 4, 0 });
+
     // Tiles
-    tileManager.Init(engineContext);
+    tileManager->Init(engineContext, objectManager);
 }
 
 
@@ -84,10 +106,10 @@ void Level::Update(float dt, const EngineContext& ec)
     {
         cursor->SetColor({ 1.0f, 1.0f,1.0f,1.0f });
     }
-    if (ec.inputManager->IsKeyDown(KEY_LEFT)) cameraManager.GetActiveCamera()->AddPosition({ -500 * dt, 0 });
-    if (ec.inputManager->IsKeyDown(KEY_RIGHT)) cameraManager.GetActiveCamera()->AddPosition({ 500 * dt, 0 });
-    if (ec.inputManager->IsKeyDown(KEY_DOWN)) cameraManager.GetActiveCamera()->SetZoom(cameraManager.GetActiveCamera()->GetZoom() - 5 * dt);
-    if (ec.inputManager->IsKeyDown(KEY_UP)) cameraManager.GetActiveCamera()->SetZoom(cameraManager.GetActiveCamera()->GetZoom() + 5 * dt);
+    //if (ec.inputManager->IsKeyDown(KEY_LEFT)) cameraManager.GetActiveCamera()->AddPosition({ -500 * dt, 0 });
+    //if (ec.inputManager->IsKeyDown(KEY_RIGHT)) cameraManager.GetActiveCamera()->AddPosition({ 500 * dt, 0 });
+    //if (ec.inputManager->IsKeyDown(KEY_DOWN)) cameraManager.GetActiveCamera()->SetZoom(cameraManager.GetActiveCamera()->GetZoom() - 5 * dt);
+    //if (ec.inputManager->IsKeyDown(KEY_UP)) cameraManager.GetActiveCamera()->SetZoom(cameraManager.GetActiveCamera()->GetZoom() + 5 * dt);
 
     if (ec.inputManager->IsKeyDown(KEY_ESCAPE)) ec.engine->RequestQuit();
     if (ec.inputManager->IsKeyReleased(KEY_O)) ec.engine->RenderDebugDraws(true);
@@ -107,7 +129,7 @@ void Level::Update(float dt, const EngineContext& ec)
         ec.windowManager->GetHeight() / 2.f - ec.inputManager->GetMousePos().y) + glm::vec2(11, -11));
 
     // Tiles
-    tileManager.Update(dt, ec);
+    tileManager->Update(dt, ec);
 
     objectManager.UpdateAll(dt, ec);
 }
@@ -117,26 +139,48 @@ void Level::Draw(const EngineContext& ec)
     if (cursor) cursor->SetVisibility(true);
 
     //Grid
-    if (ec.engine->ShouldRenderDebugDraws()) {
+    if (ec.engine->ShouldRenderDebugDraws())
+    {
         int w = m_gridSystem.GetWidth();
         int h = m_gridSystem.GetHeight();
 
-        for (int i = 0; i <= w; ++i) ec.renderManager->DrawLine({ i * 30, 0 }, { i * 30, h * 30 }, { 1, 1, 1, 0.1f });
-        for (int j = 0; j <= h; ++j) ec.renderManager->DrawLine({ 0, j * 30 }, { w * 30, j * 30 }, { 1, 1, 1, 0.1f });
+        float cellSize = 30.0f;
 
+        float offsetX = 0;
+        float offsetY = -(h * cellSize) * 0.5f;
+
+        // virtical line
+        for (int i = 0; i <= w; ++i) {
+            float x = offsetX + i * cellSize;
+            ec.renderManager->DrawLine( { x, offsetY }, { x, offsetY + h * cellSize }, { 0, 0, 1, 0.3f } );
+        }
+
+        // horizontal line
+        for (int j = 0; j <= h; ++j) {
+            float y = offsetY + j * cellSize;
+            ec.renderManager->DrawLine( { offsetX, y }, { offsetX + w * cellSize, y }, { 0, 0, 1, 0.3f } );
+        }
+
+        // cell line
         for (int y = 0; y < h; ++y) {
             for (int x = 0; x < w; ++x) {
                 auto* cell = m_gridSystem.GetCell(x, y);
-                if (cell && cell->isStaticWall) { 
-                    ec.renderManager->DrawLine({ x * 30, y * 30 }, { (x + 1) * 30, (y + 1) * 30 }, { 1, 0, 0, 0.5f }, 2.0f);
-                    ec.renderManager->DrawLine({ (x + 1) * 30, y * 30 }, { x * 30, (y + 1) * 30 }, { 1, 0, 0, 0.5f }, 2.0f);
+                if (cell && cell->isStaticWall) {
+                    float x0 = offsetX + x * cellSize;
+                    float y0 = offsetY + y * cellSize;
+                    float x1 = offsetX + (x + 1) * cellSize;
+                    float y1 = offsetY + (y + 1) * cellSize;
+
+                    ec.renderManager->DrawLine( { x0, y0 }, { x1, y1 }, { 1, 0, 0, 0.5f }, 2.0f );
+                    ec.renderManager->DrawLine( { x1, y0 }, { x0, y1 }, { 1, 0, 0, 0.5f }, 2.0f );
                 }
             }
         }
     }
 
+
     // Tiles
-    tileManager.Draw(ec);
+    tileManager->Draw(ec);
 
     objectManager.DrawAll(ec);
 }
@@ -188,22 +232,22 @@ void Level::Draw(const EngineContext& ec)
 void Level::LateInit(const EngineContext& ec) {
 
     // Tiles
-    tileManager.LateInit(ec);
+    tileManager->LateInit(ec);
 }
 void Level::LateUpdate(float dt, const EngineContext& ec) {
 
 
     // Tiles
-    tileManager.LateUpdate(dt, ec);
+    tileManager->LateUpdate(dt, ec);
 }
 void Level::Free(const EngineContext& ec) { 
 
     // Tiles
-    tileManager.Free(ec);
+    tileManager->Free(ec);
 }
 void Level::Unload(const EngineContext& ec) {
     for (int i = 0; i < 10; i++) ec.renderManager->UnregisterTexture("test" + std::to_string(i), ec);
 
     // Tiles
-    tileManager.Unload(ec);
+    tileManager->Unload(ec);
 }
