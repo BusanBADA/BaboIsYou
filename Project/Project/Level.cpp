@@ -119,11 +119,12 @@ void Level::Update(float dt, const EngineContext& ec)
     if (ec.inputManager->IsKeyPressed(KEY_L)) ec.stateManager->ChangeState(std::make_unique<Level>());
 
  
-    //if (ec.inputManager->IsKeyPressed(KEY_SPACE)) {
+    if (ec.inputManager->IsKeyPressed(KEY_SPACE)) {
     //   // SyncToLogicGrid();
     //    m_ruleManager.Parse(m_gridSystem);
     //    JIN_LOG("Active Rules Found: " << m_ruleManager.activeRules.size());
-    //}
+		wordManager->CheckCompletedSentences(ec);
+    }
 
     cursor->GetTransform2D().SetPosition(glm::vec2(
         ec.inputManager->GetMousePos().x - ec.windowManager->GetWidth() / 2.f,
