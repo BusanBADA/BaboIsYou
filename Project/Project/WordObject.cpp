@@ -3,6 +3,7 @@
 #include "GameState.h"
 #include <fstream>
 #include <unordered_map>
+#include "TileManager.h"
 WordObject::WordObject(Font* font, const std::string& text) : Button(font, text)
 {
 	ResolveWordType(text);
@@ -287,6 +288,250 @@ void WordManager::LayoutSentences(const EngineContext& engineContext)
 		placeWord(s.verb);
 		placeWord(s.object);
 	}
+}
+
+void WordManager::CheckCompletedSentences(const EngineContext& engineContext)
+{
+	for (auto& sentence : Sentences)
+	{
+		if (!sentence.IsComplete())
+			continue;
+
+		ExecuteSentenceAction(sentence, engineContext);
+	}
+}
+
+void WordManager::ExecuteSentenceAction(const Sentence& sentence, const EngineContext& engineContext)
+{
+	auto subject = sentence.subject->GetSubjectType();
+	auto verb = sentence.verb->GetVerbType();
+	auto object = sentence.object->GetObjectiveType();
+
+	if (!subject || !verb || !object)
+		return;
+
+	if (*verb == VerbType::IS)
+	{
+		ApplyIsRule(*subject, *object, engineContext);
+	}
+}
+
+
+
+void WordManager::ApplyIsRule(SubjectType subject, ObjectiveType object, const EngineContext& engineContext)
+{
+	switch (object)
+	{
+	case ObjectiveType::YOU:
+		ApplyYouRule(subject, engineContext);
+		break;
+	case ObjectiveType::RIGHT:
+		ApplyRightRule(subject, engineContext);
+		break;
+
+	case ObjectiveType::UP:
+		ApplyUpRule(subject, engineContext);
+		break;
+	case ObjectiveType::LEFT:
+		ApplyLeftRule(subject, engineContext);
+		break;
+	case ObjectiveType::DOWN:
+		ApplyDownRule(subject, engineContext);
+		break;
+	case ObjectiveType::WIN:
+		ApplyWinRule(subject, engineContext);
+		break;
+
+	case ObjectiveType::DEFEAT:
+		ApplyLoseRule(subject, engineContext);
+		break;
+	case ObjectiveType::PUSH:
+		//ApplyPushRule(subject, engineContext);
+		break;
+	case ObjectiveType::STOP:
+		//ApplyStopRule(subject, engineContext);
+		break;
+	case ObjectiveType::FIXED:
+		//ApplyFixedRule(subject, engineContext);
+		break;
+	
+
+	default:
+		break;
+	}
+}
+void WordManager::ApplyYouRule(SubjectType subject, const EngineContext& engineContext)
+{
+	auto objects = engineContext.stateManager->GetCurrentState()->GetObjectManager().GetAllRawPtrObjects();
+	TileManager& TM = TileManager::instance();
+	for (auto* obj : objects)
+	{
+		if (!obj) continue;
+
+		if (MatchesSubject(obj, subject))
+		{
+			obj->SetTag("You");
+		}
+	}
+}
+void WordManager::ApplyRightRule(SubjectType subject, const EngineContext& engineContext)
+{
+	auto objects = engineContext.stateManager->GetCurrentState()->GetObjectManager().GetAllRawPtrObjects();
+	TileManager& TM = TileManager::instance();
+	for (auto* obj : objects)
+	{
+		if (!obj) continue;
+
+		if (MatchesSubject(obj, subject))
+		{
+			TM.TileMove(static_cast<TileObject&>(*obj), ObjectiveType::RIGHT);
+		}
+	}
+}
+
+void WordManager::ApplyUpRule(SubjectType subject, const EngineContext& engineContext)
+{
+	auto objects = engineContext.stateManager->GetCurrentState()->GetObjectManager().GetAllRawPtrObjects();
+	TileManager& TM = TileManager::instance();
+	for (auto* obj : objects)
+	{
+		if (!obj) continue;
+
+		if (MatchesSubject(obj, subject))
+		{
+			TM.TileMove(static_cast<TileObject&>(*obj), ObjectiveType::UP);
+		}
+	}
+}
+
+void WordManager::ApplyLeftRule(SubjectType subject, const EngineContext& engineContext)
+{
+	auto objects = engineContext.stateManager->GetCurrentState()->GetObjectManager().GetAllRawPtrObjects();
+	TileManager& TM = TileManager::instance();
+	for (auto* obj : objects)
+	{
+		if (!obj) continue;
+
+		if (MatchesSubject(obj, subject))
+		{
+			TM.TileMove(static_cast<TileObject&>(*obj), ObjectiveType::LEFT);
+		}
+	}
+}
+
+void WordManager::ApplyDownRule(SubjectType subject, const EngineContext& engineContext)
+{
+	auto objects = engineContext.stateManager->GetCurrentState()->GetObjectManager().GetAllRawPtrObjects();
+	TileManager& TM = TileManager::instance();
+	for (auto* obj : objects)
+	{
+		if (!obj) continue;
+
+		if (MatchesSubject(obj, subject))
+		{
+			TM.TileMove(static_cast<TileObject&>(*obj), ObjectiveType::DOWN);
+		}
+	}
+}
+
+void WordManager::ApplyWinRule(SubjectType subject, const EngineContext& engineContext)
+{
+	auto objects = engineContext.stateManager->GetCurrentState()->GetObjectManager().GetAllRawPtrObjects();
+
+	for (auto* obj : objects)
+	{
+		if (!obj) continue;
+
+		if (MatchesSubject(obj, subject))
+		{
+			obj->SetTag("Win");
+		}
+	}
+}
+
+void WordManager::ApplyDefeatRule(SubjectType subject, const EngineContext& engineContext)
+{
+	auto objects = engineContext.stateManager->GetCurrentState()->GetObjectManager().GetAllRawPtrObjects();
+
+	for (auto* obj : objects)
+	{
+		if (!obj) continue;
+
+		if (MatchesSubject(obj, subject))
+		{
+			obj->SetTag("Defeat");
+		}
+	}
+}
+
+void WordManager::ApplyPushRule(SubjectType subject, const EngineContext& engineContext)
+{
+	auto objects = engineContext.stateManager->GetCurrentState()->GetObjectManager().GetAllRawPtrObjects();
+
+	for (auto* obj : objects)
+	{
+		if (!obj) continue;
+
+		if (MatchesSubject(obj, subject))
+		{
+			obj->SetTag("Push");
+		}
+	}
+}
+
+void WordManager::ApplyStopRule(SubjectType subject, const EngineContext& engineContext)
+{
+	auto objects = engineContext.stateManager->GetCurrentState()->GetObjectManager().GetAllRawPtrObjects();
+
+	for (auto* obj : objects)
+	{
+		if (!obj) continue;
+
+		if (MatchesSubject(obj, subject))
+		{
+			obj->SetTag("Stop");
+		}
+	}
+}
+
+void WordManager::ApplyFixedRule(SubjectType subject, const EngineContext& engineContext)
+{
+	auto objects = engineContext.stateManager->GetCurrentState()->GetObjectManager().GetAllRawPtrObjects();
+
+	for (auto* obj : objects)
+	{
+		if (!obj) continue;
+
+		if (MatchesSubject(obj, subject))
+		{
+			obj->SetTag("Fixed");
+		}
+	}
+}
+
+void WordManager::ApplyLoseRule(SubjectType subject, const EngineContext& engineContext)
+{
+	auto objects = engineContext.stateManager->GetCurrentState()->GetObjectManager().GetAllRawPtrObjects();
+
+	for (auto* obj : objects)
+	{
+		if (!obj) continue;
+
+		if (MatchesSubject(obj, subject))
+		{
+		}
+	}
+}
+
+bool  WordManager::MatchesSubject(Object* obj, SubjectType subject)
+{
+	switch (subject)
+	{
+	case SubjectType::BABO: return obj->GetTag() == "BABO";
+	case SubjectType::WALL: return obj->GetTag() == "WALL";
+	case SubjectType::FLAG: return obj->GetTag() == "FLAG";
+	}
+	return false;
 }
 
 Sentence* WordManager::FindSentenceForWord(WordObject* word)
