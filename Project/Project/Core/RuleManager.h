@@ -13,7 +13,7 @@ namespace BABO::Logic {
                     ActiveRule rule;
                     rule.subject = sentence.subject->GetSubjectType().value_or(SubjectType::BABO);
                     rule.verb = sentence.verb->GetVerbType().value_or(VerbType::IS);
-                    rule.object = sentence.object->GetObjectType().value_or(ObjectiveType::WIN);
+                    rule.object = sentence.object->GetObjectiveType().value_or(ObjectiveType::WIN);
                     uiRules.push_back(rule);
                 }
             }

@@ -26,10 +26,7 @@ private:
 	std::optional<ObjectiveType> objectiveType;
 
 	void ResolveWordType(const std::string& text);
-public:
-	std::optional<SubjectType> GetSubjectType() const { return subjectType; }
-	std::optional<VerbType> GetVerbType() const { return verbType; }
-	std::optional<ObjectiveType> GetObjectType() const { return objectiveType; }
+
 };
 
 class WordManager : public GameObject
