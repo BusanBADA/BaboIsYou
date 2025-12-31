@@ -39,6 +39,8 @@ public:
 
     void TileMove(TileObject& tileObj, ObjectiveType moveType);
 
+    void WhenWin(const EngineContext& engineContext);
+
     void AddTilePosition(TileObject& tileObj, const glm::vec2& pos);
 
     void SetTilePosition(const EngineContext& engineContext, TileObject& tileObj, const glm::vec2& cord);
@@ -46,6 +48,10 @@ public:
     bool CheckValidPosition(const glm::vec2& cord);
 
     bool CheckBlankPosition(const glm::vec2& cord);
+
+    bool CheckBlankPosition(const glm::vec2& cord, ObjectiveType moveType);
+
+    bool CheckIsFixedPosition(const glm::vec2& cord, ObjectiveType moveType);
 
     bool CheckPushable(TileObject& tileObj, const glm::vec2& dir);
 
@@ -67,6 +73,8 @@ public:
     TileObject::TileType GetTileTypeInTilemap(const glm::vec2& cord);
 
     std::vector<int> tilemap = std::vector<int>(MAX_TILEMAP_SIZE.x * MAX_TILEMAP_SIZE.y, 0);
+
+    bool isWin = false;
 
 
     void SyncToLogicGrid(BABO::World::GridSystem& grid, ObjectManager& objectManager);

@@ -1,4 +1,5 @@
 #include "TileManager.h"
+#include "MainMenu.h"
 #include "GameTypes.h"
 #include "Core/LevelSerializer.h"
 
@@ -100,7 +101,7 @@ void TileManager::Init(const EngineContext& engineContext, ObjectManager& om)
     //...
 
     //*TEST OBJs*
-    AddTileObject(engineContext, "[Object]babo00", TileObject::TileType::BABO, {}, { 1,7 });
+    AddTileObject(engineContext, "[Object]babo00", TileObject::TileType::BABO, {},  { 0, 7 });
     AddTileObject(engineContext, "[Object]floor00", TileObject::TileType::FLOOR, {}, { 0, 5 });
     AddTileObject(engineContext, "[Object]floor01", TileObject::TileType::FLOOR, {}, { 1, 5 });
     AddTileObject(engineContext, "[Object]floor02", TileObject::TileType::FLOOR, {}, { 2, 5 });
@@ -110,7 +111,7 @@ void TileManager::Init(const EngineContext& engineContext, ObjectManager& om)
     AddTileObject(engineContext, "[Object]box00", TileObject::TileType::BOX, {}, {2,7});
     AddTileObject(engineContext, "[Object]deadzone00", TileObject::TileType::DEADZONE, {}, {3,7});
     AddTileObject(engineContext, "[Object]wall00", TileObject::TileType::WALL, {}, {4,7});
-    AddTileObject(engineContext, "[Object]star00", TileObject::TileType::STAR, {}, {5,7});
+    AddTileObject(engineContext, "[Object]star00", TileObject::TileType::STAR, {}, {5,8});
 }
 
 void TileManager::LateInit(const EngineContext& engineContext)
@@ -151,6 +152,10 @@ void TileManager::Update(float dt, const EngineContext& engineContext)
 void TileManager::LateUpdate(float dt, const EngineContext& engineContext)
 {
     GravityFunc();
+    if (isWin)
+    {
+        WhenWin(engineContext);
+    }
 }
 
 void TileManager::Draw(const EngineContext& engineContext)
@@ -214,10 +219,23 @@ void TileManager::TileMove(TileObject& tileObj, ObjectiveType moveType)
     }
     else // if Something have
     {
+        TileObject::TileType otherTileType = GetTileTypeInTilemap(cPos + dir);
+
         //examine pushable
         /*if (CheckPushable)
             PushTiles();*/
+
+        //examine win
+        if (otherTileType == TileObject::STAR)
+        {
+            isWin = true;
+        }
     }
+}
+
+void TileManager::WhenWin(const EngineContext& engineContext)
+{
+    engineContext.stateManager->ChangeState(std::make_unique<MainMenu>());
 }
 
 void TileManager::AddTilePosition(TileObject& tileObj, const glm::vec2& pos)
@@ -247,6 +265,33 @@ bool TileManager::CheckBlankPosition(const glm::vec2& cord)
     return (CheckValidPosition(cord) && GetTileTypeInTilemap(cord) == TileObject::TileType::BLANK);
 }
 
+bool TileManager::CheckBlankPosition(const glm::vec2& cord, ObjectiveType moveType)
+{
+    glm::vec2 tempCord = cord;
+    switch (moveType)
+    {
+    case ObjectiveType::LEFT:
+        tempCord.x -= 1;
+        break;
+    case ObjectiveType::RIGHT:
+        tempCord.x += 1;
+        break;
+    case ObjectiveType::DOWN:
+        tempCord.y -= 1;
+        break;
+    case ObjectiveType::UP:
+        tempCord.y += 1;
+        break;
+    }
+    return (CheckValidPosition(tempCord) && GetTileTypeInTilemap(tempCord) == TileObject::TileType::BLANK);
+}
+
+bool TileManager::CheckIsFixedPosition(const glm::vec2& cord, ObjectiveType moveType)
+{
+
+    return false;
+}
+
 bool TileManager::CheckPushable(TileObject& tileObj, const glm::vec2& dir)
 {
     //...
@@ -269,7 +314,7 @@ void TileManager::GravityFunc()
     {
         if (!obj->GetTileRule(TileObject::RuleType::IS_FIXED))
         {
-            while (CheckBlankPosition(obj->GetCellPos()))
+            while (CheckBlankPosition(obj->GetCellPos(), ObjectiveType::DOWN))
             {
                 TileMove(*obj, ObjectiveType::DOWN);
             }
