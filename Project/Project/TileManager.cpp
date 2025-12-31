@@ -98,10 +98,15 @@ void TileManager::Init(const EngineContext& engineContext, ObjectManager& om)
 
     //*TEST OBJs*
     AddTileObject(engineContext, "[Object]babo00", TileObject::TileType::BABO, {});
-    AddTileObject(engineContext, "[Object]floor00", TileObject::TileType::FLOOR, {}, {1,0});
-    AddTileObject(engineContext, "[Object]box00", TileObject::TileType::BOX, {}, {2,0});
-    AddTileObject(engineContext, "[Object]deadzone00", TileObject::TileType::DEADZONE, {}, {3,0});
-    AddTileObject(engineContext, "[Object]wall00", TileObject::TileType::WALL, {}, {4,0});
+    AddTileObject(engineContext, "[Object]floor00", TileObject::TileType::FLOOR, {}, { 0,1 });
+    AddTileObject(engineContext, "[Object]floor01", TileObject::TileType::FLOOR, {}, {1,1});
+    AddTileObject(engineContext, "[Object]floor02", TileObject::TileType::FLOOR, {}, { 2,1 });
+    AddTileObject(engineContext, "[Object]floor03", TileObject::TileType::FLOOR, {}, { 3,1 });
+    AddTileObject(engineContext, "[Object]floor04", TileObject::TileType::FLOOR, {}, { 4,1 });
+    AddTileObject(engineContext, "[Object]floor05", TileObject::TileType::FLOOR, {}, { 5,1 });
+    AddTileObject(engineContext, "[Object]box00", TileObject::TileType::BOX, {}, {2,1});
+    AddTileObject(engineContext, "[Object]deadzone00", TileObject::TileType::DEADZONE, {}, {3,1});
+    AddTileObject(engineContext, "[Object]wall00", TileObject::TileType::WALL, {}, {4,1});
     AddTileObject(engineContext, "[Object]star00", TileObject::TileType::STAR, {}, {5,0});
 
 }

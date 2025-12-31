@@ -314,6 +314,25 @@ void WordManager::ExecuteSentenceAction(const Sentence& sentence, const EngineCo
 	{
 		ApplyIsRule(*subject, *object, engineContext);
 	}
+	if (*verb == VerbType::MOVE)
+	{
+		if (*object == ObjectiveType::RIGHT)
+		{
+			ApplyRightRule(*subject, engineContext);
+		}
+		else if (*object == ObjectiveType::LEFT)
+		{
+			ApplyLeftRule(*subject, engineContext);
+		}
+		else if (*object == ObjectiveType::UP)
+		{
+			ApplyUpRule(*subject, engineContext);
+		}
+		else if (*object == ObjectiveType::DOWN)
+		{
+			ApplyDownRule(*subject, engineContext);
+		}
+	}
 }
 
 
@@ -325,19 +344,6 @@ void WordManager::ApplyIsRule(SubjectType subject, ObjectiveType object, const E
 	case ObjectiveType::YOU:
 		ApplyYouRule(subject, engineContext);
 		break;
-	case ObjectiveType::RIGHT:
-		ApplyRightRule(subject, engineContext);
-		break;
-
-	case ObjectiveType::UP:
-		ApplyUpRule(subject, engineContext);
-		break;
-	case ObjectiveType::LEFT:
-		ApplyLeftRule(subject, engineContext);
-		break;
-	case ObjectiveType::DOWN:
-		ApplyDownRule(subject, engineContext);
-		break;
 	case ObjectiveType::WIN:
 		ApplyWinRule(subject, engineContext);
 		break;
@@ -346,13 +352,13 @@ void WordManager::ApplyIsRule(SubjectType subject, ObjectiveType object, const E
 		ApplyLoseRule(subject, engineContext);
 		break;
 	case ObjectiveType::PUSH:
-		//ApplyPushRule(subject, engineContext);
+		ApplyPushRule(subject, engineContext);
 		break;
 	case ObjectiveType::STOP:
-		//ApplyStopRule(subject, engineContext);
+		ApplyStopRule(subject, engineContext);
 		break;
 	case ObjectiveType::FIXED:
-		//ApplyFixedRule(subject, engineContext);
+		ApplyFixedRule(subject, engineContext);
 		break;
 	
 
@@ -525,11 +531,15 @@ void WordManager::ApplyLoseRule(SubjectType subject, const EngineContext& engine
 
 bool  WordManager::MatchesSubject(Object* obj, SubjectType subject)
 {
+	TileObject* tileObj = dynamic_cast<TileObject*>(obj);
+	if (!tileObj)
+		return false;
+
 	switch (subject)
 	{
-	case SubjectType::BABO: return obj->GetTag() == "BABO";
-	case SubjectType::WALL: return obj->GetTag() == "WALL";
-	case SubjectType::FLAG: return obj->GetTag() == "FLAG";
+	case SubjectType::BABO: return tileObj->GetTileType() == TileObject::TileType::BABO;
+	case SubjectType::WALL: return tileObj->GetTileType() == TileObject::TileType::WALL;
+	case SubjectType::FLAG: return tileObj->GetTileType() == TileObject::TileType::STAR;
 	}
 	return false;
 }
