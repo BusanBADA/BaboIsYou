@@ -97,17 +97,17 @@ void TileManager::Init(const EngineContext& engineContext, ObjectManager& om)
     //...
 
     //*TEST OBJs*
-    AddTileObject(engineContext, "[Object]babo00", TileObject::TileType::BABO, {});
-    AddTileObject(engineContext, "[Object]floor00", TileObject::TileType::FLOOR, {}, { 0,1 });
-    AddTileObject(engineContext, "[Object]floor01", TileObject::TileType::FLOOR, {}, {1,1});
-    AddTileObject(engineContext, "[Object]floor02", TileObject::TileType::FLOOR, {}, { 2,1 });
-    AddTileObject(engineContext, "[Object]floor03", TileObject::TileType::FLOOR, {}, { 3,1 });
-    AddTileObject(engineContext, "[Object]floor04", TileObject::TileType::FLOOR, {}, { 4,1 });
-    AddTileObject(engineContext, "[Object]floor05", TileObject::TileType::FLOOR, {}, { 5,1 });
-    AddTileObject(engineContext, "[Object]box00", TileObject::TileType::BOX, {}, {2,1});
-    AddTileObject(engineContext, "[Object]deadzone00", TileObject::TileType::DEADZONE, {}, {3,1});
-    AddTileObject(engineContext, "[Object]wall00", TileObject::TileType::WALL, {}, {4,1});
-    AddTileObject(engineContext, "[Object]star00", TileObject::TileType::STAR, {}, {5,0});
+    AddTileObject(engineContext, "[Object]babo00", TileObject::TileType::BABO, {}, { 1,7 });
+    AddTileObject(engineContext, "[Object]floor00", TileObject::TileType::FLOOR, {}, { 0, 5 });
+    AddTileObject(engineContext, "[Object]floor01", TileObject::TileType::FLOOR, {}, { 1, 5 });
+    AddTileObject(engineContext, "[Object]floor02", TileObject::TileType::FLOOR, {}, { 2, 5 });
+    AddTileObject(engineContext, "[Object]floor03", TileObject::TileType::FLOOR, {}, { 3, 5 });
+    AddTileObject(engineContext, "[Object]floor04", TileObject::TileType::FLOOR, {}, { 4, 5 });
+    AddTileObject(engineContext, "[Object]floor05", TileObject::TileType::FLOOR, {}, { 5, 5 });
+    AddTileObject(engineContext, "[Object]box00", TileObject::TileType::BOX, {}, {2,7});
+    AddTileObject(engineContext, "[Object]deadzone00", TileObject::TileType::DEADZONE, {}, {3,7});
+    AddTileObject(engineContext, "[Object]wall00", TileObject::TileType::WALL, {}, {4,7});
+    AddTileObject(engineContext, "[Object]star00", TileObject::TileType::STAR, {}, {5,7});
 }
 
 void TileManager::LateInit(const EngineContext& engineContext)
@@ -174,7 +174,6 @@ TileObject* TileManager::AddTileObject(const EngineContext& engineContext, const
     tileObj->SetTileRules(rules);
     // Set Default Postion
     SetTilePosition(engineContext, *tileObj, defPos);
-
     tileObjects.push_back(tileObj);
     return tileObj;
 }
@@ -183,34 +182,29 @@ void TileManager::TileMove(TileObject& tileObj, ObjectiveType moveType)
 {
     glm::vec2 dir = glm::vec2(0, 0);
     glm::vec2 cPos = tileObj.GetCellPos();
-    glm::vec2 cDir = glm::vec2(0, 0);
 
     switch (moveType)
     {
     case ObjectiveType::LEFT:
         dir.x = -1;
-        cDir.x = -1;
         tileObj.SetFlipUV_X(true);
         break;
     case ObjectiveType::RIGHT:
         dir.x = 1;
-        cDir.x = 1;
         tileObj.SetFlipUV_X(false);
         break;
     case ObjectiveType::DOWN:
         dir.y = -1;
-        cDir.y = 1;
         break;
     case ObjectiveType::UP:
         dir.y = 1;
-        cDir.y = -1;
         break;
     }
-    if (CheckBlankPosition(cPos + cDir)) // if BLANK
+    if (CheckBlankPosition(cPos + dir)) // if BLANK
     {
         //replace
         SetTileTypeInTilemap(cPos, TileObject::BLANK);
-        cPos += cDir;
+        cPos += dir;
         tileObj.SetCellPos(cPos);
         SetTileTypeInTilemap(cPos, tileObj.GetTileType());
         AddTilePosition(tileObj, dir);
@@ -235,7 +229,7 @@ void TileManager::SetTilePosition(const EngineContext& engineContext, TileObject
     int w = engineContext.windowManager->GetWidth();
     int h = engineContext.windowManager->GetHeight();
     glm::vec2 resPos = { 0, 0 };
-    glm::vec2 originPos = { 0 + TILE_INTERVAL / 2, h / 2 - TILE_INTERVAL / 2 };
+    glm::vec2 originPos = { 0 + TILE_INTERVAL / 2, - h / 2 + TILE_INTERVAL / 2 };
     resPos = originPos + cord * TILE_INTERVAL;
     tileObj.GetTransform2D().SetPosition(resPos);
 }
@@ -248,27 +242,6 @@ bool TileManager::CheckValidPosition(const glm::vec2& cord)
 bool TileManager::CheckBlankPosition(const glm::vec2& cord)
 {
     return (CheckValidPosition(cord) && GetTileTypeInTilemap(cord) == TileObject::TileType::BLANK);
-}
-
-bool TileManager::CheckBlankPosition(const glm::vec2& cord, ObjectiveType moveType)
-{
-    glm::vec2 tempCord = cord;
-    switch (moveType)
-    {
-    case ObjectiveType::LEFT:
-        tempCord.x -= 1;
-        break;
-    case ObjectiveType::RIGHT:
-        tempCord.x += 1;
-        break;
-    case ObjectiveType::DOWN:
-        tempCord.y += 1;
-        break;
-    case ObjectiveType::UP:
-        tempCord.y -= 1;
-        break;
-    }
-    return (CheckValidPosition(tempCord) && GetTileTypeInTilemap(tempCord) == TileObject::TileType::BLANK);
 }
 
 bool TileManager::CheckPushable(TileObject& tileObj, const glm::vec2& dir)
@@ -293,7 +266,7 @@ void TileManager::GravityFunc()
     {
         if (!obj->GetTileRule(TileObject::RuleType::IS_FIXED))
         {
-            while (CheckBlankPosition(obj->GetCellPos(), ObjectiveType::DOWN))
+            while (CheckBlankPosition(obj->GetCellPos()))
             {
                 TileMove(*obj, ObjectiveType::DOWN);
             }
